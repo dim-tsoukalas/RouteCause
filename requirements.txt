@@ -1,0 +1,17 @@
+# Phase 1 core runs on the standard library only — no install required.
+# The extras below activate the production paths described in the build plan.
+
+# --- LLM narration (the `--explain` / real-completion path) ---
+# litellm>=1.40        # provider-agnostic completions (OpenAI/Anthropic/Ollama/…)
+
+# --- Production retrieval (swap the built-in BM25 for hybrid BM25+dense) ---
+# llama-index-core>=0.11
+# chromadb>=0.5        # or qdrant-client
+# sentence-transformers>=3.0
+
+# --- Real BGP incident data (replaces the synthetic sample) ---
+mrtparse>=2.0          # pure-Python MRT parser for investigator/ingest.py
+                       # (not pybgpstream: that wraps a C library with no Windows wheels)
+
+# --- Dev ---
+pytest>=8.0

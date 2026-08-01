@@ -1,0 +1,19 @@
+{
+  "incident_id": "demo-moas-withdrawal-2024",
+  "description": "Prefix 203.0.113.0/24 originated by AS64500, then a second origin AS64666 appears (MOAS), followed by a burst of withdrawals.",
+  "prefix": "203.0.113.0/24",
+  "source": "synthetic (documentation prefix TEST-NET-3, private ASNs) — replace with RIPE RIS / RouteViews data for real evaluation",
+  "ground_truth": "prefix hijack (MOAS) with subsequent withdrawal storm",
+  "updates": [
+    {"timestamp": "2024-05-01T10:00:00Z", "kind": "announce", "prefix": "203.0.113.0/24", "peer_asn": 65001, "as_path": [65001, 64510, 64500], "origin_asn": 64500, "collector": "rrc00"},
+    {"timestamp": "2024-05-01T10:01:00Z", "kind": "announce", "prefix": "203.0.113.0/24", "peer_asn": 65002, "as_path": [65002, 64520, 64500], "origin_asn": 64500, "collector": "rrc01"},
+    {"timestamp": "2024-05-01T10:14:30Z", "kind": "announce", "prefix": "203.0.113.0/24", "peer_asn": 65003, "as_path": [65003, 64530, 64666], "origin_asn": 64666, "collector": "rrc03"},
+    {"timestamp": "2024-05-01T10:15:00Z", "kind": "announce", "prefix": "203.0.113.0/24", "peer_asn": 65004, "as_path": [65004, 64666], "origin_asn": 64666, "collector": "rrc04"},
+    {"timestamp": "2024-05-01T10:20:00Z", "kind": "withdraw", "prefix": "203.0.113.0/24", "peer_asn": 65001, "collector": "rrc00"},
+    {"timestamp": "2024-05-01T10:20:40Z", "kind": "withdraw", "prefix": "203.0.113.0/24", "peer_asn": 65002, "collector": "rrc01"},
+    {"timestamp": "2024-05-01T10:21:10Z", "kind": "withdraw", "prefix": "203.0.113.0/24", "peer_asn": 65003, "collector": "rrc03"},
+    {"timestamp": "2024-05-01T10:21:50Z", "kind": "withdraw", "prefix": "203.0.113.0/24", "peer_asn": 65004, "collector": "rrc04"},
+    {"timestamp": "2024-05-01T10:22:30Z", "kind": "withdraw", "prefix": "203.0.113.0/24", "peer_asn": 65005, "collector": "rrc05"},
+    {"timestamp": "2024-05-01T10:23:00Z", "kind": "withdraw", "prefix": "203.0.113.0/24", "peer_asn": 65006, "collector": "rrc06"}
+  ]
+}

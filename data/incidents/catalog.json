@@ -1,0 +1,28 @@
+[
+  {
+    "name": "cloudflare-verizon-2019",
+    "description": "Verizon (AS701) leaked routes learned from a small downstream customer (Allegheny Technologies / DQE Communications, AS396531), including many of Cloudflare's (AS13335) /21 blocks under 104.16.0.0/12, causing a large-scale route leak that knocked parts of Cloudflare offline. 104.16.0.0/12 is Cloudflare's aggregate but is not itself announced in BGP -- the leak visibly affected the specific /21s below (tens of thousands of announce/withdraw events each, vs. essentially none for the /12).",
+    "start": "2019-06-24T10:00:00Z",
+    "end": "2019-06-24T13:00:00Z",
+    "prefixes": [
+      "104.27.160.0/21",
+      "104.18.32.0/21",
+      "104.31.0.0/21",
+      "104.28.24.0/21",
+      "104.27.168.0/21"
+    ],
+    "collectors": ["rrc00", "route-views2"],
+    "expected": ["route_leak"],
+    "notes": "Window is deliberately wide (public writeups place the leak around 10:30-12:40 UTC) - verify against a primary source (e.g. Cloudflare's own incident writeup) before treating as precise ground truth. The prefix list is a sample of the affected /21s, not exhaustive."
+  },
+  {
+    "name": "pakistan-youtube-2008",
+    "description": "Pakistan Telecom (AS17557) originated YouTube's 208.65.153.0/24 in response to a government block order; the more-specific route propagated globally via PCCW (AS9491), hijacking YouTube traffic worldwide.",
+    "start": "2008-02-24T18:00:00Z",
+    "end": "2008-02-24T21:00:00Z",
+    "prefixes": ["208.65.153.0/24"],
+    "collectors": ["rrc00", "route-views2"],
+    "expected": ["prefix_hijack"],
+    "notes": "Window is deliberately wide around the widely-cited ~18:47-20:07 UTC incident period - verify against a primary source (e.g. RIPE NCC / Renesys writeups on the incident) before treating as precise ground truth."
+  }
+]

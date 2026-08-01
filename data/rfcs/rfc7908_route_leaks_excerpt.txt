@@ -1,0 +1,27 @@
+RFC 7908 - Problem Definition and Classification of BGP Route Leaks
+NOTE: condensed excerpts for the Phase 1 demo. Replace with the full IETF text.
+
+2. Definition of Route Leak
+A route leak is the propagation of routing announcements beyond their intended
+scope. That is, an announcement from an autonomous system (AS) of a learned
+BGP route to another AS is in violation of the intended policies of the
+receiver, the sender, and/or one of the ASes along the preceding AS path. The
+intended scope is usually defined by a set of local redistribution and
+filtering policies distributed among the ASes involved. Route leaks can lead to
+traffic being redirected through unintended paths, enabling eavesdropping or
+traffic analysis, and can cause overload or blackholing.
+
+3. Classification of Route Leaks
+Type 1 (Hairpin): A multihomed AS learns a route from one upstream and leaks it
+to another upstream. Type 2 (Lateral ISP-ISP-ISP leak). Type 4 (Leak of
+Provider Prefixes to Peer). Type 6 (Leak of Peer Prefixes to Provider). In each
+type, a prefix appears via an AS path that violates the valley-free / no-valley
+routing policy expected between providers, peers, and customers.
+
+4. Origin and Hijack Considerations
+A prefix normally originated by a single AS may appear originated by a
+different AS (a Multiple Origin AS, MOAS, condition). While some MOAS cases are
+legitimate (e.g., anycast, multi-homing with multiple origins), an unexpected
+change in origin AS for a prefix is a strong indicator of a prefix hijack or
+misconfiguration and warrants validation against RPKI Route Origin
+Authorizations (ROAs) and IRR data.
