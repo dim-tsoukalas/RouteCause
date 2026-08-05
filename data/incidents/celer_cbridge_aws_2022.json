@@ -1,0 +1,8 @@
+{
+  "incident_id": "celer-cbridge-aws-2022",
+  "description": "An attacker (AS209243, QuickHostUK) hijacked Amazon's 44.235.216.0/24 (which hosted Celer Bridge DNS infrastructure) by forging AS14618 -- a real Amazon ASN authorized by Amazon's own RPKI ROA -- as the origin, with their own AS prepended in front. This passed RPKI validation despite being a hijack, redirecting Celer Bridge dapp users to a phishing frontend.",
+  "prefix": "44.235.216.0/24",
+  "source": "RIPE RIS / RouteViews raw MRT archives (rrc00, route-views2), 2022-08-17 06:00-18:00 UTC",
+  "ground_truth": "prefix_hijack",
+  "updates": []
+}

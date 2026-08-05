@@ -1,0 +1,153 @@
+{
+  "incident_id": "google-japan-leak-2017",
+  "description": "Google (AS15169) accidentally leaked over 160,000 prefixes it had learned via peering to Verizon (AS701), which accepted and repropagated them; KDDI and NTT OCN in Japan were especially affected as major transit customers of Verizon.",
+  "prefix": "210.171.224.0/24",
+  "source": "RIPE RIS / RouteViews raw MRT archives (rrc00, route-views2), 2017-08-25 03:15-04:00 UTC",
+  "ground_truth": "route_leak",
+  "updates": [
+    {
+      "timestamp": "2017-08-25T03:18:23Z",
+      "kind": "announce",
+      "prefix": "210.171.224.0/24",
+      "peer_asn": 286,
+      "as_path": [
+        286,
+        701,
+        15169
+      ],
+      "origin_asn": 15169,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2017-08-25T03:18:28Z",
+      "kind": "announce",
+      "prefix": "210.171.224.0/24",
+      "peer_asn": 701,
+      "as_path": [
+        701,
+        15169
+      ],
+      "origin_asn": 15169,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2017-08-25T03:18:36Z",
+      "kind": "announce",
+      "prefix": "210.171.224.0/24",
+      "peer_asn": 2497,
+      "as_path": [
+        2497,
+        701,
+        15169
+      ],
+      "origin_asn": 15169,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2017-08-25T03:18:56Z",
+      "kind": "announce",
+      "prefix": "210.171.224.0/24",
+      "peer_asn": 286,
+      "as_path": [
+        286,
+        701,
+        15169
+      ],
+      "origin_asn": 15169,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2017-08-25T03:23:40Z",
+      "kind": "announce",
+      "prefix": "210.171.224.0/24",
+      "peer_asn": 286,
+      "as_path": [
+        286,
+        701,
+        15169
+      ],
+      "origin_asn": 15169,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2017-08-25T03:23:49Z",
+      "kind": "announce",
+      "prefix": "210.171.224.0/24",
+      "peer_asn": 3333,
+      "as_path": [
+        3333,
+        1103,
+        286,
+        701,
+        15169
+      ],
+      "origin_asn": 15169,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2017-08-25T03:24:09Z",
+      "kind": "announce",
+      "prefix": "210.171.224.0/24",
+      "peer_asn": 3333,
+      "as_path": [
+        3333,
+        1136,
+        286,
+        701,
+        15169
+      ],
+      "origin_asn": 15169,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2017-08-25T03:24:16Z",
+      "kind": "announce",
+      "prefix": "210.171.224.0/24",
+      "peer_asn": 4777,
+      "as_path": [
+        4777,
+        2497,
+        701,
+        15169
+      ],
+      "origin_asn": 15169,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2017-08-25T03:28:03Z",
+      "kind": "withdraw",
+      "prefix": "210.171.224.0/24",
+      "peer_asn": 286,
+      "as_path": [],
+      "origin_asn": null,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2017-08-25T03:28:10Z",
+      "kind": "withdraw",
+      "prefix": "210.171.224.0/24",
+      "peer_asn": 2497,
+      "as_path": [],
+      "origin_asn": null,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2017-08-25T03:33:44Z",
+      "kind": "withdraw",
+      "prefix": "210.171.224.0/24",
+      "peer_asn": 4777,
+      "as_path": [],
+      "origin_asn": null,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2017-08-25T03:34:33Z",
+      "kind": "withdraw",
+      "prefix": "210.171.224.0/24",
+      "peer_asn": 3333,
+      "as_path": [],
+      "origin_asn": null,
+      "collector": "rrc00"
+    }
+  ]
+}

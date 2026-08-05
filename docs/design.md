@@ -19,6 +19,36 @@ RFC corpus ──► BM25 CitationEngine ──► numbered sources │
                                     Report: observations + cited explanation + next steps
 ```
 
+**Layer 2 is now a bounded agentic loop** (`investigator/agent.py`), not a
+single retrieval call: after a mandatory seed search, an LLM backend may
+request additional `search_rfcs` searches (up to `max_search_rounds`,
+default 3) before answering — refining its query based on what came back,
+mirroring HolmesGPT's tool-calling loop. This is deliberately confined to
+retrieval: **Layer 1 stays exactly as unconditional and LLM-free as before**.
+The LLM is never given the option of skipping or choosing among analyzers —
+only of how much RFC grounding to gather before explaining what the
+analyzers already found. Letting the loop reach into detection would reopen
+the hallucination risk the two-layer split exists to close.
+
+Offline/no-LLM mode (`NoOpBackend`) is unaffected in substance: since NoOp
+can't "decide" to call a tool, the loop's mandatory seed search is the only
+round that ever runs for it — identical retrieval/citation behavior to
+before this loop existed, just routed through the same mechanism a real
+backend uses to go further.
+
+Mechanism note: the loop uses prompt-based ReAct parsing (`ACTION:
+search_rfcs("...")` / `FINAL: ...` text lines, regex-parsed) rather than
+native LiteLLM function-calling, so `LLMBackend.complete(prompt) -> str`
+stays unchanged and works identically across every LiteLLM-supported
+provider. Trade-off: less "native" than real function-calling, but simpler,
+provider-agnostic, and trivially unit-testable with a scripted fake backend
+(see `tests/test_agent.py`).
+
+Known limitation: the RFC corpus is currently 2 hand-picked excerpt files, so
+a multi-round search loop has limited practical payoff until the corpus is
+larger (see "swap for full IETF text" below) — the loop is real and tested
+now; its value grows with corpus size.
+
 ## Component map
 
 | Concern | Module | Analog it mirrors |
@@ -28,6 +58,7 @@ RFC corpus ──► BM25 CitationEngine ──► numbered sources │
 | Deterministic detectors | `investigator/analyzers/*.py` | K8sGPT analyzers |
 | LLM backend abstraction | `investigator/llm.py` | K8sGPT `IAI` |
 | RFC retrieval + citations | `investigator/retrieval/` | LlamaIndex `CitationQueryEngine` |
+| Agentic search loop | `investigator/agent.py` | HolmesGPT tool-calling loop (ReAct-via-prompt-parsing, not native function-calling) |
 | Orchestration | `investigator/engine.py` | HolmesGPT investigation loop |
 | CLI | `investigator/cli.py` | HolmesGPT `ask` / `investigate` |
 | Real-incident ingestion | `investigator/ingest.py` | — |
@@ -87,5 +118,10 @@ Cloudflare/Verizon). The raw-archive approach above has no such limit.
   clause matching; hybrid is a Phase-2/3 upgrade behind the same interface.
 - No route-leak analyzer yet (see Phase 1.5 above) — a leak-type incident
   correctly evaluates as "not applicable," not a miss.
+- The agentic search loop (see "two-layer split" above) is real but
+  low-value today given a 2-file RFC corpus; it earns its keep once the
+  corpus is scaled up.
+- No YAML-defined toolset abstraction or LLM context-budget truncation yet
+  (Phase 2 in the roadmap) — analyzers are still a hardcoded Python registry.
 - No competing hypotheses, no citation-correctness scoring yet — those are the
   differentiators, intentionally deferred so the baseline ships first.

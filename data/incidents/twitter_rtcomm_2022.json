@@ -1,0 +1,66 @@
+{
+  "incident_id": "twitter-rtcomm-2022",
+  "description": "RTComm.ru (AS8342) originated Twitter's (AS13414) 104.244.42.0/24, hijacking traffic for roughly two hours before withdrawal.",
+  "prefix": "104.244.42.0/24",
+  "source": "RIPE RIS / RouteViews raw MRT archives (rrc00, route-views2), 2022-03-28 00:00-03:00 UTC",
+  "ground_truth": "prefix_hijack",
+  "updates": [
+    {
+      "timestamp": "2022-03-28T01:56:58Z",
+      "kind": "announce",
+      "prefix": "104.244.42.0/24",
+      "peer_asn": 61218,
+      "as_path": [
+        61218,
+        24961,
+        13414,
+        13414
+      ],
+      "origin_asn": 13414,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2022-03-28T01:56:58Z",
+      "kind": "announce",
+      "prefix": "104.244.42.0/24",
+      "peer_asn": 61218,
+      "as_path": [
+        61218,
+        24961,
+        3356,
+        13414,
+        13414
+      ],
+      "origin_asn": 13414,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2022-03-28T01:56:58Z",
+      "kind": "announce",
+      "prefix": "104.244.42.0/24",
+      "peer_asn": 61218,
+      "as_path": [
+        61218,
+        24961,
+        13414,
+        13414
+      ],
+      "origin_asn": 13414,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2022-03-28T01:56:59Z",
+      "kind": "announce",
+      "prefix": "104.244.42.0/24",
+      "peer_asn": 61218,
+      "as_path": [
+        61218,
+        24961,
+        13414,
+        13414
+      ],
+      "origin_asn": 13414,
+      "collector": "rrc00"
+    }
+  ]
+}

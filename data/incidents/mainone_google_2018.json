@@ -1,0 +1,8 @@
+{
+  "incident_id": "mainone-google-2018",
+  "description": "MainOne (AS37282) declared itself the path to 212 of Google's IP prefixes at an IXPN peering point in Lagos; China Telecom (AS4809) improperly accepted and propagated the leak worldwide, taking down Google services for about 74 minutes.",
+  "prefix": "8.8.8.0/24",
+  "source": "RIPE RIS / RouteViews raw MRT archives (rrc00, route-views2), 2018-11-12 21:00-22:30 UTC",
+  "ground_truth": "route_leak",
+  "updates": []
+}

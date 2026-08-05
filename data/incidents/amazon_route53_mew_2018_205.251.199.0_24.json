@@ -1,0 +1,327 @@
+{
+  "incident_id": "amazon-route53-mew-2018-205.251.199.0/24",
+  "description": "eNet (AS10297) originated several of Amazon Route 53's DNS-server prefixes (AS16509), hijacking DNS resolution to redirect MyEtherWallet users to a phishing site.",
+  "prefix": "205.251.199.0/24",
+  "source": "RIPE RIS / RouteViews raw MRT archives (rrc00, route-views2), 2018-04-24 11:00-13:15 UTC",
+  "ground_truth": "prefix_hijack",
+  "updates": [
+    {
+      "timestamp": "2018-04-24T11:05:41Z",
+      "kind": "announce",
+      "prefix": "205.251.199.0/24",
+      "peer_asn": 6939,
+      "as_path": [
+        6939,
+        10297
+      ],
+      "origin_asn": 10297,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2018-04-24T11:05:42Z",
+      "kind": "announce",
+      "prefix": "205.251.199.0/24",
+      "peer_asn": 54728,
+      "as_path": [
+        54728,
+        6939,
+        10297
+      ],
+      "origin_asn": 10297,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2018-04-24T11:05:42Z",
+      "kind": "announce",
+      "prefix": "205.251.199.0/24",
+      "peer_asn": 47872,
+      "as_path": [
+        47872,
+        6939,
+        10297
+      ],
+      "origin_asn": 10297,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2018-04-24T11:05:42Z",
+      "kind": "announce",
+      "prefix": "205.251.199.0/24",
+      "peer_asn": 18106,
+      "as_path": [
+        18106,
+        6939,
+        10297
+      ],
+      "origin_asn": 10297,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2018-04-24T11:05:50Z",
+      "kind": "announce",
+      "prefix": "205.251.199.0/24",
+      "peer_asn": 6881,
+      "as_path": [
+        6881,
+        15685,
+        6939,
+        10297
+      ],
+      "origin_asn": 10297,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2018-04-24T11:06:06Z",
+      "kind": "announce",
+      "prefix": "205.251.199.0/24",
+      "peer_asn": 11686,
+      "as_path": [
+        11686,
+        19151,
+        10297
+      ],
+      "origin_asn": 10297,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2018-04-24T11:06:07Z",
+      "kind": "announce",
+      "prefix": "205.251.199.0/24",
+      "peer_asn": 23673,
+      "as_path": [
+        23673,
+        55329,
+        4788,
+        6939,
+        10297
+      ],
+      "origin_asn": 10297,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2018-04-24T11:06:19Z",
+      "kind": "announce",
+      "prefix": "205.251.199.0/24",
+      "peer_asn": 293,
+      "as_path": [
+        293,
+        6939,
+        10297
+      ],
+      "origin_asn": 10297,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2018-04-24T11:06:22Z",
+      "kind": "announce",
+      "prefix": "205.251.199.0/24",
+      "peer_asn": 4608,
+      "as_path": [
+        4608,
+        24130,
+        7545,
+        6939,
+        10297
+      ],
+      "origin_asn": 10297,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2018-04-24T12:55:13Z",
+      "kind": "withdraw",
+      "prefix": "205.251.199.0/24",
+      "peer_asn": 6939,
+      "as_path": [],
+      "origin_asn": null,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2018-04-24T12:55:24Z",
+      "kind": "withdraw",
+      "prefix": "205.251.199.0/24",
+      "peer_asn": 54728,
+      "as_path": [],
+      "origin_asn": null,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2018-04-24T12:55:31Z",
+      "kind": "withdraw",
+      "prefix": "205.251.199.0/24",
+      "peer_asn": 47872,
+      "as_path": [],
+      "origin_asn": null,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2018-04-24T12:55:32Z",
+      "kind": "announce",
+      "prefix": "205.251.199.0/24",
+      "peer_asn": 47872,
+      "as_path": [
+        47872,
+        6939,
+        10297
+      ],
+      "origin_asn": 10297,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2018-04-24T12:55:34Z",
+      "kind": "withdraw",
+      "prefix": "205.251.199.0/24",
+      "peer_asn": 47872,
+      "as_path": [],
+      "origin_asn": null,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2018-04-24T12:55:36Z",
+      "kind": "announce",
+      "prefix": "205.251.199.0/24",
+      "peer_asn": 47872,
+      "as_path": [
+        47872,
+        6939,
+        10297
+      ],
+      "origin_asn": 10297,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2018-04-24T12:55:56Z",
+      "kind": "withdraw",
+      "prefix": "205.251.199.0/24",
+      "peer_asn": 4608,
+      "as_path": [],
+      "origin_asn": null,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2018-04-24T12:55:57Z",
+      "kind": "announce",
+      "prefix": "205.251.199.0/24",
+      "peer_asn": 6881,
+      "as_path": [
+        6881,
+        15685,
+        6939,
+        10297
+      ],
+      "origin_asn": 10297,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2018-04-24T12:57:59Z",
+      "kind": "withdraw",
+      "prefix": "205.251.199.0/24",
+      "peer_asn": 293,
+      "as_path": [],
+      "origin_asn": null,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2018-04-24T12:58:07Z",
+      "kind": "withdraw",
+      "prefix": "205.251.199.0/24",
+      "peer_asn": 47872,
+      "as_path": [],
+      "origin_asn": null,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2018-04-24T12:58:08Z",
+      "kind": "announce",
+      "prefix": "205.251.199.0/24",
+      "peer_asn": 47872,
+      "as_path": [
+        47872,
+        6939,
+        10297
+      ],
+      "origin_asn": 10297,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2018-04-24T12:58:30Z",
+      "kind": "announce",
+      "prefix": "205.251.199.0/24",
+      "peer_asn": 293,
+      "as_path": [
+        293,
+        6939,
+        10297
+      ],
+      "origin_asn": 10297,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2018-04-24T12:58:31Z",
+      "kind": "announce",
+      "prefix": "205.251.199.0/24",
+      "peer_asn": 6881,
+      "as_path": [
+        6881,
+        15685,
+        6939,
+        10297
+      ],
+      "origin_asn": 10297,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2018-04-24T12:58:59Z",
+      "kind": "withdraw",
+      "prefix": "205.251.199.0/24",
+      "peer_asn": 293,
+      "as_path": [],
+      "origin_asn": null,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2018-04-24T12:59:27Z",
+      "kind": "withdraw",
+      "prefix": "205.251.199.0/24",
+      "peer_asn": 11686,
+      "as_path": [],
+      "origin_asn": null,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2018-04-24T13:01:20Z",
+      "kind": "withdraw",
+      "prefix": "205.251.199.0/24",
+      "peer_asn": 47872,
+      "as_path": [],
+      "origin_asn": null,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2018-04-24T13:01:29Z",
+      "kind": "withdraw",
+      "prefix": "205.251.199.0/24",
+      "peer_asn": 18106,
+      "as_path": [],
+      "origin_asn": null,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2018-04-24T13:01:35Z",
+      "kind": "withdraw",
+      "prefix": "205.251.199.0/24",
+      "peer_asn": 6881,
+      "as_path": [],
+      "origin_asn": null,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2018-04-24T13:01:42Z",
+      "kind": "withdraw",
+      "prefix": "205.251.199.0/24",
+      "peer_asn": 23673,
+      "as_path": [],
+      "origin_asn": null,
+      "collector": "route-views2"
+    }
+  ]
+}

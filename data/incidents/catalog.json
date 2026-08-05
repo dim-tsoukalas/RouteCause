@@ -13,7 +13,7 @@
     ],
     "collectors": ["rrc00", "route-views2"],
     "expected": ["route_leak"],
-    "notes": "Window is deliberately wide (public writeups place the leak around 10:30-12:40 UTC) - verify against a primary source (e.g. Cloudflare's own incident writeup) before treating as precise ground truth. The prefix list is a sample of the affected /21s, not exhaustive."
+    "notes": "Window is deliberately wide (public writeups place the leak around 10:30-12:40 UTC) - verify against a primary source (e.g. Cloudflare's own incident writeup) before treating as precise ground truth. The prefix list is a sample of the affected /21s, not exhaustive. VERIFIED: ~1,500 updates captured per /21 (real, heavy signal). Correctly evaluates as N/A (no leak analyzer exists yet), as designed -- WithdrawalStorm and ASPathLoop both fire as secondary signals."
   },
   {
     "name": "pakistan-youtube-2008",
@@ -23,6 +23,122 @@
     "prefixes": ["208.65.153.0/24"],
     "collectors": ["rrc00", "route-views2"],
     "expected": ["prefix_hijack"],
-    "notes": "Window is deliberately wide around the widely-cited ~18:47-20:07 UTC incident period - verify against a primary source (e.g. RIPE NCC / Renesys writeups on the incident) before treating as precise ground truth."
+    "notes": "Window is deliberately wide around the widely-cited ~18:47-20:07 UTC incident period - verify against a primary source (e.g. RIPE NCC / Renesys writeups on the incident) before treating as precise ground truth. VERIFIED: 172 updates captured, first announcement at 18:47:57Z -- matches the cited incident time almost exactly. MOAS fires correctly -- HIT. Known analyzer-heuristic quirk (not a catalog issue): the MOAS analyzer's 'presumed legitimate origin' picks whichever origin has more observed announcements, which favors the hijacker (AS17557) here since the capture window starts right at the hijack's onset."
+  },
+  {
+    "name": "amazon-route53-mew-2018",
+    "description": "eNet (AS10297) originated several of Amazon Route 53's DNS-server prefixes (AS16509), hijacking DNS resolution to redirect MyEtherWallet users to a phishing site.",
+    "start": "2018-04-24T11:00:00Z",
+    "end": "2018-04-24T13:15:00Z",
+    "prefixes": [
+      "205.251.192.0/24",
+      "205.251.193.0/24",
+      "205.251.195.0/24",
+      "205.251.197.0/24",
+      "205.251.199.0/24"
+    ],
+    "collectors": ["rrc00", "route-views2"],
+    "expected": ["prefix_hijack"],
+    "notes": "Identifiers and prefixes are high confidence; timing is approximate (verify against Cloudflare's 'BGP leaks and cryptocurrencies' post or the Oracle/Dyn Internet Intelligence writeup) before treating as precise ground truth. VERIFIED (ingested with RIB baseline enabled): only the hijacker's origin (AS10297) appears in the captured evidence -- the legitimate Amazon origin (AS16509) never shows up, even with the baseline snapshot, so MOAS does not fire (evaluate.py reports MISS). Either Amazon's real announcement for this exact /24 doesn't match what the baseline snapshot had on file (the same class of issue as the Cloudflare /12-vs-/21 correction), or the legitimate route was already fully displaced by the time of the nearest snapshot. Unresolved -- would need investigation of the raw RIB dump content to confirm which."
+  },
+  {
+    "name": "twitter-rtcomm-2022",
+    "description": "RTComm.ru (AS8342) originated Twitter's (AS13414) 104.244.42.0/24, hijacking traffic for roughly two hours before withdrawal.",
+    "start": "2022-03-28T00:00:00Z",
+    "end": "2022-03-28T03:00:00Z",
+    "prefixes": ["104.244.42.0/24"],
+    "collectors": ["rrc00", "route-views2"],
+    "expected": ["prefix_hijack"],
+    "notes": "Identifiers are high confidence; prefix and timing are medium confidence (verify against Cloudflare Radar / MANRS or Qrator Labs writeups) before treating as precise ground truth. VERIFIED (ingested with --no-baseline): only 4 updates captured, all the hijacker's origin -- MOAS does not fire (MISS). Likely the same fast-path blind spot as amazon-route53-mew-2018: without a RIB baseline, a legitimate origin that was quiet during the capture window never appears. Not re-run with the baseline due to its cost (see RIB-baseline performance note in docs/design.md)."
+  },
+  {
+    "name": "indosat-2014",
+    "description": "Indosat (AS4761) mis-originated hundreds of thousands of prefixes normally announced by other networks during a botched maintenance window, including 62.84.64.0/19 (legitimate origin AS42334).",
+    "start": "2014-04-02T19:00:00Z",
+    "end": "2014-04-02T20:30:00Z",
+    "prefixes": ["62.84.64.0/19"],
+    "collectors": ["rrc00", "route-views2"],
+    "expected": ["prefix_hijack"],
+    "notes": "High confidence: sourced from a BGPmon 'quick report' documenting this exact prefix as almost-fully hijacked at 19:52:27 UTC, with 4 of 101 RIS peers preferring the legitimate AS42334 route. Window is a tight bracket around that timestamp within the broader 18:26-21:15 UTC mis-origination event; widen if the pull looks thin. VERIFIED (ingested with --no-baseline): 738 updates captured, MOAS + WithdrawalStorm + ASPathLoop all fired -- HIT. The 4-of-101-peers detail from the source report explains why this one worked without a baseline: enough peers still preferred/re-announced the legitimate AS42334 route within the window itself."
+  },
+  {
+    "name": "celer-cbridge-aws-2022",
+    "description": "An attacker (AS209243, QuickHostUK) hijacked Amazon's 44.235.216.0/24 (which hosted Celer Bridge DNS infrastructure) by forging AS14618 -- a real Amazon ASN authorized by Amazon's own RPKI ROA -- as the origin, with their own AS prepended in front. This passed RPKI validation despite being a hijack, redirecting Celer Bridge dapp users to a phishing frontend.",
+    "start": "2022-08-17T06:00:00Z",
+    "end": "2022-08-17T18:00:00Z",
+    "prefixes": ["44.235.216.0/24"],
+    "collectors": ["rrc00", "route-views2"],
+    "expected": ["prefix_hijack"],
+    "notes": "Identifiers and prefix are high confidence (Coinbase's incident writeup gives the exact prefix, attacker ASN, and forged-origin ASN). Timing is low confidence -- no UTC clock time found, only 'August 17, 2022' and 'approximately 3 hours'; this 12h window is a wide guess and should be narrowed once the pull shows where the anomaly actually sits. Also worth noting for the eval: since the forged origin (AS14618) is itself a legitimate Amazon ASN, whether this registers as MOAS depends on whether Amazon's normal announcement for this exact /24 uses a *different* ASN (e.g. 16509) day-to-day -- the RIB baseline will settle that. VERIFIED (ingested with --no-baseline, twice -- first attempt hit a transient ConnectionResetError from the archive server, retry succeeded): 0 updates captured across the full 12h window on both collectors. This prefix guess needs replacing, or the real event window is well outside this 12h bracket -- 'approximately 3 hours' on 'August 17, 2022' with no anchor time leaves too wide a search space to bracket reliably."
+  },
+  {
+    "name": "klayswap-2022",
+    "description": "An attacker (AS9457) hijacked two Kakao Corp prefixes (211.249.216.0/21 via more-specific 211.249.221.0/24, legitimate origin AS7625; and 121.53.104.0/23 via more-specific 121.53.104.0/24, legitimate origin AS38099) to intercept a JavaScript library and steal KLAYswap user funds.",
+    "start": "2022-02-03T00:30:00Z",
+    "end": "2022-02-03T04:00:00Z",
+    "prefixes": ["211.249.221.0/24", "121.53.104.0/24"],
+    "collectors": ["rrc00", "route-views2"],
+    "expected": ["prefix_hijack"],
+    "notes": "Identifiers and prefixes are high confidence (S2W's post-mortem gives exact prefixes and ASNs for both waves). Timing is medium confidence: the source times ('10:04', '11:09', '11:30') are unlabeled but almost certainly KST (UTC+9, this is a Korean platform) -- converted here to a ~00:30-04:00 UTC window; verify this conversion before trusting it. VERIFIED (ingested with --no-baseline): 1644 + 1360 updates captured across the two prefixes -- real signal, but only WithdrawalStorm + ASPathLoop fired, not MOAS (MISS). Same likely cause as amazon-route53-mew-2018/twitter-rtcomm-2022: the legitimate origins (AS7625, AS38099) were probably quiet going into the window and only the baseline snapshot would have caught them."
+  },
+  {
+    "name": "rostelecom-2020",
+    "description": "Rostelecom (AS12389) briefly announced more-specific routes for over 8,000 prefixes belonging to Google, Amazon, Facebook, Akamai and Cloudflare -- among them a /21 for Cloudflare space that Cloudflare normally announces as a /20 -- diverting and blackholing traffic for about an hour before withdrawal.",
+    "start": "2020-04-01T19:00:00Z",
+    "end": "2020-04-01T20:30:00Z",
+    "prefixes": ["104.27.160.0/21"],
+    "collectors": ["rrc00", "route-views2"],
+    "expected": ["prefix_hijack"],
+    "notes": "Identifiers and approximate timing (~19:30 UTC start, resolved within about an hour) are medium confidence from ThousandEyes/MANRS writeups, which describe 'a /21 advertised for Cloudflare' without naming the exact block. This reuses 104.27.160.0/21 -- one of the real Cloudflare /21s already confirmed active in BGP via the cloudflare-verizon-2019 ingestion -- as the best available candidate; it is NOT confirmed to be the specific block Rostelecom hijacked, so a thin/empty pull here doesn't rule out the incident, it just means this particular prefix guess was wrong. VERIFIED (ingested with --no-baseline): 441 updates captured -- the prefix guess paid off, real signal exists here. Only WithdrawalStorm + ASPathLoop fired though, not MOAS (MISS) -- same quiet-legitimate-origin blind spot as the other --no-baseline hijack entries; Cloudflare's real origin (AS13335) likely didn't re-announce within this narrow window."
+  },
+  {
+    "name": "mainone-google-2018",
+    "description": "MainOne (AS37282) declared itself the path to 212 of Google's IP prefixes at an IXPN peering point in Lagos; China Telecom (AS4809) improperly accepted and propagated the leak worldwide, taking down Google services for about 74 minutes.",
+    "start": "2018-11-12T21:00:00Z",
+    "end": "2018-11-12T22:30:00Z",
+    "prefixes": ["8.8.8.0/24"],
+    "collectors": ["rrc00", "route-views2"],
+    "expected": ["route_leak"],
+    "notes": "Timing is high confidence (MANRS/press coverage gives 21:13 UTC start, ~74min duration). Prefix is LOW confidence: no source names which of the 212 leaked prefixes specifically, so 8.8.8.0/24 (Google's well-known public DNS block, definitely AS15169) is a plausible but UNCONFIRMED guess -- if the pull is empty, this prefix simply wasn't one of the 212 and needs replacing. VERIFIED: 0 updates captured. Confirmed -- 8.8.8.0/24 was not one of the 212 leaked prefixes (or wasn't visible from rrc00/route-views2 in this window). Needs a real replacement prefix from a source that names one of the 212 specifically before this entry can produce any signal."
+  },
+  {
+    "name": "telekom-malaysia-2015",
+    "description": "Telekom Malaysia (AS4788) leaked roughly 179,000 prefixes -- including RIPE NCC's own 193.0.0.0/21 -- to Level3 (AS3549), which accepted and propagated them globally, causing widespread packet loss and slowdowns for about two hours.",
+    "start": "2015-06-12T08:30:00Z",
+    "end": "2015-06-12T10:45:00Z",
+    "prefixes": ["193.0.0.0/21"],
+    "collectors": ["rrc00", "route-views2"],
+    "expected": ["route_leak"],
+    "notes": "High confidence: sourced from RIPE Labs' 'More Leaky Routes' writeup, which documents this exact prefix (RIPE NCC's own address space) appearing with AS path [3549, 4788, 12859, 3333] during the leak. Timing reconciles an 08:43 UTC start with a 'restored 6:30pm' claim that is presumably Malaysia local time (UTC+8) -- treat the end time as approximate. VERIFIED (ingested with --no-baseline): only 13 updates captured -- thin but non-zero, consistent with a real but narrow-visibility signal from just 2 collectors. Correctly evaluates as N/A (no leak analyzer exists yet), as designed."
+  },
+  {
+    "name": "google-japan-leak-2017",
+    "description": "Google (AS15169) accidentally leaked over 160,000 prefixes it had learned via peering to Verizon (AS701), which accepted and repropagated them; KDDI and NTT OCN in Japan were especially affected as major transit customers of Verizon.",
+    "start": "2017-08-25T03:15:00Z",
+    "end": "2017-08-25T04:00:00Z",
+    "prefixes": ["210.171.224.0/24"],
+    "collectors": ["rrc00", "route-views2"],
+    "expected": ["route_leak"],
+    "notes": "High confidence: sourced from a BGPmon writeup documenting this exact more-specific (a /24 carved out of Japan Internet Exchange's normal 210.171.224.0/20) being announced with Google (AS15169) in the path during the leak. Timing is high confidence (03:22 UTC start, corrected within ~8 minutes) with a small buffer added on both sides. VERIFIED (ingested with --no-baseline): only 12 updates captured -- thin but non-zero, real signal from a narrow, precisely-timed window. Correctly evaluates as N/A (no leak analyzer exists yet), as designed."
+  },
+  {
+    "name": "china-telecom-18min-2010",
+    "description": "China Telecom (AS23724) briefly announced routes for roughly 50,000 prefixes it does not own, including US government and military address space, redirecting a slice of global traffic through China for about 18 minutes.",
+    "start": "2010-04-08T15:40:00Z",
+    "end": "2010-04-08T16:30:00Z",
+    "prefixes": ["138.18.0.0/16", "164.49.0.0/16", "192.5.18.0/24"],
+    "collectors": ["rrc00", "route-views2"],
+    "expected": ["prefix_hijack"],
+    "notes": "Medium confidence: sourced from press coverage (Cyber Defense Magazine, The Register) naming these three DREN/DARPA prefixes as swept up in the incident -- not a primary BGP technical writeup, so treat the prefix list as representative rather than exhaustive. Timing is medium confidence (BGPmon/Cyclops reports place first detection around 15:57-15:58 UTC, ~18-20min duration); verify before trusting precisely. This is a mass-origination event (~50,000 prefixes) -- these three are a sample, not the full set. VERIFIED (ingested with --no-baseline): 138.18.0.0/16 and 164.49.0.0/16 returned 0 updates each, but 192.5.18.0/24 (DARPA) returned 6 updates and triggered MOAS -- HIT overall (evaluate.py aggregates detected kinds across all prefixes in a multi-prefix entry, so one working prefix out of three was enough)."
+  },
+  {
+    "name": "level3-comcast-2017",
+    "description": "Level 3 (AS3356) globally announced thousands of routes that were meant to stay internal, including more-specific leaks of Comcast's (AS7922) address space; traffic to Comcast, Bell Canada, Netflix and others was misrouted through Level 3/NTT America for about 90 minutes.",
+    "start": "2017-11-06T17:40:00Z",
+    "end": "2017-11-06T19:30:00Z",
+    "prefixes": ["73.225.0.0/16"],
+    "collectors": ["rrc00", "route-views2"],
+    "expected": ["route_leak"],
+    "notes": "High confidence: sourced from Doug Madory's (Oracle Internet Intelligence) incident writeup, which gives 17:47:05 UTC as the exact leak start and 19:24 UTC as when the leaked routes cleared, and names this specific prefix (a /16 more-specific carved out of Comcast's normal 73.0.0.0/8 announcement) as a concrete example of what leaked through Level 3. VERIFIED (ingested with --no-baseline): 75 updates captured -- solid signal, matches the high-confidence sourcing. Correctly evaluates as N/A (no leak analyzer exists yet), as designed."
   }
 ]

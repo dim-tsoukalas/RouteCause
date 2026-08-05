@@ -1,0 +1,1025 @@
+{
+  "incident_id": "level3-comcast-2017",
+  "description": "Level 3 (AS3356) globally announced thousands of routes that were meant to stay internal, including more-specific leaks of Comcast's (AS7922) address space; traffic to Comcast, Bell Canada, Netflix and others was misrouted through Level 3/NTT America for about 90 minutes.",
+  "prefix": "73.225.0.0/16",
+  "source": "RIPE RIS / RouteViews raw MRT archives (rrc00, route-views2), 2017-11-06 17:40-19:30 UTC",
+  "ground_truth": "route_leak",
+  "updates": [
+    {
+      "timestamp": "2017-11-06T17:47:47Z",
+      "kind": "announce",
+      "prefix": "73.225.0.0/16",
+      "peer_asn": 62567,
+      "as_path": [
+        62567,
+        6453,
+        3356,
+        33650
+      ],
+      "origin_asn": 33650,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2017-11-06T17:47:47Z",
+      "kind": "announce",
+      "prefix": "73.225.0.0/16",
+      "peer_asn": 57866,
+      "as_path": [
+        57866,
+        6453,
+        3356,
+        33650
+      ],
+      "origin_asn": 33650,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2017-11-06T17:47:47Z",
+      "kind": "announce",
+      "prefix": "73.225.0.0/16",
+      "peer_asn": 200130,
+      "as_path": [
+        200130,
+        6453,
+        3356,
+        33650
+      ],
+      "origin_asn": 33650,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2017-11-06T17:47:47Z",
+      "kind": "announce",
+      "prefix": "73.225.0.0/16",
+      "peer_asn": 202018,
+      "as_path": [
+        202018,
+        6453,
+        3356,
+        33650
+      ],
+      "origin_asn": 33650,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2017-11-06T17:47:47Z",
+      "kind": "announce",
+      "prefix": "73.225.0.0/16",
+      "peer_asn": 393406,
+      "as_path": [
+        393406,
+        6453,
+        3356,
+        33650
+      ],
+      "origin_asn": 33650,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2017-11-06T17:47:47Z",
+      "kind": "announce",
+      "prefix": "73.225.0.0/16",
+      "peer_asn": 37100,
+      "as_path": [
+        37100,
+        6453,
+        3356,
+        33650
+      ],
+      "origin_asn": 33650,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2017-11-06T17:47:48Z",
+      "kind": "announce",
+      "prefix": "73.225.0.0/16",
+      "peer_asn": 8758,
+      "as_path": [
+        8758,
+        6830,
+        3356,
+        33650
+      ],
+      "origin_asn": 33650,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2017-11-06T17:47:48Z",
+      "kind": "announce",
+      "prefix": "73.225.0.0/16",
+      "peer_asn": 8492,
+      "as_path": [
+        8492,
+        12389,
+        6453,
+        3356,
+        33650
+      ],
+      "origin_asn": 33650,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2017-11-06T17:47:58Z",
+      "kind": "announce",
+      "prefix": "73.225.0.0/16",
+      "peer_asn": 18106,
+      "as_path": [
+        18106,
+        2914,
+        3356,
+        33650
+      ],
+      "origin_asn": 33650,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2017-11-06T17:47:58Z",
+      "kind": "announce",
+      "prefix": "73.225.0.0/16",
+      "peer_asn": 3130,
+      "as_path": [
+        3130,
+        2914,
+        3356,
+        33650
+      ],
+      "origin_asn": 33650,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2017-11-06T17:47:58Z",
+      "kind": "announce",
+      "prefix": "73.225.0.0/16",
+      "peer_asn": 47872,
+      "as_path": [
+        47872,
+        2914,
+        3356,
+        33650
+      ],
+      "origin_asn": 33650,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2017-11-06T17:47:58Z",
+      "kind": "announce",
+      "prefix": "73.225.0.0/16",
+      "peer_asn": 8492,
+      "as_path": [
+        8492,
+        9002,
+        2914,
+        3356,
+        33650
+      ],
+      "origin_asn": 33650,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2017-11-06T17:47:58Z",
+      "kind": "announce",
+      "prefix": "73.225.0.0/16",
+      "peer_asn": 2914,
+      "as_path": [
+        2914,
+        3356,
+        33650
+      ],
+      "origin_asn": 33650,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2017-11-06T17:48:00Z",
+      "kind": "announce",
+      "prefix": "73.225.0.0/16",
+      "peer_asn": 3333,
+      "as_path": [
+        3333,
+        1136,
+        24785,
+        24785,
+        24785,
+        24785,
+        2914,
+        3356,
+        33650
+      ],
+      "origin_asn": 33650,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2017-11-06T17:48:01Z",
+      "kind": "announce",
+      "prefix": "73.225.0.0/16",
+      "peer_asn": 20912,
+      "as_path": [
+        20912,
+        1267,
+        8928,
+        2914,
+        3356,
+        33650
+      ],
+      "origin_asn": 33650,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2017-11-06T17:48:02Z",
+      "kind": "announce",
+      "prefix": "73.225.0.0/16",
+      "peer_asn": 50300,
+      "as_path": [
+        50300,
+        2914,
+        3356,
+        33650
+      ],
+      "origin_asn": 33650,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2017-11-06T17:48:03Z",
+      "kind": "announce",
+      "prefix": "73.225.0.0/16",
+      "peer_asn": 4777,
+      "as_path": [
+        4777,
+        2497,
+        2914,
+        3356,
+        33650
+      ],
+      "origin_asn": 33650,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2017-11-06T17:48:06Z",
+      "kind": "announce",
+      "prefix": "73.225.0.0/16",
+      "peer_asn": 852,
+      "as_path": [
+        852,
+        6453,
+        3356,
+        33650
+      ],
+      "origin_asn": 33650,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2017-11-06T17:48:07Z",
+      "kind": "announce",
+      "prefix": "73.225.0.0/16",
+      "peer_asn": 37989,
+      "as_path": [
+        37989,
+        4844,
+        2914,
+        3356,
+        33650
+      ],
+      "origin_asn": 33650,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2017-11-06T17:48:08Z",
+      "kind": "announce",
+      "prefix": "73.225.0.0/16",
+      "peer_asn": 22652,
+      "as_path": [
+        22652,
+        6453,
+        3356,
+        33650
+      ],
+      "origin_asn": 33650,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2017-11-06T17:48:12Z",
+      "kind": "announce",
+      "prefix": "73.225.0.0/16",
+      "peer_asn": 3130,
+      "as_path": [
+        3130,
+        2914,
+        3356,
+        33650
+      ],
+      "origin_asn": 33650,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2017-11-06T17:48:12Z",
+      "kind": "announce",
+      "prefix": "73.225.0.0/16",
+      "peer_asn": 6539,
+      "as_path": [
+        6539,
+        577,
+        6453,
+        3356,
+        33650
+      ],
+      "origin_asn": 33650,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2017-11-06T17:48:16Z",
+      "kind": "announce",
+      "prefix": "73.225.0.0/16",
+      "peer_asn": 22652,
+      "as_path": [
+        22652,
+        6453,
+        3356,
+        33650
+      ],
+      "origin_asn": 33650,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2017-11-06T17:48:16Z",
+      "kind": "announce",
+      "prefix": "73.225.0.0/16",
+      "peer_asn": 31019,
+      "as_path": [
+        31019,
+        39326,
+        2914,
+        3356,
+        33650
+      ],
+      "origin_asn": 33650,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2017-11-06T17:48:18Z",
+      "kind": "announce",
+      "prefix": "73.225.0.0/16",
+      "peer_asn": 2497,
+      "as_path": [
+        2497,
+        2914,
+        3356,
+        33650
+      ],
+      "origin_asn": 33650,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2017-11-06T17:48:23Z",
+      "kind": "announce",
+      "prefix": "73.225.0.0/16",
+      "peer_asn": 29608,
+      "as_path": [
+        29608,
+        6453,
+        6453,
+        6453,
+        3356,
+        33650
+      ],
+      "origin_asn": 33650,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2017-11-06T17:48:24Z",
+      "kind": "announce",
+      "prefix": "73.225.0.0/16",
+      "peer_asn": 11686,
+      "as_path": [
+        11686,
+        19151,
+        2914,
+        3356,
+        33650
+      ],
+      "origin_asn": 33650,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2017-11-06T17:48:24Z",
+      "kind": "announce",
+      "prefix": "73.225.0.0/16",
+      "peer_asn": 3277,
+      "as_path": [
+        3277,
+        39710,
+        9002,
+        2914,
+        3356,
+        33650
+      ],
+      "origin_asn": 33650,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2017-11-06T17:48:27Z",
+      "kind": "announce",
+      "prefix": "73.225.0.0/16",
+      "peer_asn": 23673,
+      "as_path": [
+        23673,
+        55329,
+        4788,
+        2914,
+        3356,
+        33650
+      ],
+      "origin_asn": 33650,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2017-11-06T17:48:28Z",
+      "kind": "announce",
+      "prefix": "73.225.0.0/16",
+      "peer_asn": 3333,
+      "as_path": [
+        3333,
+        1257,
+        1239,
+        3356,
+        33650
+      ],
+      "origin_asn": 33650,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2017-11-06T17:48:28Z",
+      "kind": "announce",
+      "prefix": "73.225.0.0/16",
+      "peer_asn": 3741,
+      "as_path": [
+        3741,
+        2914,
+        3356,
+        33650
+      ],
+      "origin_asn": 33650,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2017-11-06T17:48:30Z",
+      "kind": "announce",
+      "prefix": "73.225.0.0/16",
+      "peer_asn": 4608,
+      "as_path": [
+        4608,
+        24130,
+        7545,
+        6453,
+        3356,
+        33650
+      ],
+      "origin_asn": 33650,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2017-11-06T17:48:47Z",
+      "kind": "announce",
+      "prefix": "73.225.0.0/16",
+      "peer_asn": 3130,
+      "as_path": [
+        3130,
+        1239,
+        3356,
+        33650
+      ],
+      "origin_asn": 33650,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2017-11-06T17:48:49Z",
+      "kind": "announce",
+      "prefix": "73.225.0.0/16",
+      "peer_asn": 1221,
+      "as_path": [
+        1221,
+        4637,
+        1239,
+        3356,
+        33650
+      ],
+      "origin_asn": 33650,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2017-11-06T17:48:51Z",
+      "kind": "announce",
+      "prefix": "73.225.0.0/16",
+      "peer_asn": 1239,
+      "as_path": [
+        1239,
+        3356,
+        33650
+      ],
+      "origin_asn": 33650,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2017-11-06T17:48:54Z",
+      "kind": "announce",
+      "prefix": "73.225.0.0/16",
+      "peer_asn": 11686,
+      "as_path": [
+        11686,
+        19151,
+        2914,
+        3356,
+        33650
+      ],
+      "origin_asn": 33650,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2017-11-06T17:49:01Z",
+      "kind": "announce",
+      "prefix": "73.225.0.0/16",
+      "peer_asn": 4608,
+      "as_path": [
+        4608,
+        1221,
+        4637,
+        1239,
+        3356,
+        33650
+      ],
+      "origin_asn": 33650,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2017-11-06T17:49:15Z",
+      "kind": "announce",
+      "prefix": "73.225.0.0/16",
+      "peer_asn": 1668,
+      "as_path": [
+        1668,
+        10310,
+        3356,
+        33650
+      ],
+      "origin_asn": 33650,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2017-11-06T18:50:13Z",
+      "kind": "announce",
+      "prefix": "73.225.0.0/16",
+      "peer_asn": 8492,
+      "as_path": [
+        8492,
+        9002,
+        2914,
+        3356,
+        33650
+      ],
+      "origin_asn": 33650,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2017-11-06T18:50:51Z",
+      "kind": "announce",
+      "prefix": "73.225.0.0/16",
+      "peer_asn": 47872,
+      "as_path": [
+        47872,
+        2914,
+        3356,
+        33650
+      ],
+      "origin_asn": 33650,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2017-11-06T18:51:38Z",
+      "kind": "announce",
+      "prefix": "73.225.0.0/16",
+      "peer_asn": 18106,
+      "as_path": [
+        18106,
+        2914,
+        3356,
+        33650
+      ],
+      "origin_asn": 33650,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2017-11-06T18:51:45Z",
+      "kind": "announce",
+      "prefix": "73.225.0.0/16",
+      "peer_asn": 37100,
+      "as_path": [
+        37100,
+        6453,
+        3356,
+        33650
+      ],
+      "origin_asn": 33650,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2017-11-06T18:51:48Z",
+      "kind": "announce",
+      "prefix": "73.225.0.0/16",
+      "peer_asn": 11686,
+      "as_path": [
+        11686,
+        19151,
+        2914,
+        3356,
+        33650
+      ],
+      "origin_asn": 33650,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2017-11-06T18:58:19Z",
+      "kind": "announce",
+      "prefix": "73.225.0.0/16",
+      "peer_asn": 200130,
+      "as_path": [
+        200130,
+        6453,
+        3356,
+        33650
+      ],
+      "origin_asn": 33650,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2017-11-06T19:05:52Z",
+      "kind": "announce",
+      "prefix": "73.225.0.0/16",
+      "peer_asn": 62567,
+      "as_path": [
+        62567,
+        6453,
+        3356,
+        33650
+      ],
+      "origin_asn": 33650,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2017-11-06T19:07:28Z",
+      "kind": "announce",
+      "prefix": "73.225.0.0/16",
+      "peer_asn": 22652,
+      "as_path": [
+        22652,
+        6453,
+        3356,
+        33650
+      ],
+      "origin_asn": 33650,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2017-11-06T19:07:50Z",
+      "kind": "announce",
+      "prefix": "73.225.0.0/16",
+      "peer_asn": 31019,
+      "as_path": [
+        31019,
+        39326,
+        2914,
+        3356,
+        33650
+      ],
+      "origin_asn": 33650,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2017-11-06T19:09:14Z",
+      "kind": "announce",
+      "prefix": "73.225.0.0/16",
+      "peer_asn": 202018,
+      "as_path": [
+        202018,
+        6453,
+        3356,
+        33650
+      ],
+      "origin_asn": 33650,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2017-11-06T19:18:58Z",
+      "kind": "announce",
+      "prefix": "73.225.0.0/16",
+      "peer_asn": 3741,
+      "as_path": [
+        3741,
+        2914,
+        3356,
+        33650
+      ],
+      "origin_asn": 33650,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2017-11-06T19:20:34Z",
+      "kind": "announce",
+      "prefix": "73.225.0.0/16",
+      "peer_asn": 23673,
+      "as_path": [
+        23673,
+        55329,
+        4788,
+        2914,
+        3356,
+        33650
+      ],
+      "origin_asn": 33650,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2017-11-06T19:20:41Z",
+      "kind": "announce",
+      "prefix": "73.225.0.0/16",
+      "peer_asn": 2914,
+      "as_path": [
+        2914,
+        3356,
+        33650
+      ],
+      "origin_asn": 33650,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2017-11-06T19:23:46Z",
+      "kind": "announce",
+      "prefix": "73.225.0.0/16",
+      "peer_asn": 8758,
+      "as_path": [
+        8758,
+        8220,
+        5511,
+        3356,
+        33650
+      ],
+      "origin_asn": 33650,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2017-11-06T19:23:54Z",
+      "kind": "withdraw",
+      "prefix": "73.225.0.0/16",
+      "peer_asn": 22652,
+      "as_path": [],
+      "origin_asn": null,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2017-11-06T19:23:56Z",
+      "kind": "announce",
+      "prefix": "73.225.0.0/16",
+      "peer_asn": 29608,
+      "as_path": [
+        29608,
+        5511,
+        5511,
+        5511,
+        5511,
+        3356,
+        33650
+      ],
+      "origin_asn": 33650,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2017-11-06T19:24:13Z",
+      "kind": "withdraw",
+      "prefix": "73.225.0.0/16",
+      "peer_asn": 50300,
+      "as_path": [],
+      "origin_asn": null,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2017-11-06T19:24:16Z",
+      "kind": "announce",
+      "prefix": "73.225.0.0/16",
+      "peer_asn": 8758,
+      "as_path": [
+        8758,
+        15576,
+        8220,
+        5511,
+        3356,
+        33650
+      ],
+      "origin_asn": 33650,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2017-11-06T19:24:16Z",
+      "kind": "withdraw",
+      "prefix": "73.225.0.0/16",
+      "peer_asn": 3277,
+      "as_path": [],
+      "origin_asn": null,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2017-11-06T19:24:27Z",
+      "kind": "withdraw",
+      "prefix": "73.225.0.0/16",
+      "peer_asn": 29608,
+      "as_path": [],
+      "origin_asn": null,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2017-11-06T19:24:31Z",
+      "kind": "announce",
+      "prefix": "73.225.0.0/16",
+      "peer_asn": 3130,
+      "as_path": [
+        3130,
+        1239,
+        3356,
+        33650
+      ],
+      "origin_asn": 33650,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2017-11-06T19:24:34Z",
+      "kind": "withdraw",
+      "prefix": "73.225.0.0/16",
+      "peer_asn": 8758,
+      "as_path": [],
+      "origin_asn": null,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2017-11-06T19:24:35Z",
+      "kind": "withdraw",
+      "prefix": "73.225.0.0/16",
+      "peer_asn": 1239,
+      "as_path": [],
+      "origin_asn": null,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2017-11-06T19:24:39Z",
+      "kind": "announce",
+      "prefix": "73.225.0.0/16",
+      "peer_asn": 3333,
+      "as_path": [
+        3333,
+        1136,
+        24785,
+        24785,
+        24785,
+        24785,
+        2914,
+        3356,
+        33650
+      ],
+      "origin_asn": 33650,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2017-11-06T19:24:39Z",
+      "kind": "withdraw",
+      "prefix": "73.225.0.0/16",
+      "peer_asn": 2497,
+      "as_path": [],
+      "origin_asn": null,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2017-11-06T19:24:40Z",
+      "kind": "withdraw",
+      "prefix": "73.225.0.0/16",
+      "peer_asn": 4777,
+      "as_path": [],
+      "origin_asn": null,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2017-11-06T19:24:41Z",
+      "kind": "withdraw",
+      "prefix": "73.225.0.0/16",
+      "peer_asn": 3130,
+      "as_path": [],
+      "origin_asn": null,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2017-11-06T19:25:02Z",
+      "kind": "withdraw",
+      "prefix": "73.225.0.0/16",
+      "peer_asn": 3130,
+      "as_path": [],
+      "origin_asn": null,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2017-11-06T19:25:13Z",
+      "kind": "withdraw",
+      "prefix": "73.225.0.0/16",
+      "peer_asn": 3333,
+      "as_path": [],
+      "origin_asn": null,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2017-11-06T19:25:18Z",
+      "kind": "announce",
+      "prefix": "73.225.0.0/16",
+      "peer_asn": 6539,
+      "as_path": [
+        6539,
+        577,
+        6453,
+        3356,
+        33650
+      ],
+      "origin_asn": 33650,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2017-11-06T19:25:24Z",
+      "kind": "withdraw",
+      "prefix": "73.225.0.0/16",
+      "peer_asn": 1221,
+      "as_path": [],
+      "origin_asn": null,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2017-11-06T19:25:47Z",
+      "kind": "withdraw",
+      "prefix": "73.225.0.0/16",
+      "peer_asn": 4608,
+      "as_path": [],
+      "origin_asn": null,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2017-11-06T19:26:05Z",
+      "kind": "announce",
+      "prefix": "73.225.0.0/16",
+      "peer_asn": 57866,
+      "as_path": [
+        57866,
+        6453,
+        3356,
+        33650
+      ],
+      "origin_asn": 33650,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2017-11-06T19:27:55Z",
+      "kind": "withdraw",
+      "prefix": "73.225.0.0/16",
+      "peer_asn": 11686,
+      "as_path": [],
+      "origin_asn": null,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2017-11-06T19:28:58Z",
+      "kind": "announce",
+      "prefix": "73.225.0.0/16",
+      "peer_asn": 393406,
+      "as_path": [
+        393406,
+        6453,
+        3356,
+        33650
+      ],
+      "origin_asn": 33650,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2017-11-06T19:29:31Z",
+      "kind": "announce",
+      "prefix": "73.225.0.0/16",
+      "peer_asn": 1668,
+      "as_path": [
+        1668,
+        10310,
+        3356,
+        33650
+      ],
+      "origin_asn": 33650,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2017-11-06T19:29:46Z",
+      "kind": "withdraw",
+      "prefix": "73.225.0.0/16",
+      "peer_asn": 852,
+      "as_path": [],
+      "origin_asn": null,
+      "collector": "route-views2"
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+{
+  "incident_id": "china-telecom-18min-2010-138.18.0.0/16",
+  "description": "China Telecom (AS23724) briefly announced routes for roughly 50,000 prefixes it does not own, including US government and military address space, redirecting a slice of global traffic through China for about 18 minutes.",
+  "prefix": "138.18.0.0/16",
+  "source": "RIPE RIS / RouteViews raw MRT archives (rrc00, route-views2), 2010-04-08 15:40-16:30 UTC",
+  "ground_truth": "prefix_hijack",
+  "updates": []
+}
