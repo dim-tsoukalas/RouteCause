@@ -94,6 +94,7 @@ class CitedAnswer:
     answer: str
     sources: list[Source] = field(default_factory=list)
     abstained: bool = False
+    trace: list[str] = field(default_factory=list)
 
     def render(self) -> str:
         lines = [self.answer, ""]
@@ -101,6 +102,11 @@ class CitedAnswer:
             lines.append("Sources:")
             for s in self.sources:
                 lines.append(f"  [{s.n}] {s.source_id}")
+        if self.trace:
+            lines.append("")
+            lines.append("Investigation trace:")
+            for step in self.trace:
+                lines.append(f"  - {step}")
         return "\n".join(lines)
 
 
@@ -117,20 +123,28 @@ class CitationEngine:
         self.top_k = top_k
         self.min_score = min_score  # abstain if best hit scores below this
 
+    def retrieve_sources(self, query: str) -> list[Source]:
+        """Pure retrieval: BM25 hits -> numbered Sources, no LLM call. Returns
+        [] if nothing clears the relevance floor. This is the reusable piece
+        `investigator.agent.AgentLoop` calls as its `search_rfcs` tool; `query()`
+        below is unchanged and just uses it for the original single-shot path."""
+        hits = self.bm25.score(query, self.top_k)
+        if not hits or hits[0][1] < self.min_score:
+            return []
+        return [Source(n=i + 1, source_id=c.source_id, text=t)
+                for i, (c, t) in enumerate((c, c.text) for c, _ in hits)]
+
     def query(self, question: str) -> CitedAnswer:
-        hits = self.bm25.score(question, self.top_k)
+        sources = self.retrieve_sources(question)
 
         # Abstention: nothing retrieved, or nothing above the relevance floor.
-        if not hits or hits[0][1] < self.min_score:
+        if not sources:
             return CitedAnswer(
                 query=question,
                 answer=ABSTAIN_MARKER + " — no sufficiently relevant source found.",
                 sources=[],
                 abstained=True,
             )
-
-        sources = [Source(n=i + 1, source_id=c.source_id, text=t)
-                   for i, (c, t) in enumerate((c, c.text) for c, _ in hits)]
 
         block = "\n".join(f"Source {s.n} ({s.source_id}):\n{s.text}\n" for s in sources)
         prompt = CITATION_QA_TEMPLATE.format(sources=block, query=question)
