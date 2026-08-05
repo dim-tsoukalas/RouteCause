@@ -96,8 +96,10 @@ grounding source.
 ## What it does — and deliberately does not — do (yet)
 
 **Does:** deterministic BGP anomaly detection (MOAS/hijack, withdrawal storm,
-AS_PATH loop), lexical retrieval over RFCs with numbered `[n]` citations,
-abstention when no source is relevant, a pluggable LLM backend, a CLI.
+AS_PATH loop), an agentic search loop over RFCs (the LLM may run multiple
+`search_rfcs` queries before answering, `investigator/agent.py`) with numbered
+`[n]` citations, abstention when no source is relevant, a pluggable LLM
+backend, a CLI.
 
 **Also does:** real-incident ingestion from RIPE RIS / RouteViews archives
 (`investigator/ingest.py`) and a detection-accuracy evaluation harness against a
@@ -106,18 +108,23 @@ see [Real incidents](#real-incidents-ripe-ris--routeviews) above.
 
 **Does not (later phases):** competing hypotheses with retrieved *contradicting*
 evidence, citation-*correctness* scoring (does the cited clause actually entail
-the claim?), hybrid dense retrieval, or a route-leak analyzer. See
-[`docs/design.md`](docs/design.md).
+the claim?), hybrid dense retrieval, a route-leak analyzer, or a YAML-defined
+toolset abstraction. See [`docs/design.md`](docs/design.md).
 
 ## Architecture
 
 Two layers, honestly separated (see `docs/design.md`):
 
 - **Deterministic layer** — `investigator/analyzers/` (registry mirrors
-  K8sGPT's `IAnalyzer`/`coreAnalyzerMap`) and `investigator/types.py`.
+  K8sGPT's `IAnalyzer`/`coreAnalyzerMap`) and `investigator/types.py`. Always
+  runs, unconditionally, with no LLM involved — the agentic loop below never
+  gets a say in what counts as evidence.
 - **Reasoning layer** — `investigator/retrieval/` (citation engine mirrors
-  LlamaIndex's `CitationQueryEngine`) + `investigator/llm.py` (backend
-  abstraction mirrors K8sGPT's `IAI`), orchestrated in `investigator/engine.py`.
+  LlamaIndex's `CitationQueryEngine`) wrapped in a bounded agentic loop
+  (`investigator/agent.py`, mirrors HolmesGPT's tool-calling loop) +
+  `investigator/llm.py` (backend abstraction mirrors K8sGPT's `IAI`),
+  orchestrated in `investigator/engine.py`. Offline mode always does exactly
+  one search round; a real LLM backend may search further before answering.
 
 ## Layout
 
@@ -129,6 +136,7 @@ investigator/
   retrieval/               # BM25 + CitationEngine (numbered sources, abstain)
     corpus.py  citations.py
   llm.py                   # LLMBackend: NoOp (offline) + LiteLLM (real)
+  agent.py                  # bounded agentic search loop (ReAct-style, RFC retrieval only)
   engine.py  report.py  cli.py
   ingest.py                 # RIPE RIS / RouteViews raw MRT -> Incident JSON
   evaluate.py                # expected-vs-detected accuracy over the catalog
@@ -136,15 +144,15 @@ data/
   incidents/               # sample incident JSON (synthetic) + real, ingested ones
     catalog.json            # documented historical incidents (ground truth, verify before trusting)
   rfcs/                     # condensed RFC excerpts (swap for full IETF text)
-tests/                     # analyzer + retrieval/abstention + ingest/evaluate tests
+tests/                     # analyzer + retrieval/abstention + agent + ingest/evaluate tests
 docs/design.md
 ```
 
 ## Roadmap
 
-- **Phase 1 ✅** baseline parity (this repo)
+- **Phase 1 ✅** baseline parity: analyzers, cited retrieval, agentic search loop (this repo)
 - **Phase 1.5 ✅** real-incident ingestion (RIPE RIS/RouteViews) + detection-accuracy eval harness
-- **Phase 2** pluggable toolsets + more analyzers (starting with route-leak detection); hybrid BM25+dense retrieval
+- **Phase 2** YAML-defined toolset abstraction + more analyzers (starting with route-leak detection); hybrid BM25+dense retrieval; LLM context-budget truncation
 - **Phase 3** citation-correctness eval harness (ALCE + MiniCheck + RAGChecker)
 - **Phase 4** adversarial / contradicting-evidence retrieval
 - **Phase 5** competing-hypothesis (ACH) reasoning + measured abstention

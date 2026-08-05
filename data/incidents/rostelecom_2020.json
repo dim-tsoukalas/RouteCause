@@ -1,0 +1,6217 @@
+{
+  "incident_id": "rostelecom-2020",
+  "description": "Rostelecom (AS12389) briefly announced more-specific routes for over 8,000 prefixes belonging to Google, Amazon, Facebook, Akamai and Cloudflare -- among them a /21 for Cloudflare space that Cloudflare normally announces as a /20 -- diverting and blackholing traffic for about an hour before withdrawal.",
+  "prefix": "104.27.160.0/21",
+  "source": "RIPE RIS / RouteViews raw MRT archives (rrc00, route-views2), 2020-04-01 19:00-20:30 UTC",
+  "ground_truth": "prefix_hijack",
+  "updates": [
+    {
+      "timestamp": "2020-04-01T19:32:34Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 49673,
+      "as_path": [
+        49673,
+        24811,
+        20485,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:32:40Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 3333,
+      "as_path": [
+        3333,
+        1257,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:32:40Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 49134,
+      "as_path": [
+        49134,
+        53356,
+        6939,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:32:40Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 49788,
+      "as_path": [
+        49788,
+        12552,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:32:40Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 3257,
+      "as_path": [
+        3257,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:32:40Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 49788,
+      "as_path": [
+        49788,
+        12552,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:32:40Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 852,
+      "as_path": [
+        852,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:32:40Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 6939,
+      "as_path": [
+        6939,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:32:41Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 34681,
+      "as_path": [
+        34681,
+        49752,
+        137490,
+        43350,
+        6830,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:32:41Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 49420,
+      "as_path": [
+        49420,
+        34209,
+        3257,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:32:41Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 139589,
+      "as_path": [
+        139589,
+        49752,
+        137490,
+        43350,
+        6830,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:32:41Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 139589,
+      "as_path": [
+        139589,
+        34927,
+        12586,
+        3257,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:32:41Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 43607,
+      "as_path": [
+        43607,
+        58057,
+        62240,
+        6461,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:32:41Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 208709,
+      "as_path": [
+        208709,
+        49752,
+        137490,
+        43350,
+        6830,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:32:41Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 208709,
+      "as_path": [
+        208709,
+        49697,
+        12586,
+        3257,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:32:41Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 20205,
+      "as_path": [
+        20205,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:32:41Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 43607,
+      "as_path": [
+        43607,
+        58057,
+        62240,
+        3257,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:32:41Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 11708,
+      "as_path": [
+        11708,
+        32097,
+        6939,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:32:41Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 131477,
+      "as_path": [
+        131477,
+        54574,
+        3257,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:32:41Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 131477,
+      "as_path": [
+        131477,
+        138576,
+        3257,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:32:41Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 29504,
+      "as_path": [
+        29504,
+        39392,
+        3257,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:32:41Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 207968,
+      "as_path": [
+        207968,
+        34927,
+        12586,
+        3257,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:32:41Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 49752,
+      "as_path": [
+        49752,
+        137490,
+        43350,
+        6830,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:32:41Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 207968,
+      "as_path": [
+        207968,
+        49697,
+        12586,
+        3257,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:32:41Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 32097,
+      "as_path": [
+        32097,
+        6939,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:32:41Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 206313,
+      "as_path": [
+        206313,
+        1273,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:32:41Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 206313,
+      "as_path": [
+        206313,
+        1273,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:32:41Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 852,
+      "as_path": [
+        852,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:32:41Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 59919,
+      "as_path": [
+        59919,
+        28716,
+        6762,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:32:41Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 3333,
+      "as_path": [
+        3333,
+        1257,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:32:41Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 34681,
+      "as_path": [
+        34681,
+        34927,
+        12586,
+        3257,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:32:41Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 54728,
+      "as_path": [
+        54728,
+        20130,
+        6939,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:32:41Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 3257,
+      "as_path": [
+        3257,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:32:41Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 53767,
+      "as_path": [
+        53767,
+        3257,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:32:41Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 18106,
+      "as_path": [
+        18106,
+        4657,
+        6762,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:32:41Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 22652,
+      "as_path": [
+        22652,
+        3257,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:32:41Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 37100,
+      "as_path": [
+        37100,
+        3257,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:32:41Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 22652,
+      "as_path": [
+        22652,
+        3257,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:32:41Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 3561,
+      "as_path": [
+        3561,
+        3910,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:32:41Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 53767,
+      "as_path": [
+        53767,
+        3257,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:32:42Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 8758,
+      "as_path": [
+        8758,
+        8220,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:32:42Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 8758,
+      "as_path": [
+        8758,
+        8220,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:32:42Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 64271,
+      "as_path": [
+        64271,
+        131477,
+        6939,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:32:42Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 22652,
+      "as_path": [
+        22652,
+        3257,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:32:42Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 60371,
+      "as_path": [
+        60371,
+        58057,
+        62240,
+        3257,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:32:42Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 22652,
+      "as_path": [
+        22652,
+        3257,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:32:42Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 208709,
+      "as_path": [
+        208709,
+        34872,
+        24961,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:32:42Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 131477,
+      "as_path": [
+        131477,
+        138576,
+        3257,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:32:42Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 34872,
+      "as_path": [
+        34872,
+        24961,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:32:42Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 34872,
+      "as_path": [
+        34872,
+        24961,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:32:42Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 3549,
+      "as_path": [
+        3549,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:32:43Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 60371,
+      "as_path": [
+        60371,
+        58057,
+        62240,
+        3257,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:32:43Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 49102,
+      "as_path": [
+        49102,
+        9002,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:32:43Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 49102,
+      "as_path": [
+        49102,
+        9002,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:32:43Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 205148,
+      "as_path": [
+        205148,
+        49102,
+        9002,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:32:43Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 49102,
+      "as_path": [
+        49102,
+        9002,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:32:43Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 206313,
+      "as_path": [
+        206313,
+        9002,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:32:43Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 37989,
+      "as_path": [
+        37989,
+        56300,
+        132132,
+        4657,
+        6762,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:32:43Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 3549,
+      "as_path": [
+        3549,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:32:43Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 3257,
+      "as_path": [
+        3257,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:32:44Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 37721,
+      "as_path": [
+        37721,
+        6939,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:32:44Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 37989,
+      "as_path": [
+        37989,
+        4844,
+        7473,
+        6461,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:32:46Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 6539,
+      "as_path": [
+        6539,
+        577,
+        3257,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:32:47Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 49752,
+      "as_path": [
+        49752,
+        137490,
+        43350,
+        6762,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:32:47Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 49752,
+      "as_path": [
+        49752,
+        34927,
+        12586,
+        3257,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:32:47Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 49752,
+      "as_path": [
+        49752,
+        205927,
+        205927,
+        49697,
+        12586,
+        3257,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:32:48Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 55720,
+      "as_path": [
+        55720,
+        6762,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:32:48Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 60371,
+      "as_path": [
+        60371,
+        58057,
+        62240,
+        3257,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:32:49Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 3741,
+      "as_path": [
+        3741,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:32:50Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 3303,
+      "as_path": [
+        3303,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:32:50Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 701,
+      "as_path": [
+        701,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:32:51Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 23673,
+      "as_path": [
+        23673,
+        55329,
+        9304,
+        15412,
+        6762,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:32:51Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 7660,
+      "as_path": [
+        7660,
+        2516,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:32:52Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 202365,
+      "as_path": [
+        202365,
+        50673,
+        6830,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:32:53Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 11686,
+      "as_path": [
+        11686,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:32:54Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 34224,
+      "as_path": [
+        34224,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:32:56Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 2497,
+      "as_path": [
+        2497,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:32:56Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 2152,
+      "as_path": [
+        2152,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:32:57Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 3549,
+      "as_path": [
+        3549,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:32:57Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 3277,
+      "as_path": [
+        3277,
+        3267,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:32:58Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 3549,
+      "as_path": [
+        3549,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:32:59Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 132825,
+      "as_path": [
+        132825,
+        58453,
+        3257,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:33:00Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 17639,
+      "as_path": [
+        17639,
+        1239,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:33:00Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 13830,
+      "as_path": [
+        13830,
+        29802,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:33:00Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 4608,
+      "as_path": [
+        4608,
+        1221,
+        4637,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:33:01Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 139589,
+      "as_path": [
+        139589,
+        58299,
+        6939,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:33:02Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 1221,
+      "as_path": [
+        1221,
+        4637,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:33:02Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 293,
+      "as_path": [
+        293,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:33:04Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 49673,
+      "as_path": [
+        49673,
+        24811,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:33:05Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 38001,
+      "as_path": [
+        38001,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:33:06Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 207968,
+      "as_path": [
+        207968,
+        58299,
+        6939,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:33:06Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 49752,
+      "as_path": [
+        49752,
+        205927,
+        205927,
+        58299,
+        6939,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:33:06Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 205148,
+      "as_path": [
+        205148,
+        49102,
+        9002,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:33:06Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 49102,
+      "as_path": [
+        49102,
+        9002,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:33:07Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 139589,
+      "as_path": [
+        139589,
+        58299,
+        6939,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:33:07Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 49752,
+      "as_path": [
+        49752,
+        58299,
+        58299,
+        6939,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:33:07Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 29608,
+      "as_path": [
+        29608,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:33:07Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 206313,
+      "as_path": [
+        206313,
+        9002,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:33:08Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 22652,
+      "as_path": [
+        22652,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:33:09Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 44977,
+      "as_path": [
+        44977,
+        34927,
+        58299,
+        6939,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:33:09Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 34681,
+      "as_path": [
+        34681,
+        34927,
+        58299,
+        6939,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:33:11Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 6881,
+      "as_path": [
+        6881,
+        15685,
+        6939,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:33:12Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 1239,
+      "as_path": [
+        1239,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:33:16Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 34800,
+      "as_path": [
+        34800,
+        61218,
+        24961,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:33:16Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 50628,
+      "as_path": [
+        50628,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:33:17Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 58057,
+      "as_path": [
+        58057,
+        34800,
+        61218,
+        24961,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:33:18Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 55720,
+      "as_path": [
+        55720,
+        6762,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:33:19Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 55720,
+      "as_path": [
+        55720,
+        4637,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:33:19Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 6539,
+      "as_path": [
+        6539,
+        577,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:33:19Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 37100,
+      "as_path": [
+        37100,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:33:20Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 22652,
+      "as_path": [
+        22652,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:33:20Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 11686,
+      "as_path": [
+        11686,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:33:21Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 23673,
+      "as_path": [
+        23673,
+        55329,
+        4788,
+        1273,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:33:23Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 202365,
+      "as_path": [
+        202365,
+        50673,
+        6461,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:33:24Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 34872,
+      "as_path": [
+        34872,
+        24961,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:33:24Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 34872,
+      "as_path": [
+        34872,
+        24961,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:33:24Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 208709,
+      "as_path": [
+        208709,
+        34872,
+        24961,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:33:24Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 3549,
+      "as_path": [
+        3549,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:33:25Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 35619,
+      "as_path": [
+        35619,
+        58057,
+        1836,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:33:25Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 2152,
+      "as_path": [
+        2152,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:33:27Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 328474,
+      "as_path": [
+        328474,
+        328474,
+        328474,
+        328474,
+        328112,
+        37100,
+        3257,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:33:27Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 44977,
+      "as_path": [
+        44977,
+        34927,
+        39533,
+        4134,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:33:27Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 202365,
+      "as_path": [
+        202365,
+        206499,
+        39533,
+        4134,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:33:27Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 34681,
+      "as_path": [
+        34681,
+        34927,
+        39533,
+        4134,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:33:27Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 34681,
+      "as_path": [
+        34681,
+        206499,
+        39533,
+        4134,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:33:27Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 49420,
+      "as_path": [
+        49420,
+        24724,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:33:27Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 58057,
+      "as_path": [
+        58057,
+        39533,
+        4134,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:33:27Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 49752,
+      "as_path": [
+        49752,
+        39533,
+        39533,
+        4134,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:33:29Z",
+      "kind": "withdraw",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 132825,
+      "as_path": [],
+      "origin_asn": null,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:33:31Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 3549,
+      "as_path": [
+        3549,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:33:34Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 18106,
+      "as_path": [
+        18106,
+        6939,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:33:38Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 58057,
+      "as_path": [
+        58057,
+        1836,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:33:38Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 35619,
+      "as_path": [
+        35619,
+        58057,
+        1836,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:33:40Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 5413,
+      "as_path": [
+        5413,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:33:47Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 208709,
+      "as_path": [
+        208709,
+        34872,
+        24961,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:33:47Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 34872,
+      "as_path": [
+        34872,
+        24961,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:33:53Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 202365,
+      "as_path": [
+        202365,
+        50673,
+        20562,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:33:58Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 395152,
+      "as_path": [
+        395152,
+        14007,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:34:01Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 20912,
+      "as_path": [
+        20912,
+        3257,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:34:09Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 34800,
+      "as_path": [
+        34800,
+        61218,
+        24961,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:34:10Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 58057,
+      "as_path": [
+        58057,
+        34800,
+        61218,
+        24961,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:34:17Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 20912,
+      "as_path": [
+        20912,
+        3257,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:34:19Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 29504,
+      "as_path": [
+        29504,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:34:21Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 6939,
+      "as_path": [
+        6939,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:34:22Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 49134,
+      "as_path": [
+        49134,
+        53356,
+        6939,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:34:22Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 64271,
+      "as_path": [
+        64271,
+        131477,
+        6939,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:34:22Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 20205,
+      "as_path": [
+        20205,
+        6939,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:34:22Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 11708,
+      "as_path": [
+        11708,
+        32097,
+        6939,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:34:22Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 32097,
+      "as_path": [
+        32097,
+        6939,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:34:22Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 54728,
+      "as_path": [
+        54728,
+        20130,
+        6939,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:34:25Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 20205,
+      "as_path": [
+        20205,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:34:25Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 54728,
+      "as_path": [
+        54728,
+        20130,
+        6939,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:34:26Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 32097,
+      "as_path": [
+        32097,
+        6939,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:34:26Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 49134,
+      "as_path": [
+        49134,
+        53356,
+        6939,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:34:26Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 11708,
+      "as_path": [
+        11708,
+        32097,
+        6939,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:34:26Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 6939,
+      "as_path": [
+        6939,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:34:27Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 64271,
+      "as_path": [
+        64271,
+        131477,
+        6939,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:34:27Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 50300,
+      "as_path": [
+        50300,
+        3257,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:34:31Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 328474,
+      "as_path": [
+        328474,
+        328474,
+        328474,
+        328474,
+        328112,
+        37100,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:34:35Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 37721,
+      "as_path": [
+        37721,
+        6939,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:34:35Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 20205,
+      "as_path": [
+        20205,
+        6939,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:34:35Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 11708,
+      "as_path": [
+        11708,
+        32097,
+        6939,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:34:35Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 293,
+      "as_path": [
+        293,
+        6939,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:34:35Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 54728,
+      "as_path": [
+        54728,
+        20130,
+        6939,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:34:36Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 32097,
+      "as_path": [
+        32097,
+        6939,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:34:36Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 49134,
+      "as_path": [
+        49134,
+        53356,
+        6939,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:34:36Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 64271,
+      "as_path": [
+        64271,
+        131477,
+        6939,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:34:36Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 6939,
+      "as_path": [
+        6939,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:34:38Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 29608,
+      "as_path": [
+        29608,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:34:39Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 22652,
+      "as_path": [
+        22652,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:34:40Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 6881,
+      "as_path": [
+        6881,
+        15685,
+        6939,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:34:40Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 22652,
+      "as_path": [
+        22652,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:34:44Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 37721,
+      "as_path": [
+        37721,
+        6939,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:34:44Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 20205,
+      "as_path": [
+        20205,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:34:44Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 54728,
+      "as_path": [
+        54728,
+        20130,
+        6939,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:34:45Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 32097,
+      "as_path": [
+        32097,
+        6939,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:34:45Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 49134,
+      "as_path": [
+        49134,
+        53356,
+        6939,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:34:45Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 64271,
+      "as_path": [
+        64271,
+        131477,
+        6939,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:34:45Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 11708,
+      "as_path": [
+        11708,
+        32097,
+        6939,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:34:45Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 11686,
+      "as_path": [
+        11686,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:34:46Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 6939,
+      "as_path": [
+        6939,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:34:49Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 3741,
+      "as_path": [
+        3741,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:34:51Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 23673,
+      "as_path": [
+        23673,
+        55329,
+        4788,
+        1273,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:34:51Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 3303,
+      "as_path": [
+        3303,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:34:54Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 18106,
+      "as_path": [
+        18106,
+        6939,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:34:55Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 2152,
+      "as_path": [
+        2152,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:34:57Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 18106,
+      "as_path": [
+        18106,
+        6939,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:35:02Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 18106,
+      "as_path": [
+        18106,
+        6939,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:35:05Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 49673,
+      "as_path": [
+        49673,
+        48858,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:35:05Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 18106,
+      "as_path": [
+        18106,
+        6939,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:35:08Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 293,
+      "as_path": [
+        293,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:35:10Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 6881,
+      "as_path": [
+        6881,
+        15685,
+        6939,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:35:31Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 18106,
+      "as_path": [
+        18106,
+        6939,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:35:34Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 49420,
+      "as_path": [
+        49420,
+        34209,
+        3257,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:35:35Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 18106,
+      "as_path": [
+        18106,
+        6939,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:35:38Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 58057,
+      "as_path": [
+        58057,
+        1836,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:35:38Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 35619,
+      "as_path": [
+        35619,
+        58057,
+        1836,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:35:38Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 47251,
+      "as_path": [
+        47251,
+        48362,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:35:38Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 18106,
+      "as_path": [
+        18106,
+        6939,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:35:42Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 34872,
+      "as_path": [
+        34872,
+        24961,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:35:43Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 34872,
+      "as_path": [
+        34872,
+        24961,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:35:43Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 208709,
+      "as_path": [
+        208709,
+        34872,
+        24961,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:35:47Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 18106,
+      "as_path": [
+        18106,
+        6939,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:35:48Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 29504,
+      "as_path": [
+        29504,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:35:48Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 29504,
+      "as_path": [
+        29504,
+        39392,
+        3257,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:35:51Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 23673,
+      "as_path": [
+        23673,
+        55329,
+        4788,
+        6939,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:35:53Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 49420,
+      "as_path": [
+        49420,
+        34209,
+        3257,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:35:53Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 34872,
+      "as_path": [
+        34872,
+        24961,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:35:53Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 34872,
+      "as_path": [
+        34872,
+        50673,
+        20562,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:35:53Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 208709,
+      "as_path": [
+        208709,
+        58299,
+        6939,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:35:53Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 37100,
+      "as_path": [
+        37100,
+        3257,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:35:53Z",
+      "kind": "withdraw",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 3277,
+      "as_path": [],
+      "origin_asn": null,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:35:53Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 49788,
+      "as_path": [
+        49788,
+        12552,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:35:53Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 3549,
+      "as_path": [
+        3549,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:35:53Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 3303,
+      "as_path": [
+        3303,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:35:53Z",
+      "kind": "withdraw",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 49788,
+      "as_path": [],
+      "origin_asn": null,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:35:54Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 3333,
+      "as_path": [
+        3333,
+        1257,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:35:54Z",
+      "kind": "withdraw",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 20205,
+      "as_path": [],
+      "origin_asn": null,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:35:54Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 20205,
+      "as_path": [
+        20205,
+        6939,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:35:54Z",
+      "kind": "withdraw",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 3549,
+      "as_path": [],
+      "origin_asn": null,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:35:55Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 8758,
+      "as_path": [
+        8758,
+        6830,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:35:55Z",
+      "kind": "withdraw",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 3549,
+      "as_path": [],
+      "origin_asn": null,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:35:55Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 49420,
+      "as_path": [
+        49420,
+        34209,
+        3257,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:35:55Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 60371,
+      "as_path": [
+        60371,
+        58057,
+        62240,
+        3257,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:35:55Z",
+      "kind": "withdraw",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 22652,
+      "as_path": [],
+      "origin_asn": null,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:35:55Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 22652,
+      "as_path": [
+        22652,
+        3257,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:35:55Z",
+      "kind": "withdraw",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 22652,
+      "as_path": [],
+      "origin_asn": null,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:35:55Z",
+      "kind": "withdraw",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 2152,
+      "as_path": [],
+      "origin_asn": null,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:35:55Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 22652,
+      "as_path": [
+        22652,
+        3257,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:35:55Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 18106,
+      "as_path": [
+        18106,
+        6939,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:35:55Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 53767,
+      "as_path": [
+        53767,
+        3257,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:35:56Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 60371,
+      "as_path": [
+        60371,
+        58057,
+        62240,
+        3257,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:35:56Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 22652,
+      "as_path": [
+        22652,
+        3257,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:35:56Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 3549,
+      "as_path": [
+        3549,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:35:56Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 22652,
+      "as_path": [
+        22652,
+        3257,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:35:57Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 22652,
+      "as_path": [
+        22652,
+        3257,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:35:57Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 131477,
+      "as_path": [
+        131477,
+        138576,
+        3257,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:35:57Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 34872,
+      "as_path": [
+        34872,
+        24961,
+        3320,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:35:57Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 202365,
+      "as_path": [
+        202365,
+        50673,
+        6461,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:35:57Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 22652,
+      "as_path": [
+        22652,
+        3257,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:35:57Z",
+      "kind": "withdraw",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 852,
+      "as_path": [],
+      "origin_asn": null,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:35:57Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 7660,
+      "as_path": [
+        7660,
+        2516,
+        701,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:35:58Z",
+      "kind": "withdraw",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 852,
+      "as_path": [],
+      "origin_asn": null,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:35:58Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 34224,
+      "as_path": [
+        34224,
+        3257,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:35:58Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 2497,
+      "as_path": [
+        2497,
+        701,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:36:00Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 13830,
+      "as_path": [
+        13830,
+        29802,
+        6939,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:36:02Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 1221,
+      "as_path": [
+        1221,
+        4637,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:36:02Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 53767,
+      "as_path": [
+        53767,
+        3257,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:36:03Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 131477,
+      "as_path": [
+        131477,
+        138576,
+        3257,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:36:04Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 3549,
+      "as_path": [
+        3549,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:36:04Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 18106,
+      "as_path": [
+        18106,
+        6939,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:36:08Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 1239,
+      "as_path": [
+        1239,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:36:09Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 38001,
+      "as_path": [
+        38001,
+        7473,
+        6461,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:36:10Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 29608,
+      "as_path": [
+        29608,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:36:13Z",
+      "kind": "withdraw",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 37721,
+      "as_path": [],
+      "origin_asn": null,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:36:13Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 5413,
+      "as_path": [
+        5413,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:36:14Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 8758,
+      "as_path": [
+        8758,
+        15576,
+        3257,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:36:15Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 37721,
+      "as_path": [
+        37721,
+        6939,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:36:15Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 11686,
+      "as_path": [
+        11686,
+        6461,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:36:17Z",
+      "kind": "withdraw",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 50628,
+      "as_path": [],
+      "origin_asn": null,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:36:18Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 6539,
+      "as_path": [
+        6539,
+        577,
+        3257,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:36:18Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 18106,
+      "as_path": [
+        18106,
+        6939,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:36:19Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 3741,
+      "as_path": [
+        3741,
+        5511,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:36:21Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 49432,
+      "as_path": [
+        49432,
+        48362,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:36:21Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 23673,
+      "as_path": [
+        23673,
+        55329,
+        4788,
+        1273,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:36:21Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 3257,
+      "as_path": [
+        3257,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:36:22Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 328474,
+      "as_path": [
+        328474,
+        328474,
+        328474,
+        328474,
+        328112,
+        37271,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:36:23Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 55720,
+      "as_path": [
+        55720,
+        6762,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:36:23Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 49420,
+      "as_path": [
+        49420,
+        34209,
+        3257,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:36:24Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 60371,
+      "as_path": [
+        60371,
+        58057,
+        62240,
+        3257,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:36:24Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 3303,
+      "as_path": [
+        3303,
+        3320,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:36:25Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 18106,
+      "as_path": [
+        18106,
+        6939,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:36:27Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 3549,
+      "as_path": [
+        3549,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:36:31Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 3549,
+      "as_path": [
+        3549,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:36:32Z",
+      "kind": "withdraw",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 22652,
+      "as_path": [],
+      "origin_asn": null,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:36:32Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 1221,
+      "as_path": [
+        1221,
+        4637,
+        1239,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:36:32Z",
+      "kind": "withdraw",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 3257,
+      "as_path": [],
+      "origin_asn": null,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:36:32Z",
+      "kind": "withdraw",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 53767,
+      "as_path": [],
+      "origin_asn": null,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:36:32Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 37100,
+      "as_path": [
+        37100,
+        6762,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:36:32Z",
+      "kind": "withdraw",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 22652,
+      "as_path": [],
+      "origin_asn": null,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:36:33Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 47251,
+      "as_path": [
+        47251,
+        48362,
+        9002,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:36:33Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 49420,
+      "as_path": [
+        49420,
+        8308,
+        3257,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:36:33Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 43607,
+      "as_path": [
+        43607,
+        58057,
+        62240,
+        6461,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:36:33Z",
+      "kind": "withdraw",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 29504,
+      "as_path": [],
+      "origin_asn": null,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:36:34Z",
+      "kind": "withdraw",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 49420,
+      "as_path": [],
+      "origin_asn": null,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:36:34Z",
+      "kind": "withdraw",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 131477,
+      "as_path": [],
+      "origin_asn": null,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:36:35Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 49673,
+      "as_path": [
+        49673,
+        48858,
+        9002,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:36:35Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 4608,
+      "as_path": [
+        4608,
+        7575,
+        6461,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:36:35Z",
+      "kind": "withdraw",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 58057,
+      "as_path": [],
+      "origin_asn": null,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:36:35Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 60371,
+      "as_path": [
+        60371,
+        58057,
+        62240,
+        6461,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:36:35Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 35619,
+      "as_path": [
+        35619,
+        58057,
+        1836,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:36:38Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 18106,
+      "as_path": [
+        18106,
+        4657,
+        6762,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:36:38Z",
+      "kind": "withdraw",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 1239,
+      "as_path": [],
+      "origin_asn": null,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:36:39Z",
+      "kind": "withdraw",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 8758,
+      "as_path": [],
+      "origin_asn": null,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:36:40Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 49432,
+      "as_path": [
+        49432,
+        48362,
+        9002,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:36:40Z",
+      "kind": "withdraw",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 6939,
+      "as_path": [],
+      "origin_asn": null,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:36:41Z",
+      "kind": "withdraw",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 32097,
+      "as_path": [],
+      "origin_asn": null,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:36:41Z",
+      "kind": "withdraw",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 49134,
+      "as_path": [],
+      "origin_asn": null,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:36:41Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 64271,
+      "as_path": [
+        64271,
+        201106,
+        23033,
+        11404,
+        3257,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:36:41Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 11708,
+      "as_path": [
+        11708,
+        15164,
+        6939,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:36:41Z",
+      "kind": "withdraw",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 20205,
+      "as_path": [],
+      "origin_asn": null,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:36:41Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 11708,
+      "as_path": [
+        11708,
+        32097,
+        6939,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:36:41Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 20205,
+      "as_path": [
+        20205,
+        6939,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:36:41Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 54728,
+      "as_path": [
+        54728,
+        20130,
+        23352,
+        7922,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:36:41Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 6939,
+      "as_path": [
+        6939,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:36:41Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 54728,
+      "as_path": [
+        54728,
+        20130,
+        6939,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:36:42Z",
+      "kind": "withdraw",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 29608,
+      "as_path": [],
+      "origin_asn": null,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:36:42Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 32097,
+      "as_path": [
+        32097,
+        6939,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:36:42Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 49134,
+      "as_path": [
+        49134,
+        53356,
+        6939,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:36:42Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 64271,
+      "as_path": [
+        64271,
+        131477,
+        6939,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:36:42Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 293,
+      "as_path": [
+        293,
+        6939,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:36:44Z",
+      "kind": "withdraw",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 5413,
+      "as_path": [],
+      "origin_asn": null,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:36:44Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 18106,
+      "as_path": [
+        18106,
+        6939,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:36:44Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 3561,
+      "as_path": [
+        3561,
+        209,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:36:45Z",
+      "kind": "withdraw",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 37721,
+      "as_path": [],
+      "origin_asn": null,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:36:45Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 11686,
+      "as_path": [
+        11686,
+        6461,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:36:45Z",
+      "kind": "withdraw",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 3561,
+      "as_path": [],
+      "origin_asn": null,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:36:48Z",
+      "kind": "withdraw",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 6539,
+      "as_path": [],
+      "origin_asn": null,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:36:49Z",
+      "kind": "withdraw",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 3741,
+      "as_path": [],
+      "origin_asn": null,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:36:52Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 23673,
+      "as_path": [
+        23673,
+        55329,
+        4788,
+        6939,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:36:54Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 139589,
+      "as_path": [
+        139589,
+        58299,
+        6939,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:36:55Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 139589,
+      "as_path": [
+        139589,
+        34927,
+        39533,
+        4134,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:36:56Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 208709,
+      "as_path": [
+        208709,
+        49697,
+        39533,
+        4134,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:36:56Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 207968,
+      "as_path": [
+        207968,
+        49697,
+        39533,
+        4134,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:36:56Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 34800,
+      "as_path": [
+        34800,
+        58057,
+        1836,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:36:57Z",
+      "kind": "withdraw",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 44977,
+      "as_path": [],
+      "origin_asn": null,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:36:57Z",
+      "kind": "withdraw",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 58057,
+      "as_path": [],
+      "origin_asn": null,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:36:57Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 139589,
+      "as_path": [
+        139589,
+        206499,
+        39533,
+        4134,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:36:57Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 49752,
+      "as_path": [
+        49752,
+        205927,
+        205927,
+        49697,
+        39533,
+        4134,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:36:58Z",
+      "kind": "withdraw",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 58057,
+      "as_path": [],
+      "origin_asn": null,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:36:58Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 208709,
+      "as_path": [
+        208709,
+        34872,
+        24961,
+        3320,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:36:58Z",
+      "kind": "withdraw",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 202365,
+      "as_path": [],
+      "origin_asn": null,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:36:58Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 207968,
+      "as_path": [
+        207968,
+        58299,
+        6939,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:36:58Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 34681,
+      "as_path": [
+        34681,
+        58299,
+        6939,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:36:58Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 139589,
+      "as_path": [
+        139589,
+        49752,
+        205927,
+        205927,
+        49697,
+        39533,
+        4134,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:36:58Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 139589,
+      "as_path": [
+        139589,
+        49752,
+        137490,
+        30823,
+        9002,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:36:58Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 49752,
+      "as_path": [
+        49752,
+        137490,
+        30823,
+        9002,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:36:59Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 34681,
+      "as_path": [
+        34681,
+        60474,
+        58057,
+        1836,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:36:59Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 13830,
+      "as_path": [
+        13830,
+        29802,
+        6939,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:36:59Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 34224,
+      "as_path": [
+        34224,
+        6762,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:37:00Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 3549,
+      "as_path": [
+        3549,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:37:02Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 3549,
+      "as_path": [
+        3549,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:37:02Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 18106,
+      "as_path": [
+        18106,
+        4657,
+        6762,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:37:02Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 20912,
+      "as_path": [
+        20912,
+        3257,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:37:03Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 18106,
+      "as_path": [
+        18106,
+        6939,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:37:04Z",
+      "kind": "withdraw",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 207968,
+      "as_path": [],
+      "origin_asn": null,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:37:08Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 3549,
+      "as_path": [
+        3549,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:37:08Z",
+      "kind": "withdraw",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 3549,
+      "as_path": [],
+      "origin_asn": null,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:37:09Z",
+      "kind": "withdraw",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 3549,
+      "as_path": [],
+      "origin_asn": null,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:37:09Z",
+      "kind": "withdraw",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 3549,
+      "as_path": [],
+      "origin_asn": null,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:37:10Z",
+      "kind": "withdraw",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 3333,
+      "as_path": [],
+      "origin_asn": null,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:37:10Z",
+      "kind": "withdraw",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 6881,
+      "as_path": [],
+      "origin_asn": null,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:37:10Z",
+      "kind": "withdraw",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 60371,
+      "as_path": [],
+      "origin_asn": null,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:37:10Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 43607,
+      "as_path": [
+        43607,
+        58057,
+        34872,
+        50673,
+        6461,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:37:11Z",
+      "kind": "withdraw",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 59919,
+      "as_path": [],
+      "origin_asn": null,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:37:11Z",
+      "kind": "withdraw",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 701,
+      "as_path": [],
+      "origin_asn": null,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:37:11Z",
+      "kind": "withdraw",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 11686,
+      "as_path": [],
+      "origin_asn": null,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:37:12Z",
+      "kind": "withdraw",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 37100,
+      "as_path": [],
+      "origin_asn": null,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:37:13Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 34872,
+      "as_path": [
+        34872,
+        24961,
+        3320,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:37:13Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 34872,
+      "as_path": [
+        34872,
+        50673,
+        6461,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:37:14Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 208709,
+      "as_path": [
+        208709,
+        34872,
+        24961,
+        3320,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:37:14Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 206313,
+      "as_path": [
+        206313,
+        3320,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:37:14Z",
+      "kind": "withdraw",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 205148,
+      "as_path": [],
+      "origin_asn": null,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:37:15Z",
+      "kind": "withdraw",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 49102,
+      "as_path": [],
+      "origin_asn": null,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:37:15Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 6939,
+      "as_path": [
+        6939,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:37:16Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 208709,
+      "as_path": [
+        208709,
+        34872,
+        50673,
+        6461,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:37:16Z",
+      "kind": "withdraw",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 37989,
+      "as_path": [],
+      "origin_asn": null,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:37:16Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 64271,
+      "as_path": [
+        64271,
+        131477,
+        6939,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:37:16Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 20205,
+      "as_path": [
+        20205,
+        6939,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:37:16Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 11708,
+      "as_path": [
+        11708,
+        32097,
+        6939,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:37:16Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 54728,
+      "as_path": [
+        54728,
+        20130,
+        6939,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:37:17Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 32097,
+      "as_path": [
+        32097,
+        6939,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:37:17Z",
+      "kind": "withdraw",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 139589,
+      "as_path": [],
+      "origin_asn": null,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:37:17Z",
+      "kind": "withdraw",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 49752,
+      "as_path": [],
+      "origin_asn": null,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:37:18Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 49134,
+      "as_path": [
+        49134,
+        53356,
+        6939,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:37:18Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 64271,
+      "as_path": [
+        64271,
+        131477,
+        6939,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:37:18Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 11708,
+      "as_path": [
+        11708,
+        32097,
+        6939,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:37:18Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 20205,
+      "as_path": [
+        20205,
+        6939,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:37:18Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 54728,
+      "as_path": [
+        54728,
+        20130,
+        6939,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:37:18Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 6939,
+      "as_path": [
+        6939,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:37:19Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 32097,
+      "as_path": [
+        32097,
+        6939,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:37:19Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 49134,
+      "as_path": [
+        49134,
+        53356,
+        6939,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:37:19Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 328474,
+      "as_path": [
+        328474,
+        328474,
+        328474,
+        328474,
+        328112,
+        37271,
+        6762,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:37:19Z",
+      "kind": "withdraw",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 7660,
+      "as_path": [],
+      "origin_asn": null,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:37:21Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 23673,
+      "as_path": [
+        23673,
+        55329,
+        4788,
+        6939,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:37:22Z",
+      "kind": "withdraw",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 49673,
+      "as_path": [],
+      "origin_asn": null,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:37:23Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 37989,
+      "as_path": [
+        37989,
+        56300,
+        132132,
+        10099,
+        4837,
+        1239,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:37:24Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 55720,
+      "as_path": [
+        55720,
+        10099,
+        4837,
+        1239,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:37:25Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 18106,
+      "as_path": [
+        18106,
+        6939,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:37:28Z",
+      "kind": "withdraw",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 202365,
+      "as_path": [],
+      "origin_asn": null,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:37:28Z",
+      "kind": "withdraw",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 34872,
+      "as_path": [],
+      "origin_asn": null,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:37:28Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 18106,
+      "as_path": [
+        18106,
+        6939,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:37:29Z",
+      "kind": "withdraw",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 208709,
+      "as_path": [],
+      "origin_asn": null,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:37:29Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 13830,
+      "as_path": [
+        13830,
+        29802,
+        6939,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:37:29Z",
+      "kind": "withdraw",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 43607,
+      "as_path": [],
+      "origin_asn": null,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:37:29Z",
+      "kind": "withdraw",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 34224,
+      "as_path": [],
+      "origin_asn": null,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:37:30Z",
+      "kind": "withdraw",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 17639,
+      "as_path": [],
+      "origin_asn": null,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:37:30Z",
+      "kind": "withdraw",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 20912,
+      "as_path": [],
+      "origin_asn": null,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:37:31Z",
+      "kind": "withdraw",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 2497,
+      "as_path": [],
+      "origin_asn": null,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:37:31Z",
+      "kind": "withdraw",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 1221,
+      "as_path": [],
+      "origin_asn": null,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:37:34Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 206313,
+      "as_path": [
+        206313,
+        3320,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:37:35Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 206313,
+      "as_path": [
+        206313,
+        8560,
+        3320,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:37:36Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 4608,
+      "as_path": [
+        4608,
+        24130,
+        7545,
+        6939,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:37:37Z",
+      "kind": "withdraw",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 206313,
+      "as_path": [],
+      "origin_asn": null,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:37:39Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 35619,
+      "as_path": [
+        35619,
+        60474,
+        58057,
+        1836,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:37:39Z",
+      "kind": "withdraw",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 35619,
+      "as_path": [],
+      "origin_asn": null,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:37:40Z",
+      "kind": "withdraw",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 34681,
+      "as_path": [],
+      "origin_asn": null,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:37:41Z",
+      "kind": "withdraw",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 38001,
+      "as_path": [],
+      "origin_asn": null,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:37:44Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 34854,
+      "as_path": [
+        34854,
+        206499,
+        39533,
+        4134,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:37:50Z",
+      "kind": "withdraw",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 34854,
+      "as_path": [],
+      "origin_asn": null,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:37:51Z",
+      "kind": "withdraw",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 64271,
+      "as_path": [],
+      "origin_asn": null,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:37:51Z",
+      "kind": "withdraw",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 6939,
+      "as_path": [],
+      "origin_asn": null,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:37:51Z",
+      "kind": "withdraw",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 54728,
+      "as_path": [],
+      "origin_asn": null,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:37:52Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 11708,
+      "as_path": [
+        11708,
+        15164,
+        6939,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:37:52Z",
+      "kind": "withdraw",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 32097,
+      "as_path": [],
+      "origin_asn": null,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:37:52Z",
+      "kind": "withdraw",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 49134,
+      "as_path": [],
+      "origin_asn": null,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:37:52Z",
+      "kind": "withdraw",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 34800,
+      "as_path": [],
+      "origin_asn": null,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:37:52Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 23673,
+      "as_path": [
+        23673,
+        55329,
+        4788,
+        6939,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:37:53Z",
+      "kind": "withdraw",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 20205,
+      "as_path": [],
+      "origin_asn": null,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:37:55Z",
+      "kind": "withdraw",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 3303,
+      "as_path": [],
+      "origin_asn": null,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:37:58Z",
+      "kind": "withdraw",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 49432,
+      "as_path": [],
+      "origin_asn": null,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:37:59Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 13830,
+      "as_path": [
+        13830,
+        29802,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:38:04Z",
+      "kind": "withdraw",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 18106,
+      "as_path": [],
+      "origin_asn": null,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:38:05Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 18106,
+      "as_path": [
+        18106,
+        6939,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:38:07Z",
+      "kind": "withdraw",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 4608,
+      "as_path": [],
+      "origin_asn": null,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:38:07Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 18106,
+      "as_path": [
+        18106,
+        6939,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:38:11Z",
+      "kind": "withdraw",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 293,
+      "as_path": [],
+      "origin_asn": null,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:38:14Z",
+      "kind": "withdraw",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 47251,
+      "as_path": [],
+      "origin_asn": null,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:38:14Z",
+      "kind": "withdraw",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 328474,
+      "as_path": [],
+      "origin_asn": null,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:38:17Z",
+      "kind": "withdraw",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 18106,
+      "as_path": [],
+      "origin_asn": null,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:38:17Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 18106,
+      "as_path": [
+        18106,
+        6939,
+        3356,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:38:21Z",
+      "kind": "withdraw",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 37989,
+      "as_path": [],
+      "origin_asn": null,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:38:21Z",
+      "kind": "announce",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 23673,
+      "as_path": [
+        23673,
+        55329,
+        4788,
+        6939,
+        20764,
+        12389
+      ],
+      "origin_asn": 12389,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:38:22Z",
+      "kind": "withdraw",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 11708,
+      "as_path": [],
+      "origin_asn": null,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:38:25Z",
+      "kind": "withdraw",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 55720,
+      "as_path": [],
+      "origin_asn": null,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:38:28Z",
+      "kind": "withdraw",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 18106,
+      "as_path": [],
+      "origin_asn": null,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:38:48Z",
+      "kind": "withdraw",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 395152,
+      "as_path": [],
+      "origin_asn": null,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:38:51Z",
+      "kind": "withdraw",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 23673,
+      "as_path": [],
+      "origin_asn": null,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2020-04-01T19:38:57Z",
+      "kind": "withdraw",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 55720,
+      "as_path": [],
+      "origin_asn": null,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:39:10Z",
+      "kind": "withdraw",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 50300,
+      "as_path": [],
+      "origin_asn": null,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2020-04-01T19:39:59Z",
+      "kind": "withdraw",
+      "prefix": "104.27.160.0/21",
+      "peer_asn": 13830,
+      "as_path": [],
+      "origin_asn": null,
+      "collector": "rrc00"
+    }
+  ]
+}

@@ -1,0 +1,114 @@
+{
+  "incident_id": "china-telecom-18min-2010-192.5.18.0/24",
+  "description": "China Telecom (AS23724) briefly announced routes for roughly 50,000 prefixes it does not own, including US government and military address space, redirecting a slice of global traffic through China for about 18 minutes.",
+  "prefix": "192.5.18.0/24",
+  "source": "RIPE RIS / RouteViews raw MRT archives (rrc00, route-views2), 2010-04-08 15:40-16:30 UTC",
+  "ground_truth": "prefix_hijack",
+  "updates": [
+    {
+      "timestamp": "2010-04-08T15:59:50Z",
+      "kind": "announce",
+      "prefix": "192.5.18.0/24",
+      "peer_asn": 6939,
+      "as_path": [
+        6939,
+        4134,
+        23724,
+        23724
+      ],
+      "origin_asn": 23724,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2010-04-08T16:00:46Z",
+      "kind": "announce",
+      "prefix": "192.5.18.0/24",
+      "peer_asn": 6939,
+      "as_path": [
+        6939,
+        15412,
+        6517,
+        22238,
+        22238,
+        22238,
+        22238,
+        22238,
+        22238
+      ],
+      "origin_asn": 22238,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2010-04-08T16:09:38Z",
+      "kind": "announce",
+      "prefix": "192.5.18.0/24",
+      "peer_asn": 1221,
+      "as_path": [
+        1221,
+        4637,
+        4134,
+        23724,
+        23724
+      ],
+      "origin_asn": 23724,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2010-04-08T16:10:18Z",
+      "kind": "announce",
+      "prefix": "192.5.18.0/24",
+      "peer_asn": 4608,
+      "as_path": [
+        4608,
+        1221,
+        4637,
+        4134,
+        23724,
+        23724
+      ],
+      "origin_asn": 23724,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2010-04-08T16:14:45Z",
+      "kind": "announce",
+      "prefix": "192.5.18.0/24",
+      "peer_asn": 1221,
+      "as_path": [
+        1221,
+        4637,
+        3549,
+        6517,
+        22238,
+        22238,
+        22238,
+        22238,
+        22238,
+        22238
+      ],
+      "origin_asn": 22238,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2010-04-08T16:14:52Z",
+      "kind": "announce",
+      "prefix": "192.5.18.0/24",
+      "peer_asn": 4608,
+      "as_path": [
+        4608,
+        1221,
+        4637,
+        3549,
+        6517,
+        22238,
+        22238,
+        22238,
+        22238,
+        22238,
+        22238
+      ],
+      "origin_asn": 22238,
+      "collector": "rrc00"
+    }
+  ]
+}

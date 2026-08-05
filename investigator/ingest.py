@@ -46,10 +46,14 @@ DEFAULT_CATALOG = DATA_DIR / "catalog.json"
 DEFAULT_COLLECTORS = ["rrc00", "route-views2"]
 
 _FILENAME_RE = re.compile(r"updates\.(\d{8})\.(\d{4})\.(gz|bz2)")
+_RIB_FILENAME_RE = re.compile(r"(?:bview|rib)\.(\d{8})\.(\d{4})\.(gz|bz2)")
 _LOOKBACK = timedelta(minutes=20)  # include the file whose interval may straddle `start`
 _MSG_TYPE_UPDATE = 2
 _AFI_IPV4 = 1
 _ATTR_AS_PATH = 2
+_TYPE_TABLE_DUMP_V2 = 13
+_SUBTYPE_PEER_INDEX_TABLE = 1
+_SUBTYPE_RIB_IPV4_UNICAST = 2
 
 
 # --------------------------------------------------------------------------- #
@@ -89,6 +93,43 @@ def _collector_file_urls(collector: str, start: datetime, end: datetime) -> list
             if start - _LOOKBACK <= ts <= end:
                 urls.append(dir_url + fname)
     return sorted(set(urls))
+
+
+def _rib_dir_url(collector: str, month_start: datetime) -> str:
+    if _is_routeviews(collector):
+        return f"http://archive.routeviews.org/{collector}/bgpdata/{month_start:%Y.%m}/RIBS/"
+    return f"https://data.ris.ripe.net/{collector}/{month_start:%Y.%m}/"
+
+
+def _prev_month(dt: datetime) -> datetime:
+    if dt.month == 1:
+        return datetime(dt.year - 1, 12, 1, tzinfo=timezone.utc)
+    return datetime(dt.year, dt.month - 1, 1, tzinfo=timezone.utc)
+
+
+def _nearest_rib_dump_url(collector: str, at: datetime) -> str | None:
+    """The most recent full RIB snapshot at or before `at`. A window-only scan
+    of incremental updates sees nothing for a route that was already stable
+    (no announce/withdraw) going into the window -- which silently hides a
+    real MOAS condition if the legitimate origin's session just hadn't
+    changed recently. The RIB snapshot is what actually fixes that."""
+    for month_start in (datetime(at.year, at.month, 1, tzinfo=timezone.utc), _prev_month(at)):
+        dir_url = _rib_dir_url(collector, month_start)
+        try:
+            listing = _download(dir_url).decode("utf-8", errors="ignore")
+        except urllib.error.URLError as exc:
+            print(f"warning: could not list {dir_url}: {exc}", file=sys.stderr)
+            continue
+        candidates = []
+        for match in _RIB_FILENAME_RE.finditer(listing):
+            fname, date_part, time_part = match.group(0), match.group(1), match.group(2)
+            ts = datetime.strptime(date_part + time_part, "%Y%m%d%H%M").replace(tzinfo=timezone.utc)
+            if ts <= at:
+                candidates.append((ts, dir_url + fname))
+        if candidates:
+            candidates.sort()
+            return candidates[-1][1]
+    return None
 
 
 def _download(url: str, timeout: int = 60) -> bytes:
@@ -152,15 +193,87 @@ def extract_updates(entry_data: dict, target_prefixes: set[str], collector: str)
     return updates
 
 
+def extract_rib_entries(rib_record: dict, target_prefixes: set[str], peer_asns: dict[int, int],
+                          at: datetime, collector: str) -> list[BGPUpdate]:
+    """Pure transform: one parsed TABLE_DUMP_V2 RIB_IPV4_UNICAST record ->
+    zero or more synthetic "announce" BGPUpdate (timestamped at `at`) for any
+    prefix in `target_prefixes` already installed at snapshot time. No I/O, so
+    it's directly unit-testable against a fixture."""
+    if _TYPE_TABLE_DUMP_V2 not in rib_record.get("type", {}):
+        return []
+    if _SUBTYPE_RIB_IPV4_UNICAST not in rib_record.get("subtype", {}):
+        return []
+    prefix = f"{rib_record['prefix']}/{rib_record['length']}"
+    if prefix not in target_prefixes:
+        return []
+
+    updates: list[BGPUpdate] = []
+    for rib_entry in rib_record.get("rib_entries", []):
+        as_path = _flatten_as_path(rib_entry.get("path_attributes", []))
+        if not as_path:
+            continue
+        origin = as_path[-1]
+        peer_asn = peer_asns.get(rib_entry.get("peer_index"), origin)
+        updates.append(BGPUpdate(at, "announce", prefix, peer_asn, tuple(as_path), origin, collector))
+    return updates
+
+
+def fetch_rib_baseline(prefixes: set[str], at: datetime, collector: str) -> list[BGPUpdate]:
+    """Download the nearest full-table RIB dump at/before `at` and extract a
+    synthetic "announce" BGPUpdate for each already-installed route to a
+    target prefix -- the baseline that a window-only incremental scan can
+    miss entirely. Best-effort: returns [] (with a warning) if no dump is
+    found or the download/parse fails, rather than aborting the whole fetch."""
+    url = _nearest_rib_dump_url(collector, at)
+    if url is None:
+        print(f"warning: no RIB dump found for {collector} at/before {at}", file=sys.stderr)
+        return []
+    try:
+        raw = _download(url, timeout=180)
+    except urllib.error.URLError as exc:
+        print(f"warning: failed to fetch RIB dump {url}: {exc}", file=sys.stderr)
+        return []
+
+    mrt = _open_mrt(raw, url)
+    peer_asns: dict[int, int] = {}
+    baseline: list[BGPUpdate] = []
+    for entry in Reader(mrt):
+        d = entry.data
+        if _TYPE_TABLE_DUMP_V2 not in d.get("type", {}):
+            continue
+        if _SUBTYPE_PEER_INDEX_TABLE in d.get("subtype", {}):
+            for i, p in enumerate(d.get("peer_entries", [])):
+                try:
+                    peer_asns[i] = int(p["peer_as"])
+                except (KeyError, ValueError):
+                    continue
+            continue
+        baseline.extend(extract_rib_entries(d, prefixes, peer_asns, at, collector))
+    return baseline
+
+
 def fetch_updates_for_prefixes(
-    prefixes: list[str], start: datetime, end: datetime, collectors: list[str]
+    prefixes: list[str], start: datetime, end: datetime, collectors: list[str],
+    *, include_baseline: bool = True,
 ) -> dict[str, list[BGPUpdate]]:
     """Download + parse every archive file overlapping [start, end] for each
     collector *once*, filtered down to every prefix in `prefixes` in the same
     pass, then grouped back out per prefix. Network + parsing; not unit-tested
-    directly (see `extract_updates` for the tested pure transform)."""
+    directly (see `extract_updates`/`extract_rib_entries` for the tested pure
+    transforms).
+
+    `include_baseline` also pulls the nearest RIB snapshot at/before `start`
+    per collector: incremental updates alone only show *changes*, so a route
+    that was already stable going into the window (the common case) would
+    otherwise never appear at all -- silently hiding a real MOAS condition."""
     target = set(prefixes)
     by_prefix: dict[str, list[BGPUpdate]] = {p: [] for p in prefixes}
+
+    if include_baseline:
+        for collector in collectors:
+            for u in fetch_rib_baseline(target, start, collector):
+                by_prefix[u.prefix].append(u)
+
     for collector in collectors:
         for url in _collector_file_urls(collector, start, end):
             try:
@@ -178,10 +291,13 @@ def fetch_updates_for_prefixes(
 
 
 def fetch_updates(
-    prefix: str, start: datetime, end: datetime, collectors: list[str]
+    prefix: str, start: datetime, end: datetime, collectors: list[str],
+    *, include_baseline: bool = True,
 ) -> list[BGPUpdate]:
     """Single-prefix convenience wrapper around `fetch_updates_for_prefixes`."""
-    return fetch_updates_for_prefixes([prefix], start, end, collectors)[prefix]
+    return fetch_updates_for_prefixes(
+        [prefix], start, end, collectors, include_baseline=include_baseline
+    )[prefix]
 
 
 # --------------------------------------------------------------------------- #
@@ -202,8 +318,10 @@ def build_incident(
     end: datetime,
     collectors: list[str],
     ground_truth: str | None,
+    *,
+    include_baseline: bool = True,
 ) -> Incident:
-    updates = fetch_updates(prefix, start, end, collectors)
+    updates = fetch_updates(prefix, start, end, collectors, include_baseline=include_baseline)
     return Incident(
         incident_id=incident_id,
         description=description,
@@ -222,12 +340,16 @@ def build_incidents_for_prefixes(
     end: datetime,
     collectors: list[str],
     ground_truth: str | None,
+    *,
+    include_baseline: bool = True,
 ) -> dict[str, Incident]:
     """One archive-download pass, one Incident per prefix -- the multi-prefix
     counterpart of `build_incident`, used by the `catalog` CLI command so a
     5-prefix incident doesn't re-fetch the same files 5 times."""
     single = len(prefixes) == 1
-    by_prefix = fetch_updates_for_prefixes(prefixes, start, end, collectors)
+    by_prefix = fetch_updates_for_prefixes(
+        prefixes, start, end, collectors, include_baseline=include_baseline
+    )
     source = _source_note(collectors, start, end)
     incidents: dict[str, Incident] = {}
     for prefix in prefixes:
@@ -317,11 +439,15 @@ def _build_parser() -> argparse.ArgumentParser:
         help="comma-separated RIS rrcNN and/or RouteViews route-viewsX collectors",
     )
     fetch.add_argument("--output", default=None)
+    fetch.add_argument("--no-baseline", action="store_true",
+                        help="skip the RIB-snapshot baseline fetch (faster, but misses "
+                             "any route that was already stable going into the window)")
 
     cat = sub.add_parser("catalog", help="fetch a named incident from the catalog")
     cat.add_argument("name")
     cat.add_argument("--catalog-file", default=str(DEFAULT_CATALOG))
     cat.add_argument("--collectors", default=None, help="override the catalog entry's collectors")
+    cat.add_argument("--no-baseline", action="store_true", help="see `fetch --no-baseline`")
 
     return p
 
@@ -333,7 +459,8 @@ def main(argv: list[str] | None = None) -> int:
         start, end = _parse_ts(args.start), _parse_ts(args.end)
         collectors = [c.strip() for c in args.collectors.split(",") if c.strip()]
         incident = build_incident(
-            args.name, args.description, args.prefix, start, end, collectors, args.ground_truth
+            args.name, args.description, args.prefix, start, end, collectors, args.ground_truth,
+            include_baseline=not args.no_baseline,
         )
         out = Path(args.output) if args.output else DATA_DIR / f"{args.name}.json"
         save_incident(incident, out)
@@ -353,7 +480,8 @@ def main(argv: list[str] | None = None) -> int:
         prefixes = entry["prefixes"]
         single = len(prefixes) == 1
         incidents = build_incidents_for_prefixes(
-            entry["name"], entry.get("description", ""), prefixes, start, end, collectors, ground_truth
+            entry["name"], entry.get("description", ""), prefixes, start, end, collectors, ground_truth,
+            include_baseline=not args.no_baseline,
         )
         for prefix, incident in incidents.items():
             out = incident_output_path(entry["name"], prefix, single=single)

@@ -1,0 +1,181 @@
+{
+  "incident_id": "telekom-malaysia-2015",
+  "description": "Telekom Malaysia (AS4788) leaked roughly 179,000 prefixes -- including RIPE NCC's own 193.0.0.0/21 -- to Level3 (AS3549), which accepted and propagated them globally, causing widespread packet loss and slowdowns for about two hours.",
+  "prefix": "193.0.0.0/21",
+  "source": "RIPE RIS / RouteViews raw MRT archives (rrc00, route-views2), 2015-06-12 08:30-10:45 UTC",
+  "ground_truth": "route_leak",
+  "updates": [
+    {
+      "timestamp": "2015-06-12T09:02:26Z",
+      "kind": "announce",
+      "prefix": "193.0.0.0/21",
+      "peer_asn": 1668,
+      "as_path": [
+        1668,
+        1299,
+        3333
+      ],
+      "origin_asn": 3333,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2015-06-12T09:10:01Z",
+      "kind": "announce",
+      "prefix": "193.0.0.0/21",
+      "peer_asn": 1668,
+      "as_path": [
+        1668,
+        1299,
+        3333
+      ],
+      "origin_asn": 3333,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2015-06-12T09:26:27Z",
+      "kind": "announce",
+      "prefix": "193.0.0.0/21",
+      "peer_asn": 1668,
+      "as_path": [
+        1668,
+        1299,
+        3333
+      ],
+      "origin_asn": 3333,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2015-06-12T09:45:04Z",
+      "kind": "announce",
+      "prefix": "193.0.0.0/21",
+      "peer_asn": 1668,
+      "as_path": [
+        1668,
+        1299,
+        3333
+      ],
+      "origin_asn": 3333,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2015-06-12T10:04:28Z",
+      "kind": "announce",
+      "prefix": "193.0.0.0/21",
+      "peer_asn": 1668,
+      "as_path": [
+        1668,
+        1299,
+        3333
+      ],
+      "origin_asn": 3333,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2015-06-12T10:24:23Z",
+      "kind": "announce",
+      "prefix": "193.0.0.0/21",
+      "peer_asn": 3549,
+      "as_path": [
+        3549,
+        286,
+        1136,
+        3333
+      ],
+      "origin_asn": 3333,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2015-06-12T10:29:41Z",
+      "kind": "announce",
+      "prefix": "193.0.0.0/21",
+      "peer_asn": 3549,
+      "as_path": [
+        3549,
+        286,
+        1136,
+        3333
+      ],
+      "origin_asn": 3333,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2015-06-12T10:31:37Z",
+      "kind": "announce",
+      "prefix": "193.0.0.0/21",
+      "peer_asn": 3549,
+      "as_path": [
+        3549,
+        286,
+        1136,
+        3333
+      ],
+      "origin_asn": 3333,
+      "collector": "rrc00"
+    },
+    {
+      "timestamp": "2015-06-12T10:32:42Z",
+      "kind": "announce",
+      "prefix": "193.0.0.0/21",
+      "peer_asn": 5413,
+      "as_path": [
+        5413,
+        3333
+      ],
+      "origin_asn": 3333,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2015-06-12T10:34:14Z",
+      "kind": "announce",
+      "prefix": "193.0.0.0/21",
+      "peer_asn": 1668,
+      "as_path": [
+        1668,
+        1299,
+        3333
+      ],
+      "origin_asn": 3333,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2015-06-12T10:34:17Z",
+      "kind": "announce",
+      "prefix": "193.0.0.0/21",
+      "peer_asn": 6539,
+      "as_path": [
+        6539,
+        577,
+        1273,
+        3333
+      ],
+      "origin_asn": 3333,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2015-06-12T10:34:58Z",
+      "kind": "announce",
+      "prefix": "193.0.0.0/21",
+      "peer_asn": 3549,
+      "as_path": [
+        3549,
+        286,
+        1136,
+        3333
+      ],
+      "origin_asn": 3333,
+      "collector": "route-views2"
+    },
+    {
+      "timestamp": "2015-06-12T10:42:39Z",
+      "kind": "announce",
+      "prefix": "193.0.0.0/21",
+      "peer_asn": 37100,
+      "as_path": [
+        37100,
+        3333
+      ],
+      "origin_asn": 3333,
+      "collector": "route-views2"
+    }
+  ]
+}
