@@ -52,16 +52,38 @@ measuring against real data, not asserted in a design doc:
   permanent regression test
   (`test_zero_evidence_does_not_beat_genuine_mixed_evidence`).
 
+- **Real model narration finds citation gaps synthetic tests never could.**
+  `--score-citations` had only ever scored `NoOpBackend`'s echoed prompt or
+  hand-written fixtures — both trivially "cite" their own source text. Pointed
+  at actual generated prose for the first time (`claude-haiku-4-5` hosted,
+  `llama3.1:8b` local via Ollama, same incident, same question): the hosted
+  run scored 100% citation precision but only 60% recall — two of five
+  generated claims had no supporting passage anywhere in the corpus, i.e. the
+  model editorialized past what its own cited source actually said. The local
+  run did worse and differently: 33%/33%, with both a retriever error *and* a
+  generator error (a claim the corpus could have supported but that didn't get
+  cited). Neither failure mode is visible until real model output — with all
+  its variance across providers — is actually in the loop; see
+  [Real LLM narration](#real-llm-narration-hosted--local) below.
+
 ## See it work: the 2008 Pakistan Telecom / YouTube hijack
 
 Real MRT archive data (RIPE RIS + RouteViews, 2008-02-24 18:47–20:54 UTC) for
 the incident where Pakistan Telecom (AS17557) originated YouTube's
 `208.65.153.0/24` in response to a government block order, and the
 more-specific route leaked globally via PCCW (AS9491), hijacking YouTube
-traffic worldwide. No synthetic data, no cherry-picked prompt — this is
-`investigate pakistan-youtube-2008 --seek-contradictions` after
-[install](#install), trimmed only for length (evidence lists and the raw
-agent-loop prompt are collapsed with `…`):
+traffic worldwide. No synthetic data, no cherry-picked prompt, and — unlike
+earlier revisions of this README — a **real hosted model** (`claude-haiku-4-5`
+via LiteLLM), not the no-LLM fallback. This is
+
+```bash
+INVESTIGATOR_MODEL=claude-haiku-4-5 investigate pakistan-youtube-2008 \
+  --question "Using the reference corpus, explain why a prefix (208.65.153.0/24) being announced by two distinct origin ASNs (AS17557 and AS36561) is treated as a strong indicator of a hijack or misconfiguration, and what validation step is recommended." \
+  --seek-contradictions --score-citations
+```
+
+after [install](#install) with the `llm` extra, trimmed only for length
+(evidence lists are collapsed with `…`):
 
 ```
 ## Observations (computed from evidence)
@@ -76,19 +98,43 @@ agent-loop prompt are collapsed with `…`):
     - …and 58 more
 
 ## Explanation (grounded in reference docs)
-[no-LLM mode] The structured findings and numbered sources below are shown
-verbatim. Configure an LLM backend (INVESTIGATOR_MODEL=...) for
-natural-language narration that cites these same sources. …
+According to RFC 7908 §4, a prefix normally originated by a single AS
+appearing to be originated by a different AS creates a "Multiple Origin AS
+(MOAS) condition" [1]. While some MOAS cases are legitimate (such as anycast
+or multi-homing with multiple origins), an unexpected change in origin AS
+for a prefix is treated as a strong indicator of a prefix hijack or
+misconfiguration because it violates the normal expectation that a given
+prefix should have a single authoritative origin [1].
 
-Source 1 (RFC 7908 §4):
-4. Origin and Hijack Considerations … an unexpected change in origin AS for
-a prefix is a strong indicator of a prefix hijack or misconfiguration and
-warrants validation against RPKI Route Origin Authorizations (ROAs) and IRR
-data.
-…
+In the case of 208.65.153.0/24 being announced by both AS17557 and AS36561,
+this unexpected dual-origin scenario warrants validation. The recommended
+validation steps are to check the announcements against "RPKI Route Origin
+Authorizations (ROAs) and IRR data" [1]. …
 
 Sources:
   [1] RFC 7908 §4   [2] RFC 7908   [3] RFC 7908 §2   [4] RFC 4271 §9.1.2
+
+Citation-correctness scorecard (checker: lexical_overlap):
+  claims: 5
+  citation precision: 100%
+  citation recall: 60%
+  retriever errors (no corpus support found): 2
+  generator errors (corpus had support, not cited): 0
+  [OK] [1] According to RFC 7908 §4, a prefix normally originated by a
+       single AS appearing to be originated by a different AS creates a
+       "Multiple Origin AS (MOAS) condition" .
+  [OK] [1] While some MOAS cases are legitimate … an unexpected change in
+       origin AS … is treated as a strong indicator of a prefix hijack or
+       misconfiguration …
+  [MISS] (uncited) In the case of 208.65.153.0/24 being announced by both
+       AS17557 and AS36561, this unexpected dual-origin scenario warrants
+       validation.
+        -> retriever error
+  [OK] [1] The recommended validation steps are to check the announcements
+       against "RPKI Route Origin Authorizations (ROAs) and IRR data" .
+  [MISS] (uncited) These validation mechanisms allow operators to determine
+       whether both origin ASNs are legitimately authorized …
+        -> retriever error
 
 Competing considerations (verified counter-evidence, not asserted):
 
@@ -113,15 +159,73 @@ prefix. (asserted on relevance-tier evidence: 2 vs 2 contradicting;
 conservative strict-entailment count: 1)
 ```
 
-Real archive data → deterministic MOAS detection → RFC-cited explanation →
-adversarial counter-evidence search (two of MOAS's four candidate sources
-got flagged as *refuting* it) → a competing-hypothesis verdict that survives
-that contradiction anyway, reported against **two labeled evidence bars**
-("strictly entailed" and "topically relevant") rather than one bar loosened
-until it passes. Measured, not cherry-picked: `investigator/evaluate.py
---ach` runs this same pipeline over all 13 real catalog incidents and
-reports **3 correct assertions, 0 false assertions, 10 honest
+Real archive data → deterministic MOAS detection → real model narration
+(hosted, via LiteLLM) → citation-correctness scoring over that generated
+prose → adversarial counter-evidence search (two of MOAS's four candidate
+sources got flagged as *refuting* it) → a competing-hypothesis verdict that
+survives that contradiction anyway, reported against **two labeled evidence
+bars** ("strictly entailed" and "topically relevant") rather than one bar
+loosened until it passes. Measured, not cherry-picked: `investigator/evaluate.py
+--ach` runs the detection + retrieval pipeline over all 13 real catalog
+incidents and reports **3 correct assertions, 0 false assertions, 10 honest
 abstentions** — see [What it does](#what-it-does--and-deliberately-does-not--do-yet).
+The 100%/60% precision/recall above is a single incident's numbers, not that
+harness — see [Real LLM narration](#real-llm-narration-hosted--local) for
+what changed once real model output replaced the no-LLM fallback.
+
+### Real LLM narration (hosted + local)
+
+The transcript above is real, but it isn't the whole story: the same
+question, same incident, same corpus, run a second time against a **local**
+backend (`ollama/llama3.1:8b`, no API key, no network egress) via
+`INVESTIGATOR_MODEL=ollama/llama3.1:8b`. Both backends are exercised by
+`investigator/llm.py`'s `LiteLLMBackend` — this is provider parity actually
+run, not just claimed:
+
+```
+Citation-correctness scorecard (checker: lexical_overlap):
+  claims: 3
+  citation precision: 33%
+  citation recall: 33%
+  retriever errors (no corpus support found): 1
+  generator errors (corpus had support, not cited): 1
+  [MISS] [1] A prefix being announced by two distinct origin ASNs is
+       treated as a strong indicator of a hijack or misconfiguration
+       because it violates the Multiple Origin Autonomous System (MOAS)
+       condition .
+        -> retriever error
+  [MISS] (uncited) According to RFC 7908 §4, an unexpected change in
+       origin AS for a prefix is a strong indicator of a prefix hijack or
+       misconfiguration.
+        -> generator error
+  [OK] [1], [1] The recommended validation step is to check RPKI Route
+       Origin Authorizations (ROAs) and IRR data .
+```
+
+| | `claude-haiku-4-5` (hosted) | `llama3.1:8b` (local, Ollama) |
+|---|---|---|
+| Search rounds used | 1 (answered from the seed search) | 3 (used the full `--max-search-rounds` budget) |
+| Claims made | 5 | 3 |
+| Citation precision | 100% | 33% |
+| Citation recall | 60% | 33% |
+| Retriever errors | 2 | 1 |
+| Generator errors | 0 | 1 |
+
+Both runs abstained rather than hallucinated when they lacked grounding (an
+earlier attempt with a generic question — "why did connectivity change?" —
+had *both* models correctly abstain outright, because the agent's prompt
+only carries retrieved RFC text and the question, not the analyzer's
+specific findings; a sharper, evidence-referencing question was needed
+before either model would commit to a claim at all). Once they did commit,
+neither backend was fully grounded: the hosted model never miscited a
+source but asserted two claims the corpus doesn't actually support
+(precision without recall); the local model did both worse — one claim with
+no corpus support at all, and a second where the corpus *did* have a
+supporting passage that never got cited. This is exactly the differentiator
+Phase 3 exists to measure, and it was invisible until real model output —
+not `NoOpBackend`'s echoed prompt, not a hand-written fixture — was actually
+scored. Treat any citation-correctness number elsewhere in this README that
+predates this run as provisional.
 
 ## Install
 
@@ -205,8 +309,11 @@ source.
 
 Set `INVESTIGATOR_MODEL` (+ a provider key, see `.env.example`, needs the
 `llm` extra) to turn on natural-language narration that cites the same
-numbered sources. Without it, the tool runs in no-LLM mode and shows the
-grounded findings and sources verbatim, as in the example above.
+numbered sources — verified end-to-end against both a hosted model
+(`claude-haiku-4-5`) and a local one (`ollama/llama3.1:8b`, no key, no
+network egress); see [Real LLM narration](#real-llm-narration-hosted--local).
+Without it, the tool runs in no-LLM mode and shows the grounded findings and
+sources verbatim.
 
 ## What it does — and deliberately does not — do (yet)
 
