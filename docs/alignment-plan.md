@@ -32,12 +32,12 @@ Four buckets:
 | Plan item | Status | Bucket |
 |---|---|---|
 | Phase 0: LiteLLM routes to API model *and* local Ollama | ✅ Done — `claude-haiku-4-5` (hosted) + `ollama/llama3.1:8b` (local), README updated | Correctness |
-| Phase 3: citation precision/recall over generated claims | Only run on NoOp output + fixtures | Correctness |
-| Phase 3: ALCE-style recall | Definition doesn't match ALCE | Correctness |
+| Phase 3: citation precision/recall over generated claims | ✅ Done — same item-1 work; now scored against real narration, twice (2-RFC and 16-RFC corpus) | Correctness |
+| Phase 3: ALCE-style recall | ✅ Done — `scorer.py` matches ALCE's concatenated-source definitions | Correctness |
 | Phase 3/4: one checker doing two different jobs | Conflated; explains a documented bug | Correctness |
-| Phase 1: full RFC corpus | 2 hand-picked excerpts | Correctness |
+| Phase 1: full RFC corpus | ✅ Done — 16 RFCs, 945 chunks; results mixed, see docs/corpus-expansion-results.md | Correctness |
 | Plan caveats: re-verify upstream facts | Partly done below | Correctness |
-| Phase 1: hybrid BM25 + dense retrieval | BM25 only | Missing scope |
+| Phase 1: hybrid BM25 + dense retrieval | BM25 only; corpus expansion made this gap *more* visible, not less | Missing scope |
 | Phase 2: second data source proves the abstraction | Claimed, never demonstrated | Missing scope |
 | Phase 3: **Bespoke-MiniCheck-7B primary** | Not used | **Deviate — plan is wrong** |
 | Phase 4: NLI-filter contradictions with the same stack | Same checker as Phase 3 | **Deviate — plan is wrong** |
@@ -45,7 +45,8 @@ Four buckets:
 | Phase 1: LlamaIndex + Chroma/Qdrant | Hand-rolled BM25 + citation engine | Defend |
 | Phase 2: YAML toolsets | TOML toolsets | Defend |
 | Data: PyBGPStream | mrtparse + stdlib, real MRT archives | Defend (better) |
-| Phase 6 | Not started | Correctly deferred |
+| Phase 6: RFC corpus | ✅ Done (this item) | Correctly deferred, now closed |
+| Phase 6: hybrid retrieval, provenance graph, live feed | Not started | Correctly deferred |
 
 ---
 
@@ -236,6 +237,16 @@ Expect ACH results to move. The two-tier evidence bar exists because hedged
 RFC text couldn't strictly entail incident-specific claims; more corpus may or
 may not change that, and either outcome is worth writing up.
 
+**Done** — all three "three things break on real RFC text" issues above
+fixed and tested (`investigator/retrieval/corpus.py`, `tests/test_corpus.py`,
+`tests/test_citations.py`); all 16 target RFCs fetched and swapped in for
+the 2 hand-picked excerpts. Results moved, and not uniformly for the better:
+[docs/corpus-expansion-results.md](corpus-expansion-results.md) — a new
+false ACH assertion (0/3 → 1/4) and worse local-model citation-correctness
+on the flagship demo (33%/33% → 0%/0%), alongside the expected reduction in
+uninformative abstentions. Reported as measured, per this section's own
+instruction, not adjusted after the fact.
+
 ### 5. Verification pass on the plan's own caveats
 
 The plan closes by noting web tools were unavailable and that every
@@ -326,10 +337,10 @@ rather than more RFC prose.
 | # | Item | Est. | Notes |
 |---|---|---|---|
 | 1 | Run the LLM path, regenerate README demo + scorecard | ✅ done | Unblocks honest Phase 3 numbers |
-| 6 | Housekeeping (line endings, extras) | 1 hour | — |
-| 2 | ALCE definition fix | 0.5 day | Do before re-measuring |
-| 4a | Baseline harness numbers **before** corpus change | 1 hour | Blocks 4b |
-| 4b | Corpus expansion + cleaner + scale-invariant floor | 2–3 days | Blocks 7 |
+| 6 | Housekeeping (line endings, extras) | ✅ done | — |
+| 2 | ALCE definition fix | ✅ done | Do before re-measuring |
+| 4a | Baseline harness numbers **before** corpus change | ✅ done | Blocks 4b |
+| 4b | Corpus expansion + cleaner + scale-invariant floor | ✅ done | Blocks 7; see docs/corpus-expansion-results.md |
 | 3 | Split support vs. contradiction checkers | 1–2 days | Highest-signal single change |
 | 5 | Finish verification pass | 1 hour | — |
 | 7 | Hybrid dense retrieval, if measurement justifies | 2–3 days | — |

@@ -14,8 +14,8 @@ can't ground a claim in a source.
 
 ## What I found
 
-Three things worth reading even if you skip the code — each found by actually
-measuring against real data, not asserted in a design doc:
+Worth reading even if you skip the code — each found by actually measuring
+against real data, not asserted in a design doc:
 
 - **RFC citations are definitional grounding, not case-specific proof.**
   Measuring the ACH system against all 13 real catalog incidents first
@@ -56,15 +56,33 @@ measuring against real data, not asserted in a design doc:
   `--score-citations` had only ever scored `NoOpBackend`'s echoed prompt or
   hand-written fixtures — both trivially "cite" their own source text. Pointed
   at actual generated prose for the first time (`claude-haiku-4-5` hosted,
-  `llama3.1:8b` local via Ollama, same incident, same question): the hosted
-  run scored 100% citation precision but only 60% recall — two of five
-  generated claims had no supporting passage anywhere in the corpus, i.e. the
-  model editorialized past what its own cited source actually said. The local
-  run did worse and differently: 33%/33%, with both a retriever error *and* a
-  generator error (a claim the corpus could have supported but that didn't get
-  cited). Neither failure mode is visible until real model output — with all
-  its variance across providers — is actually in the loop; see
-  [Real LLM narration](#real-llm-narration-hosted--local) below.
+  `llama3.1:8b` local via Ollama, same incident, same question, against the
+  2-RFC corpus): the hosted run scored 100% citation precision but only 60%
+  recall — two of five generated claims had no supporting passage anywhere in
+  the corpus, i.e. the model editorialized past what its own cited source
+  actually said. The local run did worse and differently: 33%/33%, with both
+  a retriever error *and* a generator error (a claim the corpus could have
+  supported but that didn't get cited). Neither failure mode is visible until
+  real model output — with all its variance across providers — is actually in
+  the loop.
+
+- **A bigger RFC corpus is not an unconditional improvement — measured, not
+  assumed.** Expanding from 2 hand-picked excerpts to 16 full RFCs (945
+  chunks) was expected to reduce abstentions. It did, for some incidents —
+  but it also produced this project's **first false ACH assertion** (0% → 25%
+  false-assertion rate) and made the flagship demo's *local* model narration
+  measurably worse (33%/33% citation precision/recall → 0%/0%), because a
+  larger, topically denser corpus gives a weaker model more plausible-
+  sounding material to draw from without its grounding discipline improving
+  to match — it name-drops real RFC sections that don't actually say what its
+  sentences claim. The hosted model, given the same larger corpus, abstained
+  outright on the same question it answered confidently before. All three are
+  diagnosed, not just reported, in
+  [docs/corpus-expansion-results.md](docs/corpus-expansion-results.md) — the
+  false assertion traces to a pre-existing detection-layer gap the bigger
+  corpus exposed rather than caused. See
+  [Real LLM narration](#real-llm-narration-hosted--local) below for the
+  current transcript.
 
 ## See it work: the 2008 Pakistan Telecom / YouTube hijack
 
@@ -72,18 +90,17 @@ Real MRT archive data (RIPE RIS + RouteViews, 2008-02-24 18:47–20:54 UTC) for
 the incident where Pakistan Telecom (AS17557) originated YouTube's
 `208.65.153.0/24` in response to a government block order, and the
 more-specific route leaked globally via PCCW (AS9491), hijacking YouTube
-traffic worldwide. No synthetic data, no cherry-picked prompt, and — unlike
-earlier revisions of this README — a **real hosted model** (`claude-haiku-4-5`
-via LiteLLM), not the no-LLM fallback. This is
+traffic worldwide. No synthetic data, no cherry-picked prompt. This is
 
 ```bash
-INVESTIGATOR_MODEL=claude-haiku-4-5 investigate pakistan-youtube-2008 \
+INVESTIGATOR_MODEL=ollama/llama3.1:8b investigate pakistan-youtube-2008 \
   --question "Using the reference corpus, explain why a prefix (208.65.153.0/24) being announced by two distinct origin ASNs (AS17557 and AS36561) is treated as a strong indicator of a hijack or misconfiguration, and what validation step is recommended." \
   --seek-contradictions --score-citations
 ```
 
-after [install](#install) with the `llm` extra, trimmed only for length
-(evidence lists are collapsed with `…`):
+after [install](#install) with the `llm` extra, against the full 16-RFC
+corpus (see [Real incidents](#real-incidents-ripe-ris--routeviews)), trimmed
+only for length (evidence lists are collapsed with `…`):
 
 ```
 ## Observations (computed from evidence)
@@ -98,134 +115,125 @@ after [install](#install) with the `llm` extra, trimmed only for length
     - …and 58 more
 
 ## Explanation (grounded in reference docs)
-According to RFC 7908 §4, a prefix normally originated by a single AS
-appearing to be originated by a different AS creates a "Multiple Origin AS
-(MOAS) condition" [1]. While some MOAS cases are legitimate (such as anycast
-or multi-homing with multiple origins), an unexpected change in origin AS
-for a prefix is treated as a strong indicator of a prefix hijack or
-misconfiguration because it violates the normal expectation that a given
-prefix should have a single authoritative origin [1].
-
-In the case of 208.65.153.0/24 being announced by both AS17557 and AS36561,
-this unexpected dual-origin scenario warrants validation. The recommended
-validation steps are to check the announcements against "RPKI Route Origin
-Authorizations (ROAs) and IRR data" [1]. …
+The presence of a prefix (208.65.153.0/24) being announced by two distinct
+origin ASNs (AS17557 and AS36561) is treated as a strong indicator of a
+hijack or misconfiguration because it violates the security guarantees
+provided by BGPsec when used in conjunction with origin validation
+[RFC 8205 §8.1]. Specifically, according to RFC 8205 §4.1, a BGPsec speaker
+should only originate a BGPsec UPDATE message advertising a route for a
+given prefix if there exists a valid ROA authorizing the BGPsec speaker's AS
+to originate routes to this prefix [RFC 6482]. …
 
 Sources:
-  [1] RFC 7908 §4   [2] RFC 7908   [3] RFC 7908 §2   [4] RFC 4271 §9.1.2
+  [1] RFC 8206 §3.1   [2] RFC 8205 §4.1   [3] RFC 6811 §2.1   [4] RFC 8205 §8.1
 
 Citation-correctness scorecard (checker: lexical_overlap):
-  claims: 5
-  citation precision: 100%
-  citation recall: 60%
-  retriever errors (no corpus support found): 2
-  generator errors (corpus had support, not cited): 0
-  [OK] [1] According to RFC 7908 §4, a prefix normally originated by a
-       single AS appearing to be originated by a different AS creates a
-       "Multiple Origin AS (MOAS) condition" .
-  [OK] [1] While some MOAS cases are legitimate … an unexpected change in
-       origin AS … is treated as a strong indicator of a prefix hijack or
-       misconfiguration …
-  [MISS] (uncited) In the case of 208.65.153.0/24 being announced by both
-       AS17557 and AS36561, this unexpected dual-origin scenario warrants
-       validation.
+  claims: 4
+  citation precision: n/a
+  citation recall: 0%
+  retriever errors (no corpus support found): 3
+  generator errors (corpus had support, not cited): 1
+  [MISS] (uncited) The presence of a prefix … is treated as a strong
+       indicator of a hijack or misconfiguration because it violates the
+       security guarantees provided by BGPsec …
         -> retriever error
-  [OK] [1] The recommended validation steps are to check the announcements
-       against "RPKI Route Origin Authorizations (ROAs) and IRR data" .
-  [MISS] (uncited) These validation mechanisms allow operators to determine
-       whether both origin ASNs are legitimately authorized …
+  [MISS] (uncited) Specifically, according to RFC 8205 §4.1, a BGPsec
+       speaker should only originate … if there exists a valid ROA
+       authorizing … [RFC 6482].
+        -> generator error
+  [MISS] (uncited) The presence of two distinct origin ASNs indicates that
+       either one or both … have not been authorized … to originate route
+       advertisements for the given prefix …
+        -> retriever error
+  [MISS] (uncited) This is further supported by RFC 6811 §2.1, which
+       illustrates a procedure for validating prefixes …
         -> retriever error
 
 Competing considerations (verified counter-evidence, not asserted):
 
 [MOAS] 2 origin ASNs observed for a single prefix.
   Counter-evidence found (verified by entailment checker):
-    - RFC 7908 §3
-    - RFC 4271 §9.1.2
+    - RFC 8206 §1.2
+    - RFC 8206 §3
   Supporting evidence (strict entailment):
-    - RFC 7908 §4
-  Additional topically-relevant evidence (relevance tier only, not strictly entailed):
-    - RFC 4271 §9.2
+    - RFC 6811 §2.1
+    - RFC 7454 §6.1.2.2
 
 ACH ranking (least-refuted first):
   1. [MOAS] 2 origin ASNs observed for a single prefix.
-     -- 2 topically-relevant (1 strictly entailed), 2 contradicting
+     -- 2 topically-relevant (2 strictly entailed), 2 contradicting
   2. [ASPathLoop] 10 announcement(s) with a repeated ASN in AS_PATH.
-     -- 3 topically-relevant (0 strictly entailed), 1 contradicting
+     -- 1 topically-relevant (1 strictly entailed), 3 contradicting
   3. [RouteLeak] 1 new transit AS(es) appeared mid-window, origin unchanged.
-     -- 1 topically-relevant (0 strictly entailed), 2 contradicting
+     -- 0 topically-relevant (0 strictly entailed), 4 contradicting
 Verdict: leading hypothesis is [MOAS] 2 origin ASNs observed for a single
 prefix. (asserted on relevance-tier evidence: 2 vs 2 contradicting;
-conservative strict-entailment count: 1)
+conservative strict-entailment count: 2)
 ```
 
+This transcript is shown warts and all, on purpose: the detection and ACH
+layers are still exactly right (MOAS, correctly, same verdict as the 2-RFC
+corpus) but the local model's narration is **not** — it reads fluently and
+cites four real RFC sections, and every single one of those citations is
+wrong (`0%` recall). This is precisely the failure `--score-citations`
+exists to catch, and it's a materially worse result than this same command
+produced against the smaller 2-RFC corpus (33%/33%) — a bigger, more
+topically diverse corpus gave the model more plausible-sounding material to
+draw from without its grounding discipline improving to match. See
+[Real LLM narration](#real-llm-narration-hosted--local) for the hosted-model
+comparison (which abstained outright on this exact question) and
+[docs/corpus-expansion-results.md](docs/corpus-expansion-results.md) for the
+full diagnosis, including why this is being shown here rather than swapped
+for a more flattering question.
+
 Real archive data → deterministic MOAS detection → real model narration
-(hosted, via LiteLLM) → citation-correctness scoring over that generated
-prose → adversarial counter-evidence search (two of MOAS's four candidate
-sources got flagged as *refuting* it) → a competing-hypothesis verdict that
-survives that contradiction anyway, reported against **two labeled evidence
-bars** ("strictly entailed" and "topically relevant") rather than one bar
-loosened until it passes. Measured, not cherry-picked: `investigator/evaluate.py
---ach` runs the detection + retrieval pipeline over all 13 real catalog
-incidents and reports **3 correct assertions, 0 false assertions, 10 honest
-abstentions** — see [What it does](#what-it-does--and-deliberately-does-not--do-yet).
-The 100%/60% precision/recall above is a single incident's numbers, not that
-harness — see [Real LLM narration](#real-llm-narration-hosted--local) for
-what changed once real model output replaced the no-LLM fallback.
+(local, via LiteLLM/Ollama) → citation-correctness scoring that catches the
+narration's ungrounded citations → adversarial counter-evidence search (two
+of MOAS's four candidate sources got flagged as *refuting* it) → a
+competing-hypothesis verdict that survives that contradiction anyway,
+reported against **two labeled evidence bars** ("strictly entailed" and
+"topically relevant") rather than one bar loosened until it passes.
+Measured, not cherry-picked: `investigator/evaluate.py --ach` runs the
+detection + retrieval pipeline over all 13 real catalog incidents and
+reports **3 correct assertions, 1 false assertion, 9 honest abstentions**
+against the expanded corpus (was 3/0/10 against the 2-RFC corpus) — see
+[What it does](#what-it-does--and-deliberately-does-not--do-yet) and
+[docs/corpus-expansion-results.md](docs/corpus-expansion-results.md) for the
+diagnosed false assertion.
 
 ### Real LLM narration (hosted + local)
 
-The transcript above is real, but it isn't the whole story: the same
-question, same incident, same corpus, run a second time against a **local**
-backend (`ollama/llama3.1:8b`, no API key, no network egress) via
-`INVESTIGATOR_MODEL=ollama/llama3.1:8b`. Both backends are exercised by
-`investigator/llm.py`'s `LiteLLMBackend` — this is provider parity actually
-run, not just claimed:
+The transcript above is the local model; the same question, same incident,
+same corpus, run against a **hosted** backend (`claude-haiku-4-5` via
+LiteLLM) behaves completely differently: it **abstains outright**, where
+against the smaller 2-RFC corpus it answered confidently (100%/60%
+precision/recall). With more, more topically diffuse sources retrieved for
+this exact question, the model chose `FINAL: INSUFFICIENT EVIDENCE` over
+asserting from what it retrieved — arguably the right call given what it
+saw, but it means there's no hosted narration to show here anymore. Both
+backends are exercised by `investigator/llm.py`'s `LiteLLMBackend` — this is
+provider parity actually run, not just claimed, and provider variance is
+itself part of what's being measured:
 
-```
-Citation-correctness scorecard (checker: lexical_overlap):
-  claims: 3
-  citation precision: 33%
-  citation recall: 33%
-  retriever errors (no corpus support found): 1
-  generator errors (corpus had support, not cited): 1
-  [MISS] [1] A prefix being announced by two distinct origin ASNs is
-       treated as a strong indicator of a hijack or misconfiguration
-       because it violates the Multiple Origin Autonomous System (MOAS)
-       condition .
-        -> retriever error
-  [MISS] (uncited) According to RFC 7908 §4, an unexpected change in
-       origin AS for a prefix is a strong indicator of a prefix hijack or
-       misconfiguration.
-        -> generator error
-  [OK] [1], [1] The recommended validation step is to check RPKI Route
-       Origin Authorizations (ROAs) and IRR data .
-```
+| | 2-RFC corpus: `claude-haiku-4-5` | 2-RFC corpus: `llama3.1:8b` | 16-RFC corpus: `claude-haiku-4-5` | 16-RFC corpus: `llama3.1:8b` |
+|---|---|---|---|---|
+| Outcome | answered | answered | **abstained** | answered |
+| Claims made | 5 | 3 | 0 | 4 |
+| Citation precision | 100% | 33% | n/a | n/a (0 entailed) |
+| Citation recall | 60% | 33% | n/a | **0%** |
 
-| | `claude-haiku-4-5` (hosted) | `llama3.1:8b` (local, Ollama) |
-|---|---|---|
-| Search rounds used | 1 (answered from the seed search) | 3 (used the full `--max-search-rounds` budget) |
-| Claims made | 5 | 3 |
-| Citation precision | 100% | 33% |
-| Citation recall | 60% | 33% |
-| Retriever errors | 2 | 1 |
-| Generator errors | 0 | 1 |
-
-Both runs abstained rather than hallucinated when they lacked grounding (an
-earlier attempt with a generic question — "why did connectivity change?" —
-had *both* models correctly abstain outright, because the agent's prompt
-only carries retrieved RFC text and the question, not the analyzer's
-specific findings; a sharper, evidence-referencing question was needed
-before either model would commit to a claim at all). Once they did commit,
-neither backend was fully grounded: the hosted model never miscited a
-source but asserted two claims the corpus doesn't actually support
-(precision without recall); the local model did both worse — one claim with
-no corpus support at all, and a second where the corpus *did* have a
-supporting passage that never got cited. This is exactly the differentiator
-Phase 3 exists to measure, and it was invisible until real model output —
-not `NoOpBackend`'s echoed prompt, not a hand-written fixture — was actually
-scored. Treat any citation-correctness number elsewhere in this README that
-predates this run as provisional.
+Neither backend was fully grounded even against the small corpus (the hosted
+model asserted two claims the corpus didn't support; the local model did
+worse, missing a claim entirely and failing to cite a passage that would
+have supported another). Against the expanded corpus, the hosted model
+became *more* conservative and the local model became *less* grounded while
+sounding more confident — two different, both real, reactions to the same
+change in retrieval breadth. This is exactly the differentiator Phase 3
+exists to measure, and it was invisible until real model output — not
+`NoOpBackend`'s echoed prompt, not a hand-written fixture — was actually
+scored, twice, against two different corpus sizes. See
+[docs/corpus-expansion-results.md](docs/corpus-expansion-results.md) for the
+full before/after and diagnosis.
 
 ## Install
 
@@ -349,30 +357,46 @@ On top of that, competing-hypothesis (ACH) reasoning
 analyzer findings by Heuer's ACH method (fewest refuted first, not most
 confirmed) and abstains rather than asserting when no hypothesis clears a
 real evidence bar. **Measured against the real 13-incident catalog
-(`investigator/evaluate.py --ach`), not left as an untested claim, twice:**
-first, a real ranking-rule bug was found and fixed (a hypothesis with zero
-evidence was beating one with genuine mixed evidence) — after which the
-system correctly abstained on all 13 real incidents rather than asserting
-anything, a legitimate but weak result: RFC citations are hedged/
+(`investigator/evaluate.py --ach`), not left as an untested claim, three
+times:** first, a real ranking-rule bug was found and fixed (a hypothesis
+with zero evidence was beating one with genuine mixed evidence) — after
+which the system correctly abstained on all 13 real incidents rather than
+asserting anything, a legitimate but weak result: RFC citations are hedged/
 definitional grounding, not case-specific logical proof, and a strict
-entailment bar mostly can't clear that distinction against the current
-2-file corpus. Second, a **two-tier evidence bar** was added on top: ACH's
-assert/abstain gate now compares contradicting evidence against a
-*relevance* tier (on-topic, checker-verified, even if short of strict
-entailment) instead of the strict tier alone, while still reporting the
-strict count alongside every verdict as the conservative cross-check — two
-labeled bars, not one loosened until it passes. Re-measured: **3 correct
-assertions, 0 false assertions, 10 honest abstentions** (the [example
-above](#see-it-work-the-2008-pakistan-telecom--youtube-hijack) is one of
-the 3). See `docs/design.md`'s Phase 5 section for the full diagnosis and
-the two-tier follow-up.
+entailment bar mostly can't clear that distinction against a 2-file corpus.
+Second, a **two-tier evidence bar** was added on top: ACH's assert/abstain
+gate now compares contradicting evidence against a *relevance* tier
+(on-topic, checker-verified, even if short of strict entailment) instead of
+the strict tier alone, while still reporting the strict count alongside
+every verdict as the conservative cross-check — two labeled bars, not one
+loosened until it passes. Re-measured against the 2-file corpus: **3
+correct assertions, 0 false assertions, 10 honest abstentions**. Third,
+after expanding to the full 16-RFC corpus (below): **3 correct assertions,
+1 false assertion, 9 honest abstentions** — a real, diagnosed regression
+(not silently absorbed into the earlier number), traced to a pre-existing
+detection-layer gap the bigger corpus exposed rather than caused. See
+`docs/design.md`'s Phase 5 section and
+[docs/corpus-expansion-results.md](docs/corpus-expansion-results.md) for
+the full diagnosis at each stage.
 
-**Does not (Phase 6, effort-gated):** a bigger/more specific RFC corpus (the
-change most likely to grow past 3/13 — most of the remaining 10 abstentions
-are "no evidence found at all" against the small corpus, not a contradiction
-problem the two-tier bar addresses), hybrid dense retrieval, a
-claims→sources provenance graph, live BGP feed integration. See
-[`docs/design.md`](docs/design.md).
+**Also does (as of the corpus expansion):** a bigger, topically-focused RFC
+corpus — 16 full RFCs (4271, 4272, 7908, 9234, 8212, 7454, 6811, 6480, 8205,
+8206, 8207, 4760, 1997, 4456, 5065, 2439) instead of 2 hand-picked excerpts,
+945 chunks instead of a handful. This surfaced two real bugs only visible
+against real RFC text (a section-header regex that mislabeled Table-of-
+Contents entries, and a preamble-skip that ate an entire RFC's body when it
+used pre-2000-style unnumbered headings — see `investigator/retrieval/corpus.py`)
+and required recalibrating the relevance floor to be scale-invariant rather
+than an absolute BM25 score (`CitationEngine.min_score_fraction`). The
+result was **not** an unconditional improvement — see
+[docs/corpus-expansion-results.md](docs/corpus-expansion-results.md) for the
+false-assertion regression and the LLM-narration degradation this exposed,
+reported honestly rather than adjusted after the fact.
+
+**Does not (Phase 6, effort-gated):** hybrid BM25+dense retrieval (the
+retrieval-precision gap the corpus expansion made *more* visible, not
+less — see the corpus-expansion results doc), a claims→sources provenance
+graph, live BGP feed integration. See [`docs/design.md`](docs/design.md).
 
 ## Architecture
 
@@ -415,9 +439,11 @@ investigator/
 data/
   incidents/               # sample incident JSON (synthetic) + real, ingested ones
     catalog.json            # documented historical incidents (ground truth, verify before trusting)
-  rfcs/                     # condensed RFC excerpts (swap for full IETF text)
+  rfcs/                     # 16 full IETF RFCs (rfc-editor.org), cleaned + chunked at load time
 tests/                     # analyzer + toolset + retrieval/abstention/contradiction + ach + agent + ingest/evaluate/evaluation/cli tests
 docs/design.md
+docs/alignment-plan.md      # delta vs. the original build plan, ordered by value
+docs/corpus-expansion-results.md  # before/after of the RFC corpus expansion, honestly reported
 ```
 
 ## Roadmap
@@ -431,5 +457,6 @@ measured limitations.
 - **Phase 2 ✅** config-driven toolset abstraction (TOML) + a real route-leak analyzer + LLM context-budget truncation
 - **Phase 3 ✅** citation-correctness eval harness (ALCE-style precision/recall + RAGChecker-style retriever-vs-generator split), pluggable lexical/cross-encoder entailment checking
 - **Phase 4 ✅** adversarial contradiction retrieval (`--seek-contradictions`), reusing Phase 1 retrieval + Phase 3 entailment checking; a real, verified false-positive limitation is documented, not hidden
-- **Phase 5 ✅** competing-hypothesis (ACH) reasoning + measured abstention (`investigator/ach.py`, `--ach`); a real ranking-rule bug was found and fixed against real data, and a follow-up two-tier evidence bar turned the resulting 100% real-catalog abstention rate into 3 correct assertions with 0 false assertions
-- **Phase 6 (effort-gated, not started):** a bigger/more specific RFC corpus, hybrid BM25+dense retrieval, a claims→sources provenance graph, live BGP feed integration
+- **Phase 5 ✅** competing-hypothesis (ACH) reasoning + measured abstention (`investigator/ach.py`, `--ach`); a real ranking-rule bug was found and fixed against real data, and a follow-up two-tier evidence bar turned the resulting 100% real-catalog abstention rate into 3 correct assertions with 0 false assertions (2-file corpus) — re-measured at 3 correct, 1 false, 9 abstained after the corpus expansion below, diagnosed rather than hidden
+- **RFC corpus expansion ✅** 2 hand-picked excerpts → 16 full RFCs (945 chunks); fixed two real bugs only visible against full RFC text and a corpus-size-dependent relevance floor; the result was a genuine mix of better (more abstentions now have real evidence weighed) and worse (a new false ACH assertion, degraded local-model grounding) — see [docs/corpus-expansion-results.md](docs/corpus-expansion-results.md)
+- **Phase 6 (effort-gated, not started):** hybrid BM25+dense retrieval, a claims→sources provenance graph, live BGP feed integration
