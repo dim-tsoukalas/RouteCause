@@ -19,9 +19,9 @@ def _wd(prefix, peer, offset_s=0):
                      (), None, "rrc00")
 
 
-def test_registry_has_three_analyzers():
-    assert set(registered_kinds()) == {"MOAS", "WithdrawalStorm", "ASPathLoop"}
-    assert len(all_analyzers()) == 3
+def test_registry_has_four_analyzers():
+    assert set(registered_kinds()) == {"MOAS", "WithdrawalStorm", "ASPathLoop", "RouteLeak"}
+    assert len(all_analyzers()) == 4
 
 
 def test_moas_flags_multiple_origins():

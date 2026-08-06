@@ -45,3 +45,11 @@ def get_analyzer(kind: str) -> Analyzer | None:
 
 def registered_kinds() -> list[str]:
     return sorted(_REGISTRY)
+
+
+def reset_registry() -> None:
+    """Clears the registry so it can be rebuilt from a non-default toolset
+    manifest (see investigator.toolsets / InvestigationEngine's `--toolsets`
+    override). Not needed for normal usage -- plain imports self-register
+    from the default manifest and never call this."""
+    _REGISTRY.clear()
