@@ -5,12 +5,13 @@ from investigator.retrieval.contradiction import ContradictionCheck, Hypothesis
 from investigator.retrieval.corpus import Chunk
 
 
-def _check(kind, supporting=0, contradicting=0):
+def _check(kind, supporting=0, contradicting=0, topically_relevant=0):
     hyp = Hypothesis(kind=kind, statement=f"{kind} claim")
     return ContradictionCheck(
         hypothesis=hyp,
         query=hyp.statement,
         supporting=[Source(i, f"{kind}-S{i}", "x") for i in range(supporting)],
+        topically_relevant=[Source(i, f"{kind}-R{i}", "x") for i in range(topically_relevant)],
         contradicting=[Source(i, f"{kind}-C{i}", "x") for i in range(contradicting)],
         checker_name="test",
     )
@@ -47,7 +48,7 @@ def test_abstains_when_leading_hypothesis_is_net_refuted():
     matrix = rank_hypotheses([only])
 
     assert matrix.abstained
-    assert "more refuting than supporting" in matrix.abstain_reason
+    assert "more refuting than topically-relevant evidence" in matrix.abstain_reason
 
 
 def test_abstains_on_empty_input():
@@ -68,6 +69,22 @@ def test_zero_evidence_does_not_beat_genuine_mixed_evidence():
 
     assert not matrix.abstained
     assert matrix.leading.hypothesis.kind == "MOAS"
+
+
+def test_relevance_tier_evidence_can_outweigh_contradictions_strict_alone_cannot():
+    # Regression test for the real pakistan-youtube-2008 case: MOAS had 1
+    # strict (ENTAILED) source and 2 CONTRADICTS sources -- net-refuted on
+    # the strict count alone (1 < 2) -- but a further on-topic UNCLEAR
+    # source brings relevant_count to 2, tying (not losing to) the 2
+    # contradictions, so ACH should assert rather than abstain.
+    moas = _check("MOAS", supporting=1, contradicting=2, topically_relevant=1)
+
+    matrix = rank_hypotheses([moas])
+
+    assert not matrix.abstained
+    assert matrix.leading.hypothesis.kind == "MOAS"
+    assert matrix.leading.relevant_count == 2
+    assert matrix.leading.supporting_count == 1  # conservative strict number still reported
 
 
 def test_abstains_when_nothing_found_any_supporting_evidence():
