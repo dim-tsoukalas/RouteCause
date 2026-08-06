@@ -1,6 +1,10 @@
-"""Importing this package registers all built-in analyzers.
+"""Importing this package registers every *enabled* analyzer from the
+toolset manifest (investigator/toolsets.toml).
 
-New analyzers (Phase 2+) only need to be imported here to join the registry.
+New analyzers (Phase 2+) don't get imported here anymore -- add a module
+implementing the `Analyzer` protocol plus one `[[toolset]]` entry in
+toolsets.toml, and it self-registers on import. Zero changes to this file,
+engine.py, or cli.py.
 """
 from investigator.analyzers.base import (  # noqa: F401
     Analyzer,
@@ -9,8 +13,6 @@ from investigator.analyzers.base import (  # noqa: F401
     register,
     registered_kinds,
 )
+from investigator.toolsets import load_toolsets, register_enabled_analyzers
 
-# Side-effect imports: each module self-registers via @register.
-from investigator.analyzers import moas            # noqa: F401,E402
-from investigator.analyzers import withdrawal_storm  # noqa: F401,E402
-from investigator.analyzers import as_path_loop     # noqa: F401,E402
+register_enabled_analyzers(load_toolsets())

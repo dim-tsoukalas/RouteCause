@@ -12,12 +12,14 @@ that split is deliberate.
 """
 from __future__ import annotations
 
-from investigator.agent import AgentLoop
+from investigator.agent import DEFAULT_MAX_CONTEXT_CHARS, AgentLoop
 from investigator.analyzers import all_analyzers
+from investigator.analyzers.base import reset_registry
 from investigator.llm import LLMBackend, default_backend
 from investigator.report import Report
 from investigator.retrieval.citations import CitationEngine
 from investigator.retrieval.corpus import load_corpus
+from investigator.toolsets import DEFAULT_TOOLSETS_PATH, load_rfc_search_config, load_toolsets, register_enabled_analyzers
 from investigator.types import Incident
 
 
@@ -27,10 +29,26 @@ class InvestigationEngine:
         rfc_dir: str,
         backend: LLMBackend | None = None,
         max_search_rounds: int = 3,
+        toolsets_path: str = DEFAULT_TOOLSETS_PATH,
     ):
+        # Rebuild the analyzer registry from `toolsets_path` every time, so a
+        # non-default manifest (e.g. `--toolsets` with an analyzer disabled)
+        # actually takes effect -- plain `import investigator.analyzers`
+        # already self-registered from the *default* manifest, and that's
+        # fine for that path's own callers, but this engine must be able to
+        # override it explicitly.
+        reset_registry()
+        register_enabled_analyzers(load_toolsets(toolsets_path))
+
         self.backend = backend or default_backend()
         self.citations = CitationEngine(load_corpus(rfc_dir), backend=self.backend)
-        self.agent = AgentLoop(self.citations, self.backend, max_iterations=max_search_rounds)
+        max_context_chars = load_rfc_search_config(toolsets_path).get(
+            "max_context_chars", DEFAULT_MAX_CONTEXT_CHARS
+        )
+        self.agent = AgentLoop(
+            self.citations, self.backend,
+            max_iterations=max_search_rounds, max_context_chars=max_context_chars,
+        )
 
     def investigate(self, incident: Incident, question: str) -> Report:
         # Layer 1: deterministic detection.
@@ -73,6 +91,9 @@ class InvestigationEngine:
             steps.append("Correlate withdrawal timestamps with upstream session state / flap logs.")
         if "ASPathLoop" in kinds:
             steps.append("Inspect route-maps/prepending config on the ASes repeated in AS_PATH.")
+        if "RouteLeak" in kinds:
+            steps.append("Confirm with the newly-appearing transit AS's operator whether this was "
+                         "an intentional customer/peer/provider relationship change or a leak.")
         if not steps:
             steps.append("No anomalies detected; verify the evidence window covers the incident.")
         return steps

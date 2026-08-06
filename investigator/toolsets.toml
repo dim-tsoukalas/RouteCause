@@ -1,0 +1,52 @@
+# Toolset manifest (Phase 2 pluggable toolset abstraction).
+#
+# Mirrors HolmesGPT's YAML toolset model, in TOML instead: this project's
+# core has always run on the standard library alone (no install required),
+# and Python 3.11+'s stdlib `tomllib` keeps that true. Same idea either way
+# -- a config-driven list of tools, not hardcoded imports.
+#
+# Adding a new analyzer = write a new module implementing the existing
+# Analyzer protocol (investigator/analyzers/base.py, unchanged) + one new
+# [[toolset]] block below. No edits to engine.py, cli.py, or the registry.
+
+[[toolset]]
+name = "moas"
+kind = "analyzer"
+module = "investigator.analyzers.moas"
+enabled = true
+description = "Detects multiple-origin-AS (MOAS) prefix hijacks."
+
+[[toolset]]
+name = "withdrawal_storm"
+kind = "analyzer"
+module = "investigator.analyzers.withdrawal_storm"
+enabled = true
+description = "Detects a burst of withdrawals within a short window."
+
+[[toolset]]
+name = "as_path_loop"
+kind = "analyzer"
+module = "investigator.analyzers.as_path_loop"
+enabled = true
+description = "Detects a repeated ASN in AS_PATH (loop / prepending)."
+
+[[toolset]]
+name = "route_leak"
+kind = "analyzer"
+module = "investigator.analyzers.route_leak"
+enabled = true
+description = "Detects a newly-appearing shared transit AS across peers (possible leak)."
+
+[rfc_search]
+# Context-budget cap for the agentic search loop (investigator/agent.py):
+# the max characters of RFC source text included in a single prompt, across
+# all accumulated sources. Character-based, not a real tokenizer -- no new
+# dependency, documented as an approximation.
+max_context_chars = 4000
+
+[citation_eval]
+# Which EntailmentChecker investigator/evaluation/entailment.py's
+# default_checker() should prefer. "lexical" (default) is dependency-free;
+# "cross_encoder" needs `pip install sentence-transformers` (see
+# requirements.txt) and falls back to lexical if that's not installed.
+checker = "lexical"

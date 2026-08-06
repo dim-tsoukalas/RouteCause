@@ -70,6 +70,7 @@ class Report:
 
         # --- Placeholders for later phases ----------------------------------
         out.append("\n---")
-        out.append("_Competing hypotheses, contradicting evidence, and "
-                   "citation-correctness scores are added in later phases._")
+        out.append("_Competing hypotheses and contradicting evidence are added in "
+                   "later phases. Citation-correctness scoring is available now, "
+                   "opt-in via `--score-citations` (see investigator/evaluation/)._")
         return "\n".join(out)

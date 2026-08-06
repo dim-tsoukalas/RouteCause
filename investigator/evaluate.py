@@ -30,7 +30,11 @@ LABEL_TO_ANALYZER_KINDS: dict[str, set[str]] = {
     "moas": {"MOAS"},
     "withdrawal_storm": {"WithdrawalStorm"},
     "as_path_loop": {"ASPathLoop"},
-    "route_leak": set(),
+    # RouteLeak (investigator/analyzers/route_leak.py) is a heuristic, not
+    # policy-violation proof (no AS-relationship data available) -- see its
+    # docstring. Still a real analyzer now, so this is no longer an
+    # unconditional N/A gap.
+    "route_leak": {"RouteLeak"},
 }
 
 HIT, MISS, NA = "HIT", "MISS", "N/A"
