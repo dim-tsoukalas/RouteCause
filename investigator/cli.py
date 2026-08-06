@@ -1,6 +1,6 @@
 """Command-line interface.
 
-    investigate <incident.json> [--question ...] [--rfc-dir DIR] [--max-search-rounds N] [--toolsets PATH] [--score-citations]
+    investigate <incident.json> [--question ...] [--rfc-dir DIR] [--max-search-rounds N] [--toolsets PATH] [--score-citations] [--seek-contradictions]
     ask "<question>"            [--rfc-dir DIR] [--max-search-rounds N] [--toolsets PATH] [--score-citations]
 
 Mirrors HolmesGPT's two-verb ergonomics (`ask` for free-form doc questions,
@@ -12,6 +12,10 @@ config-driven (investigator/toolsets.toml, see investigator/toolsets.py).
 `--score-citations` runs the citation-correctness harness (Phase 3, see
 investigator/evaluation/) over the answer -- not applicable in offline mode,
 since there's no real narration to check (see the scorecard's own message).
+`--seek-contradictions` (investigate only) runs the adversarial-retrieval
+harness (Phase 4, see investigator/retrieval/contradiction.py) over each
+fired analyzer result, reporting verified counter-evidence per hypothesis
+(or an honest "none found" -- never asserted, always entailment-checked).
 """
 from __future__ import annotations
 
@@ -22,6 +26,7 @@ from pathlib import Path
 from investigator.engine import InvestigationEngine
 from investigator.evaluation.entailment import default_checker
 from investigator.evaluation.scorer import score_citations
+from investigator.retrieval.contradiction import hypotheses_from_results, seek_contradictions
 from investigator.toolsets import DEFAULT_TOOLSETS_PATH, load_citation_eval_config
 from investigator.types import Incident
 
@@ -42,6 +47,8 @@ def _build_parser() -> argparse.ArgumentParser:
                       help="path to the toolset manifest controlling which analyzers run")
     inv.add_argument("--score-citations", action="store_true",
                       help="run the citation-correctness harness over the explanation")
+    inv.add_argument("--seek-contradictions", action="store_true",
+                      help="run the adversarial-retrieval harness over each fired analyzer result")
 
     ask = sub.add_parser("ask", help="ask a question of the RFC corpus (cited)")
     ask.add_argument("question", help="a natural-language question")
@@ -64,6 +71,21 @@ def _print_scorecard(answer, engine, toolsets_path: str) -> None:
     print(scorecard.render())
 
 
+def _print_contradictions(report, engine, toolsets_path: str) -> None:
+    checker_name = load_citation_eval_config(toolsets_path).get("checker")
+    checker = default_checker(checker_name)
+    hypotheses = hypotheses_from_results(report.results)
+    print()
+    print("Competing considerations (verified counter-evidence, not asserted):")
+    if not hypotheses:
+        print("  (no analyzer findings to check)")
+        return
+    for h in hypotheses:
+        check = seek_contradictions(h, engine.citations, checker)
+        print()
+        print(check.render())
+
+
 def main(argv: list[str] | None = None) -> int:
     args = _build_parser().parse_args(argv)
 
@@ -76,6 +98,8 @@ def main(argv: list[str] | None = None) -> int:
         print(report.render())
         if args.score_citations and report.explanation is not None:
             _print_scorecard(report.explanation, engine, args.toolsets)
+        if args.seek_contradictions:
+            _print_contradictions(report, engine, args.toolsets)
         return 0
 
     if args.cmd == "ask":
