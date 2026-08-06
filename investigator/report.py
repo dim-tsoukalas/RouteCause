@@ -68,8 +68,11 @@ class Report:
         else:
             out.append("- (none)")
 
-        # --- Placeholders for later phases ----------------------------------
+        # --- Footer ----------------------------------------------------------
         out.append("\n---")
-        out.append("_Competing hypotheses, contradicting evidence, and "
-                   "citation-correctness scores are added in later phases._")
+        out.append("_Citation-correctness scoring (`--score-citations`) and "
+                   "adversarial counter-evidence retrieval (`--seek-contradictions`) "
+                   "are both available now, opt-in -- see investigator/evaluation/ and "
+                   "investigator/retrieval/contradiction.py. Competing-hypothesis (ACH) "
+                   "scoring is still a later phase._")
         return "\n".join(out)

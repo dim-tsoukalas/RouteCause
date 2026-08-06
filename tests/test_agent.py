@@ -1,5 +1,5 @@
-from investigator.agent import AgentLoop
-from investigator.retrieval.citations import ABSTAIN_MARKER, CitationEngine
+from investigator.agent import AgentLoop, _format_sources, _truncate
+from investigator.retrieval.citations import ABSTAIN_MARKER, CitationEngine, Source
 from investigator.retrieval.corpus import Chunk
 
 CHUNKS = [
@@ -112,3 +112,33 @@ def test_abstains_when_seed_search_finds_nothing_and_backend_gives_up():
 
     assert ans.abstained
     assert not ans.sources
+
+
+def test_truncate_passes_short_text_through_unchanged():
+    assert _truncate("short", 100) == "short"
+
+
+def test_truncate_cuts_long_text_with_marker():
+    text = "x" * 500
+    out = _truncate(text, 100)
+    assert len(out) < len(text)
+    assert out.startswith("x" * 100)
+    assert "truncated" in out
+    assert "400 more chars" in out
+
+
+def test_format_sources_respects_overall_budget():
+    sources = [Source(n=i + 1, source_id=f"RFC {i}", text="y" * 2000) for i in range(5)]
+    block = _format_sources(sources, max_context_chars=3000)
+    assert len(block) <= 3500  # budget + one small "omitted" note line
+    assert "omitted for context budget" in block
+    # the highest-priority (first) source must always survive, even alone
+    assert "RFC 0" in block
+
+
+def test_format_sources_always_includes_at_least_the_first_source():
+    # A single source larger than the whole budget must still appear --
+    # the budget must never produce an empty prompt.
+    sources = [Source(n=1, source_id="RFC 0", text="z" * 5000)]
+    block = _format_sources(sources, max_context_chars=100)
+    assert "RFC 0" in block

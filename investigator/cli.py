@@ -1,13 +1,21 @@
 """Command-line interface.
 
-    investigate <incident.json> [--question ...] [--rfc-dir DIR] [--max-search-rounds N]
-    ask "<question>"            [--rfc-dir DIR] [--max-search-rounds N]
+    investigate <incident.json> [--question ...] [--rfc-dir DIR] [--max-search-rounds N] [--toolsets PATH] [--score-citations] [--seek-contradictions]
+    ask "<question>"            [--rfc-dir DIR] [--max-search-rounds N] [--toolsets PATH] [--score-citations]
 
 Mirrors HolmesGPT's two-verb ergonomics (`ask` for free-form doc questions,
 `investigate` for a specific incident). Runs fully offline in no-LLM mode;
 set INVESTIGATOR_MODEL (+ provider API key) for natural-language narration,
 including a real multi-round agentic RFC search (see investigator/agent.py) —
-offline mode always does exactly one search round.
+offline mode always does exactly one search round. Which analyzers run is
+config-driven (investigator/toolsets.toml, see investigator/toolsets.py).
+`--score-citations` runs the citation-correctness harness (Phase 3, see
+investigator/evaluation/) over the answer -- not applicable in offline mode,
+since there's no real narration to check (see the scorecard's own message).
+`--seek-contradictions` (investigate only) runs the adversarial-retrieval
+harness (Phase 4, see investigator/retrieval/contradiction.py) over each
+fired analyzer result, reporting verified counter-evidence per hypothesis
+(or an honest "none found" -- never asserted, always entailment-checked).
 """
 from __future__ import annotations
 
@@ -16,6 +24,10 @@ import sys
 from pathlib import Path
 
 from investigator.engine import InvestigationEngine
+from investigator.evaluation.entailment import default_checker
+from investigator.evaluation.scorer import score_citations
+from investigator.retrieval.contradiction import hypotheses_from_results, seek_contradictions
+from investigator.toolsets import DEFAULT_TOOLSETS_PATH, load_citation_eval_config
 from investigator.types import Incident
 
 DEFAULT_RFC_DIR = str(Path(__file__).resolve().parent.parent / "data" / "rfcs")
@@ -31,14 +43,47 @@ def _build_parser() -> argparse.ArgumentParser:
     inv.add_argument("--rfc-dir", default=DEFAULT_RFC_DIR)
     inv.add_argument("--max-search-rounds", type=int, default=3,
                       help="max additional RFC searches the agent loop may request beyond the seed search")
+    inv.add_argument("--toolsets", default=str(DEFAULT_TOOLSETS_PATH),
+                      help="path to the toolset manifest controlling which analyzers run")
+    inv.add_argument("--score-citations", action="store_true",
+                      help="run the citation-correctness harness over the explanation")
+    inv.add_argument("--seek-contradictions", action="store_true",
+                      help="run the adversarial-retrieval harness over each fired analyzer result")
 
     ask = sub.add_parser("ask", help="ask a question of the RFC corpus (cited)")
     ask.add_argument("question", help="a natural-language question")
     ask.add_argument("--rfc-dir", default=DEFAULT_RFC_DIR)
     ask.add_argument("--max-search-rounds", type=int, default=3,
                       help="max additional RFC searches the agent loop may request beyond the seed search")
+    ask.add_argument("--toolsets", default=str(DEFAULT_TOOLSETS_PATH),
+                      help="path to the toolset manifest (only its [rfc_search]/[citation_eval] tables matter for `ask`)")
+    ask.add_argument("--score-citations", action="store_true",
+                      help="run the citation-correctness harness over the answer")
 
     return p
+
+
+def _print_scorecard(answer, engine, toolsets_path: str) -> None:
+    checker_name = load_citation_eval_config(toolsets_path).get("checker")
+    checker = default_checker(checker_name)
+    scorecard = score_citations(answer, engine.citations, checker)
+    print()
+    print(scorecard.render())
+
+
+def _print_contradictions(report, engine, toolsets_path: str) -> None:
+    checker_name = load_citation_eval_config(toolsets_path).get("checker")
+    checker = default_checker(checker_name)
+    hypotheses = hypotheses_from_results(report.results)
+    print()
+    print("Competing considerations (verified counter-evidence, not asserted):")
+    if not hypotheses:
+        print("  (no analyzer findings to check)")
+        return
+    for h in hypotheses:
+        check = seek_contradictions(h, engine.citations, checker)
+        print()
+        print(check.render())
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -46,15 +91,25 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.cmd == "investigate":
         incident = Incident.from_json(args.incident)
-        engine = InvestigationEngine(rfc_dir=args.rfc_dir, max_search_rounds=args.max_search_rounds)
+        engine = InvestigationEngine(
+            rfc_dir=args.rfc_dir, max_search_rounds=args.max_search_rounds, toolsets_path=args.toolsets
+        )
         report = engine.investigate(incident, args.question)
         print(report.render())
+        if args.score_citations and report.explanation is not None:
+            _print_scorecard(report.explanation, engine, args.toolsets)
+        if args.seek_contradictions:
+            _print_contradictions(report, engine, args.toolsets)
         return 0
 
     if args.cmd == "ask":
-        engine = InvestigationEngine(rfc_dir=args.rfc_dir, max_search_rounds=args.max_search_rounds)
+        engine = InvestigationEngine(
+            rfc_dir=args.rfc_dir, max_search_rounds=args.max_search_rounds, toolsets_path=args.toolsets
+        )
         answer = engine.ask(args.question)
         print(answer.render())
+        if args.score_citations:
+            _print_scorecard(answer, engine, args.toolsets)
         return 0
 
     return 1

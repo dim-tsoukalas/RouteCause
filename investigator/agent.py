@@ -18,6 +18,13 @@ before ever prompting the backend, so offline mode (NoOpBackend, which can't
 "decide" anything) always gets the same retrieval it got before this loop
 existed. NoOp's echoed response never matches `ACTION:`, so it falls through
 to "treat as final" after that one mandatory round.
+
+Context-budget truncation (Phase 2): the sources block a prompt embeds can
+grow unboundedly as the RFC corpus grows or as more ReAct rounds accumulate
+sources, so both are capped -- per-source text and the overall block, via
+`max_context_chars` (default 4000, overridable from toolsets.toml's
+`[rfc_search]` table). Character-based, not a real tokenizer -- no new
+dependency, and documented here as an approximation.
 """
 from __future__ import annotations
 
@@ -43,19 +50,51 @@ _TOOL_PROMPT_HEADER = (
 )
 
 
-def _format_sources(sources: list[Source]) -> str:
+_PER_SOURCE_MAX_CHARS = 1200  # cap any single source's text before block budgeting
+DEFAULT_MAX_CONTEXT_CHARS = 4000
+
+
+def _truncate(text: str, max_chars: int) -> str:
+    if len(text) <= max_chars:
+        return text
+    omitted = len(text) - max_chars
+    return text[:max_chars].rstrip() + f" ...[truncated, {omitted} more chars]"
+
+
+def _format_sources(sources: list[Source], max_context_chars: int = DEFAULT_MAX_CONTEXT_CHARS) -> str:
     if not sources:
         return "(no sources found for this query)\n"
-    return "\n".join(f"Source {s.n} ({s.source_id}):\n{s.text}\n" for s in sources)
+
+    blocks: list[str] = []
+    used = 0
+    omitted = 0
+    for s in sources:
+        text = _truncate(s.text, _PER_SOURCE_MAX_CHARS)
+        block = f"Source {s.n} ({s.source_id}):\n{text}\n"
+        if used + len(block) > max_context_chars and blocks:
+            omitted += 1
+            continue
+        blocks.append(block)
+        used += len(block)
+    if omitted:
+        blocks.append(f"({omitted} additional lower-priority source(s) omitted for context budget)\n")
+    return "\n".join(blocks)
 
 
 class AgentLoop:
     """Runs the seed search + bounded ReAct loop, returns a CitedAnswer."""
 
-    def __init__(self, citations: CitationEngine, backend: LLMBackend, max_iterations: int = 3):
+    def __init__(
+        self,
+        citations: CitationEngine,
+        backend: LLMBackend,
+        max_iterations: int = 3,
+        max_context_chars: int = DEFAULT_MAX_CONTEXT_CHARS,
+    ):
         self.citations = citations
         self.backend = backend
         self.max_iterations = max_iterations
+        self.max_context_chars = max_context_chars
 
     def run(self, question: str, seed_query: str) -> CitedAnswer:
         all_sources: list[Source] = []
@@ -79,7 +118,7 @@ class AgentLoop:
             rounds_left = self.max_iterations - i
             prompt = (
                 _TOOL_PROMPT_HEADER.format(rounds_left=rounds_left)
-                + _format_sources(all_sources)
+                + _format_sources(all_sources, self.max_context_chars)
                 + transcript
                 + f"\nQuestion: {question}\n"
             )

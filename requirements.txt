@@ -7,7 +7,13 @@
 # --- Production retrieval (swap the built-in BM25 for hybrid BM25+dense) ---
 # llama-index-core>=0.11
 # chromadb>=0.5        # or qdrant-client
-# sentence-transformers>=3.0
+# sentence-transformers>=3.0   # also powers the citation-correctness cross-encoder below
+
+# --- Citation-correctness entailment checking (investigator/evaluation/) ---
+# The default LexicalOverlapChecker needs nothing extra. For the real
+# CrossEncoderNLIChecker (CITATION_CHECKER=cross_encoder or
+# [citation_eval].checker="cross_encoder" in toolsets.toml):
+# sentence-transformers>=3.0   # pulls in transformers + torch (CPU wheel is fine)
 
 # --- Real BGP incident data (replaces the synthetic sample) ---
 mrtparse>=2.0          # pure-Python MRT parser for investigator/ingest.py
