@@ -47,6 +47,6 @@ max_context_chars = 4000
 [citation_eval]
 # Which EntailmentChecker investigator/evaluation/entailment.py's
 # default_checker() should prefer. "lexical" (default) is dependency-free;
-# "cross_encoder" needs `pip install sentence-transformers` (see
-# requirements.txt) and falls back to lexical if that's not installed.
+# "cross_encoder" needs `pip install -e ".[nli]"` (sentence-transformers)
+# and falls back to lexical if that's not installed.
 checker = "lexical"

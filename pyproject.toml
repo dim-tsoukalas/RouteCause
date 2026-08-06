@@ -14,7 +14,8 @@ dependencies = []
 # competing-hypothesis / contradiction / citation-correctness scoring with
 # the default lexical checker) runs on the standard library alone -- these
 # extras only activate the production paths documented in the README/
-# docs/design.md, mirroring requirements.txt.
+# docs/design.md. requirements.txt installs the [all] extra so the two
+# never drift apart.
 [project.optional-dependencies]
 ingest = ["mrtparse>=2.0"]            # investigator/ingest.py: real RIPE RIS / RouteViews data
 llm = ["litellm>=1.40"]               # provider-agnostic LLM narration
