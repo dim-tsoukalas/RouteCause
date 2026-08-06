@@ -15,7 +15,10 @@ since there's no real narration to check (see the scorecard's own message).
 `--seek-contradictions` (investigate only) runs the adversarial-retrieval
 harness (Phase 4, see investigator/retrieval/contradiction.py) over each
 fired analyzer result, reporting verified counter-evidence per hypothesis
-(or an honest "none found" -- never asserted, always entailment-checked).
+(or an honest "none found" -- never asserted, always entailment-checked),
+then ranks the competing hypotheses (Phase 5 ACH, investigator/ach.py) and
+either names a leading explanation or explicitly abstains -- a computed
+decision from evidence counts, never an LLM judging its own sufficiency.
 """
 from __future__ import annotations
 
@@ -23,6 +26,7 @@ import argparse
 import sys
 from pathlib import Path
 
+from investigator.ach import rank_hypotheses
 from investigator.engine import InvestigationEngine
 from investigator.evaluation.entailment import default_checker
 from investigator.evaluation.scorer import score_citations
@@ -80,10 +84,14 @@ def _print_contradictions(report, engine, toolsets_path: str) -> None:
     if not hypotheses:
         print("  (no analyzer findings to check)")
         return
+    checks = []
     for h in hypotheses:
         check = seek_contradictions(h, engine.citations, checker)
+        checks.append(check)
         print()
         print(check.render())
+    print()
+    print(rank_hypotheses(checks).render())
 
 
 def main(argv: list[str] | None = None) -> int:
