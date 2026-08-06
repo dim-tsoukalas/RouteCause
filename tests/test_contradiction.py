@@ -13,6 +13,7 @@ CHUNK_CONTRADICTS = Chunk(
     "A change in origin AS for a prefix is not an indicator of a prefix hijack in anycast deployments.",
 )
 CHUNK_UNRELATED = Chunk("UNRELATED", "Sourdough bread requires a long fermentation time.")
+CHUNK_TOPICALLY_RELEVANT = Chunk("RELEVANT", "alpha zeta eta theta iota kappa lambda")
 
 
 def _citation_engine():
@@ -48,6 +49,20 @@ def test_seek_contradictions_finds_verified_counter_evidence():
     contradicting_ids = {s.source_id for s in check.contradicting}
     assert "CONTRADICT" in contradicting_ids
     assert "UNRELATED" not in contradicting_ids  # irrelevant, not a refutation
+
+
+def test_seek_contradictions_keeps_unclear_as_topically_relevant():
+    # UNCLEAR (on-topic, real vocabulary overlap, but below the strict
+    # ENTAILED threshold) must not be silently dropped -- it's the
+    # relevance-tier evidence ACH's assert/abstain gate relies on.
+    hypothesis = Hypothesis(kind="MOAS", statement="alpha beta gamma delta epsilon")
+    engine = CitationEngine([CHUNK_TOPICALLY_RELEVANT], top_k=6, min_score=0.1)
+    check = seek_contradictions(hypothesis, engine, LexicalOverlapChecker())
+
+    relevant_ids = {s.source_id for s in check.topically_relevant}
+    assert "RELEVANT" in relevant_ids
+    assert check.supporting == []
+    assert check.relevant_count == 1
 
 
 def test_seek_contradictions_reports_none_found_honestly():

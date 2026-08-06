@@ -14,6 +14,23 @@ which is exactly why Phase 4's contradiction search is retrieval-and-
 entailment-verified rather than generator-asserted in the first place. The
 abstention decision here is a fully computed function of hard evidence
 counts -- never a model judging itself.
+
+TWO-TIER EVIDENCE BAR: `HypothesisScore` carries both `supporting_count`
+(strict: entailment-checker `ENTAILED` only) and `relevant_count` (relevance:
+`ENTAILED` + `UNCLEAR` -- on-topic per the checker, even if not confident
+enough to call strict entailment; see `ContradictionCheck.relevant_count` in
+investigator/retrieval/contradiction.py for why the `UNCLEAR` tier is worth
+keeping at all). The leading hypothesis's net-refuted gate below compares
+`contradicting_count` against `relevant_count`, not the strict count: against
+the real catalog, requiring strict entailment to outweigh contradictions
+abstained on every single incident, including ones (e.g. `pakistan-youtube-2008`)
+where the leading hypothesis already had genuine strict-tier support and the
+"refuting" evidence was itself the documented lexical-checker false positive
+in contradiction.py's docstring. Both numbers are always reported together
+(`render()`, `ACHMatrix.render()`) -- this loosens *which bar an assertion is
+measured against*, not what counts as evidence; nothing here lets an
+uncontested, zero-evidence hypothesis assert, and the strict count stays
+visible as the conservative cross-check.
 """
 from __future__ import annotations
 
@@ -28,7 +45,8 @@ from investigator.retrieval.contradiction import ContradictionCheck, Hypothesis,
 class HypothesisScore:
     hypothesis: Hypothesis
     check: ContradictionCheck
-    supporting_count: int
+    supporting_count: int    # strict tier: ENTAILED only -- the conservative number
+    relevant_count: int      # relevance tier: ENTAILED + UNCLEAR -- what the assert/abstain gate uses
     contradicting_count: int
 
 
@@ -47,13 +65,19 @@ class ACHMatrix:
         for i, s in enumerate(self.scores, start=1):
             lines.append(
                 f"  {i}. [{s.hypothesis.kind}] {s.hypothesis.statement} "
-                f"-- {s.supporting_count} supporting, {s.contradicting_count} contradicting"
+                f"-- {s.relevant_count} topically-relevant ({s.supporting_count} strictly entailed), "
+                f"{s.contradicting_count} contradicting"
             )
         if self.abstained:
             lines.append(f"Verdict: ABSTAIN -- {self.abstain_reason}")
         elif self.leading is not None:
-            lines.append(f"Verdict: leading hypothesis is [{self.leading.hypothesis.kind}] "
-                         f"{self.leading.hypothesis.statement}")
+            lines.append(
+                f"Verdict: leading hypothesis is [{self.leading.hypothesis.kind}] "
+                f"{self.leading.hypothesis.statement} "
+                f"(asserted on relevance-tier evidence: {self.leading.relevant_count} vs "
+                f"{self.leading.contradicting_count} contradicting; conservative strict-entailment "
+                f"count: {self.leading.supporting_count})"
+            )
         return "\n".join(lines)
 
 
@@ -65,7 +89,7 @@ def rank_hypotheses(checks: list[ContradictionCheck]) -> ACHMatrix:
         return ACHMatrix(scores=[], abstained=True, abstain_reason="no analyzer findings to evaluate")
 
     scores = [
-        HypothesisScore(c.hypothesis, c, len(c.supporting), len(c.contradicting))
+        HypothesisScore(c.hypothesis, c, len(c.supporting), c.relevant_count, len(c.contradicting))
         for c in checks
     ]
     # Rank key, in priority order: (1) a hypothesis with genuine supporting
@@ -87,13 +111,14 @@ def rank_hypotheses(checks: list[ContradictionCheck]) -> ACHMatrix:
         )
 
     leader = scores[0]
-    if leader.contradicting_count > leader.supporting_count:
+    if leader.contradicting_count > leader.relevant_count:
         return ACHMatrix(
             scores=scores, abstained=True,
             abstain_reason=(
                 f"even the leading hypothesis ([{leader.hypothesis.kind}]) has more "
-                f"refuting than supporting evidence ({leader.contradicting_count} vs "
-                f"{leader.supporting_count})"
+                f"refuting than topically-relevant evidence ({leader.contradicting_count} vs "
+                f"{leader.relevant_count}; only {leader.supporting_count} of that meets the "
+                f"strict entailment bar)"
             ),
         )
 
