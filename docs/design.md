@@ -90,8 +90,10 @@ now; its value grows with corpus size.
   and `INSUFFICIENT EVIDENCE` marker were indeed the seed, as anticipated;
   the ACH matrix and false-assertion measurement are built on top of
   Phase 4's `Hypothesis`/`ContradictionCheck`, not new infrastructure. The
-  measured outcome (100% abstention on the real catalog) is a genuine
-  finding, not a shipped-and-forgotten number — see below.
+  first measured outcome (100% abstention on the real catalog) was a
+  genuine finding, not a shipped-and-forgotten number, and led directly to
+  the two-tier evidence bar follow-up (3 correct assertions, 0 false) —
+  see below.
 
 ## Real-incident ingestion + evaluation (Phase 1.5)
 
@@ -329,13 +331,41 @@ number:
    citation engine), not as case-specific logical proof, which is a
    materially stricter bar.
 
-This is shipped deliberately, not left broken: a mechanism that correctly
+This was shipped deliberately, not left broken: a mechanism that correctly
 recognizes its evidence doesn't clear a real bar and says so is a legitimate,
-defensible result — safer than one that asserts anyway. The honest
-conclusion is that demonstrating real positive ACH assertions needs either a
-larger/more specific RFC corpus, or a deliberately separate (more lenient,
-clearly-labeled) threshold for "topically relevant" vs. "strictly entails" —
-neither attempted here, both natural next steps.
+defensible result — safer than one that asserts anyway. But it was also a
+diagnosed, not just accepted, dead end — the root cause above pointed at a
+specific, checkable fix, so it was built and re-measured rather than left as
+a documented limitation.
+
+**Follow-up fix: the two-tier evidence bar.** `ContradictionCheck` (Phase 4)
+already computed a middle `UNCLEAR` entailment label — on-topic, real
+vocabulary overlap, just short of the strict `ENTAILED` bar — and silently
+discarded it. `investigator/ach.py`'s net-refuted gate now compares
+`contradicting_count` against `relevant_count` (`ENTAILED` + `UNCLEAR`)
+instead of the strict `supporting_count` alone; the strict count is still
+computed and reported alongside every verdict as the conservative,
+labeled-separately number — this widens *which bar an assertion is measured
+against*, not what counts as evidence in the first place. Concretely, for
+`pakistan-youtube-2008`'s MOAS hypothesis: 1 strict-entailed source + 1
+further topically-relevant (`UNCLEAR`) source = 2, no longer outweighed by
+its 2 `CONTRADICTS` sources — one of which is exactly the documented RFC
+4271 §9.1.2 lexical false positive above, riding in on a negation-mismatch
+against the shared, contentless token "2". Re-measured against the real
+13-incident catalog (`investigator/evaluate.py --ach`): **3 correct
+assertions, 0 false assertions, 10 honest abstentions** (`pakistan-
+youtube-2008`, `indosat-2014`, `china-telecom-18min-2010` — the same
+MOAS-with-genuine-strict-support pattern in all three). Nothing that
+previously abstained correctly now flips to a wrong answer; the fix only
+unlocks assertions where real evidence was already present and only being
+outvoted by a documented retrieval/entailment artifact.
+
+A larger/more specific RFC corpus (Phase 6) remains the most likely way to
+grow past 3/13 — most of the remaining 10 abstentions are "no hypothesis
+found any evidence at all" against the current 2-file corpus, which the
+two-tier bar deliberately does not touch (widening the *no-evidence* floor,
+rather than the *contradicted-despite-evidence* gate, is a different and
+riskier change, not attempted here).
 
 ## Deliberate limitations
 
@@ -347,10 +377,14 @@ neither attempted here, both natural next steps.
   violation — stated in its own docstring, not just here.
 - The agentic search loop (see "two-layer split" above), adversarial
   contradiction retrieval (Phase 4), and ACH reasoning (Phase 5) are all
-  real but low-value today given a 2-file RFC corpus; all three earn their
-  keep once the corpus is scaled up. Phase 4 has a *verified* false-positive
-  pattern from this, and Phase 5 currently abstains 100% of the time on the
-  real catalog because of it — see those sections, not just asserted here.
+  real but corpus-bound today given a 2-file RFC corpus; all three earn
+  their keep further once the corpus is scaled up. Phase 4 has a *verified*
+  false-positive pattern from this, and Phase 5's two-tier evidence bar
+  (see above) gets 3/13 real-catalog incidents to a correct assertion
+  despite it — but most of the remaining 10 abstain for a more basic
+  reason (no evidence found either way against the small corpus), which
+  Phase 6's corpus expansion is what actually fixes — see those sections,
+  not just asserted here.
 - All six phases of the original build plan (0–5) are now done. Remaining
   future work (Phase 6 in the source plan): a bigger/more specific RFC
   corpus (the single change most likely to unlock real positive ACH
