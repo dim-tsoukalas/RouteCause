@@ -196,11 +196,25 @@ gameable LLM-as-judge faithfulness scoring (RAGAS/TruLens/DeepEval).
   `[citation_eval].checker` in `toolsets.toml` (or `CITATION_CHECKER` env
   var as a lower-priority override) — same config-driven pattern as
   `[rfc_search]` from Phase 2.
-- `investigator/evaluation/scorer.py` computes ALCE-style citation precision
-  (of every citation actually placed, what fraction does its source entail)
-  and recall (of every claim made, what fraction has >=1 entailing citation
-  among its own), plus a RAGChecker-style retriever-vs-generator split for
-  every recall miss: re-query the *full* corpus (not just what was cited,
+- `investigator/evaluation/scorer.py` computes ALCE's actual statement-level
+  definitions (Gao et al., 2023), not an approximation of them. **Recall**
+  for a claim is 1 iff it has >=1 citation and the *concatenation* of all its
+  cited sources entails it — not "at least one cited source, alone, entails
+  it." That distinction bites exactly where RFC grounding lives: a claim
+  jointly supported by two passages that are each insufficient alone (e.g.
+  RFC 7908 §4 + RFC 4271 §9.1.2 grounding one MOAS claim, neither sufficient
+  alone) scores 1 under ALCE, 0 under the naive rule — a real gap an earlier
+  revision of this scorer had, caught and fixed, with
+  `test_joint_citation_support_counts_toward_alce_recall_and_precision`
+  (`tests/evaluation/test_scorer.py`) as the regression test.
+  **Precision** is gated on that per-claim recall (ALCE's own rule — an
+  unsupported claim's citations aren't "wrong," the claim itself is) and,
+  within a recall-met claim, a citation counts as precise if it entails the
+  claim alone *or* removing it from the cited set breaks the concatenation's
+  entailment (load-bearing even if insufficient alone); a citation droppable
+  with no loss of support is redundant, not precise. Plus a RAGChecker-style
+  retriever-vs-generator split for every recall miss: re-query the *full*
+  corpus (not just what was cited,
   reusing `CitationEngine.retrieve_sources` from Phase 1) — if something
   uncited would have worked, that's a generator error; if nothing in the
   corpus supports the claim at all, that's a retriever error.
