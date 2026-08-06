@@ -43,6 +43,17 @@ _REFERENCES_HEADING_RE = re.compile(
 )
 _PREAMBLE_HEADING_RE = re.compile(r"^(Status of This Memo|Copyright Notice)\s*$")
 _TOC_HEADING_RE = re.compile(r"^Table of Contents\s*$")
+# Any flush-left, non-blank line -- RFC body text is conventionally indented
+# 3 spaces, so column 0 is reserved for headings (numbered like "3.  Summary
+# of Operation", or bare like "Abstract"/"Introduction" -- pre-~2000 RFCs
+# routinely skip numbering entirely). Used to find where a preamble/TOC skip
+# should end: the *first* heading of either style, not specifically a
+# numbered one -- an earlier version of this function only recognized
+# numbered headers, so on an RFC using bare headings throughout (e.g.
+# RFC 1997, which never numbers a single section) the skip never found
+# anywhere to stop and ate the entire body. Caught by running this over all
+# 16 target RFCs, not assumed to work from RFC 4271 alone.
+_FLUSH_LEFT_HEADING_RE = re.compile(r"^\S")
 
 
 def _clean_rfc_text(raw: str) -> str:
@@ -58,31 +69,24 @@ def _clean_rfc_text(raw: str) -> str:
     lines = raw.replace("\f", "\n").splitlines()
 
     kept: list[str] = []
-    skip_until_section = False  # inside Status-of-Memo/Copyright/TOC block
-    i = 0
-    while i < len(lines):
-        line = lines[i]
-
+    skip_until_heading = False  # inside Status-of-Memo/Copyright/TOC block
+    for line in lines:
         if _REFERENCES_HEADING_RE.match(line):
             break  # References onward: bibliography + addresses + copyright, all dropped
 
+        if _PAGE_FOOTER_RE.match(line) or _PAGE_HEADER_RE.match(line):
+            continue  # dropped unconditionally, including mid-skip
+
         if _PREAMBLE_HEADING_RE.match(line) or _TOC_HEADING_RE.match(line):
-            skip_until_section = True
-            i += 1
+            skip_until_heading = True
             continue
-        if skip_until_section:
-            if _SECTION_RE.match(line):
-                skip_until_section = False  # fall through, this line is real body content
+        if skip_until_heading:
+            if _FLUSH_LEFT_HEADING_RE.match(line):
+                skip_until_heading = False  # fall through, this line is real body content
             else:
-                i += 1
                 continue
 
-        if _PAGE_FOOTER_RE.match(line) or _PAGE_HEADER_RE.match(line):
-            i += 1
-            continue
-
         kept.append(line)
-        i += 1
 
     return "\n".join(kept)
 

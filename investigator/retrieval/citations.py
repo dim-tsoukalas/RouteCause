@@ -97,13 +97,29 @@ CITATION_QA_TEMPLATE = (
 ABSTAIN_MARKER = "INSUFFICIENT EVIDENCE"
 
 # Default for production CitationEngine construction (investigator/engine.py,
-# investigator/evaluate.py) once the corpus is more than a couple of hand-
-# picked files -- calibrated empirically against the expanded RFC corpus
-# (docs/alignment-plan.md item 4b), not guessed. Test fixtures deliberately
-# don't use this: their tiny synthetic corpora make max_possible_score's
-# scaling assumptions moot, and every existing test already calibrates
-# min_score directly.
-DEFAULT_MIN_SCORE_FRACTION = 0.2
+# investigator/evaluate.py). Calibrated empirically against the real 16-RFC
+# corpus (docs/alignment-plan.md item 4b), not guessed -- and the first
+# number tried (0.2) was wrong: on real multi-term incident questions
+# against real RFC text, ratio-to-ceiling does NOT cleanly separate on-topic
+# from off-topic the way it did on the synthetic single/double-term test
+# case. The flagship MOAS query ("why is a prefix announced by two distinct
+# origin ASNs...") scored ratio 0.161 -- genuinely on-topic, but *below* an
+# unrelated "kubernetes ingress controller" query's 0.219. A multi-term
+# on-topic query has a larger ceiling (more distinct terms each contribute)
+# but rarely saturates every term, while a short off-topic query can spike
+# on one coincidentally-rare corpus term -- the same lexical-coincidence
+# weakness BM25 already has, just visible here too.
+#
+# So this constant is deliberately conservative (comfortably below every
+# on-topic ratio observed, ~0.16-0.37) and MUST NOT be read as "0.1 = the
+# relevance bar." Its actual, narrower job: stop a fixed absolute min_score
+# from drifting to look easier to clear purely because the corpus grew (the
+# bug this item fixes -- see max_possible_score's docstring). It is not, and
+# isn't meant to be, a general relevance classifier -- that's dense
+# retrieval's job (docs/alignment-plan.md item 7, deferred), and BM25's
+# lexical-coincidence false-positive rate is a pre-existing, already-
+# documented limitation this constant doesn't change either way.
+DEFAULT_MIN_SCORE_FRACTION = 0.1
 
 
 @dataclass
