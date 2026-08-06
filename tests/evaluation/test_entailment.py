@@ -25,12 +25,15 @@ def test_not_entailed_when_claim_is_unrelated():
     assert verdict.label == EntailmentLabel.NOT_ENTAILED
 
 
-def test_not_entailed_on_negation_mismatch():
+def test_contradicts_on_negation_mismatch():
     checker = LexicalOverlapChecker()
-    # Shares plenty of vocabulary with SOURCE, but asserts the opposite.
+    # Shares plenty of vocabulary with SOURCE, but asserts the opposite --
+    # a genuine refutation signal (CONTRADICTS), distinct from
+    # test_not_entailed_when_claim_is_unrelated's plain "doesn't address
+    # this at all" (NOT_ENTAILED) case above.
     claim = "A change in origin AS for a prefix is not an indicator of a prefix hijack or MOAS."
     verdict = checker.check(claim, SOURCE)
-    assert verdict.label == EntailmentLabel.NOT_ENTAILED
+    assert verdict.label == EntailmentLabel.CONTRADICTS
 
 
 def test_unclear_on_empty_claim_tokens():
@@ -66,4 +69,4 @@ def test_cross_encoder_checker_real_model():
     contradiction = checker.check(
         "An unexpected origin AS change is completely normal and never a hijack signal.", SOURCE
     )
-    assert contradiction.label in (EntailmentLabel.NOT_ENTAILED, EntailmentLabel.UNCLEAR)
+    assert contradiction.label == EntailmentLabel.CONTRADICTS
