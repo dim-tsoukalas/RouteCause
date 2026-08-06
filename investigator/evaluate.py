@@ -32,7 +32,7 @@ from investigator.ach import ACHMatrix, build_ach_matrix
 from investigator.analyzers import all_analyzers
 from investigator.evaluation.entailment import EntailmentChecker, default_checker
 from investigator.ingest import DEFAULT_CATALOG, incident_output_path, load_catalog
-from investigator.retrieval.citations import CitationEngine
+from investigator.retrieval.citations import DEFAULT_MIN_SCORE_FRACTION, CitationEngine
 from investigator.retrieval.contradiction import hypotheses_from_results
 from investigator.retrieval.corpus import load_corpus
 from investigator.toolsets import DEFAULT_TOOLSETS_PATH, load_citation_eval_config
@@ -259,7 +259,7 @@ def main(argv: list[str] | None = None) -> int:
     print(summarize(rows))
 
     if args.ach:
-        citations = CitationEngine(load_corpus(args.rfc_dir))
+        citations = CitationEngine(load_corpus(args.rfc_dir), min_score_fraction=DEFAULT_MIN_SCORE_FRACTION)
         checker_name = load_citation_eval_config(args.toolsets).get("checker")
         checker = default_checker(checker_name)
         ach_rows = [evaluate_entry_ach(entry, incidents_dir, citations, checker) for entry in catalog]

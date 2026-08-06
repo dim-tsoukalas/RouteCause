@@ -47,6 +47,22 @@ class BM25:
         # BM25 idf with +1 to stay non-negative
         return math.log(1 + (self.n - n_q + 0.5) / (n_q + 0.5))
 
+    def max_possible_score(self, query: str) -> float:
+        """Upper bound on any single chunk's score for this query: each
+        distinct query term's BM25 contribution saturates toward
+        idf(term) * (k1 + 1) as tf grows / doc length shrinks. Only terms
+        that actually appear somewhere in the corpus count (a term absent
+        from every chunk can never be matched, so including it would only
+        inflate the ceiling with a contribution nothing can ever earn).
+
+        This ceiling scales with corpus size the same way real per-term
+        scores do, since both come from the same idf() -- see
+        `CitationEngine`'s `min_score_fraction` for why that makes the
+        *ratio* between an actual top score and this ceiling a scale-
+        invariant relevance signal, unlike a fixed absolute score floor."""
+        q_terms = {t for t in _tokenize(query) if t not in STOPWORDS}
+        return sum(self._idf(t) * (self.k1 + 1) for t in q_terms if t in self.df)
+
     def score(self, query: str, top_k: int = 4) -> list[tuple[Chunk, float]]:
         q_terms = [t for t in _tokenize(query) if t not in STOPWORDS]
         scored: list[tuple[Chunk, float]] = []
@@ -79,6 +95,15 @@ CITATION_QA_TEMPLATE = (
 )
 
 ABSTAIN_MARKER = "INSUFFICIENT EVIDENCE"
+
+# Default for production CitationEngine construction (investigator/engine.py,
+# investigator/evaluate.py) once the corpus is more than a couple of hand-
+# picked files -- calibrated empirically against the expanded RFC corpus
+# (docs/alignment-plan.md item 4b), not guessed. Test fixtures deliberately
+# don't use this: their tiny synthetic corpora make max_possible_score's
+# scaling assumptions moot, and every existing test already calibrates
+# min_score directly.
+DEFAULT_MIN_SCORE_FRACTION = 0.2
 
 
 @dataclass
@@ -117,11 +142,26 @@ class CitationEngine:
         backend: LLMBackend | None = None,
         top_k: int = 4,
         min_score: float = 1.0,
+        min_score_fraction: float | None = None,
     ):
         self.bm25 = BM25(chunks)
         self.backend = backend or NoOpBackend()
         self.top_k = top_k
         self.min_score = min_score  # abstain if best hit scores below this
+        # Opt-in, additive on top of min_score (not a replacement -- every
+        # existing caller that passes an explicit min_score and leaves this
+        # unset keeps today's exact behavior; small hand-built test corpora
+        # never need it). When set, ALSO requires the top hit to clear this
+        # fraction of BM25.max_possible_score(query) for that query. A fixed
+        # absolute min_score is corpus-size dependent: idf(term) rises with
+        # corpus size N for a term whose document frequency stays flat, so a
+        # threshold calibrated against a small corpus gets easier to clear,
+        # for reasons unrelated to relevance, as the corpus grows (see
+        # docs/alignment-plan.md item 4b). max_possible_score scales with N
+        # the same way real per-term scores do -- both come from the same
+        # idf() -- so the *ratio* between an actual top score and that
+        # ceiling stays roughly constant regardless of corpus size.
+        self.min_score_fraction = min_score_fraction
 
     def retrieve_sources(self, query: str) -> list[Source]:
         """Pure retrieval: BM25 hits -> numbered Sources, no LLM call. Returns
@@ -129,7 +169,13 @@ class CitationEngine:
         `investigator.agent.AgentLoop` calls as its `search_rfcs` tool; `query()`
         below is unchanged and just uses it for the original single-shot path."""
         hits = self.bm25.score(query, self.top_k)
-        if not hits or hits[0][1] < self.min_score:
+        if not hits:
+            return []
+        floor = self.min_score
+        if self.min_score_fraction is not None:
+            ceiling = self.bm25.max_possible_score(query)
+            floor = max(floor, self.min_score_fraction * ceiling)
+        if hits[0][1] < floor:
             return []
         return [Source(n=i + 1, source_id=c.source_id, text=t)
                 for i, (c, t) in enumerate((c, c.text) for c, _ in hits)]
