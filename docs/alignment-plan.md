@@ -225,7 +225,12 @@ Three things break on real RFC text:
   a percentile of the score distribution) and document why.
 
 **Capture baseline harness numbers before expanding.** The before/after delta
-is the artifact; it cannot be reconstructed afterwards.
+is the artifact; it cannot be reconstructed afterwards. Done —
+[docs/corpus-baseline-2rfc.md](corpus-baseline-2rfc.md): 4/13 detection
+accuracy (corpus-independent, recorded as a sanity check), 0/3 false
+assertions / 3 correct / 10 abstained on ACH, with the 10 abstentions split
+4 "no analyzer findings fired" (no corpus can fix these) vs. 6 "no genuine
+supporting evidence in the corpus" (the ones worth re-checking after 4b).
 
 Expect ACH results to move. The two-tier evidence bar exists because hedged
 RFC text couldn't strictly entail incident-specific claims; more corpus may or
