@@ -17,7 +17,7 @@ from investigator.analyzers import all_analyzers
 from investigator.analyzers.base import reset_registry
 from investigator.llm import LLMBackend, default_backend
 from investigator.report import Report
-from investigator.retrieval.citations import CitationEngine
+from investigator.retrieval.citations import build_citation_engine
 from investigator.retrieval.corpus import load_corpus
 from investigator.toolsets import DEFAULT_TOOLSETS_PATH, load_rfc_search_config, load_toolsets, register_enabled_analyzers
 from investigator.types import Incident
@@ -41,10 +41,9 @@ class InvestigationEngine:
         register_enabled_analyzers(load_toolsets(toolsets_path))
 
         self.backend = backend or default_backend()
-        self.citations = CitationEngine(load_corpus(rfc_dir), backend=self.backend)
-        max_context_chars = load_rfc_search_config(toolsets_path).get(
-            "max_context_chars", DEFAULT_MAX_CONTEXT_CHARS
-        )
+        rfc_search_config = load_rfc_search_config(toolsets_path)
+        self.citations = build_citation_engine(load_corpus(rfc_dir), rfc_search_config, backend=self.backend)
+        max_context_chars = rfc_search_config.get("max_context_chars", DEFAULT_MAX_CONTEXT_CHARS)
         self.agent = AgentLoop(
             self.citations, self.backend,
             max_iterations=max_search_rounds, max_context_chars=max_context_chars,

@@ -1,0 +1,532 @@
+# Alignment plan: closing the gap to the original build plan
+
+Status as of 2026-08-06. Phases 0–5 are implemented; Phase 6 is deliberately
+not started. This document is the delta between what the original build plan
+specified and what this repo actually does, ordered by value — plus the
+deviations that should be *defended* rather than closed, and two places where
+the **original plan is wrong** and should be deviated from deliberately.
+
+---
+
+## The framing
+
+"As close as possible to the original plan" is the wrong goal if taken
+literally. The plan itself says its effort figures are "planning figures, not
+commitments," permits the DeBERTa fallback, and names a defensible minimum
+scope of Phases 0–4. It also — by its own admission — was written without web
+access, and verification has now shown at least two of its technical
+recommendations to be the wrong call for this project.
+
+Four buckets:
+
+- **Correctness gaps** — a claim the README already makes is not supported by
+  what the code does. Fix first.
+- **Missing scope** — real plan items not built.
+- **Defend** — deviations that are fine or better. Prepare the one-liner.
+- **Deviate deliberately** — the plan's own recommendation is wrong here.
+
+---
+
+## Gap table
+
+| Plan item | Status | Bucket |
+|---|---|---|
+| Phase 0: LiteLLM routes to API model *and* local Ollama | ✅ Done — `claude-haiku-4-5` (hosted) + `ollama/llama3.1:8b` (local), README updated | Correctness |
+| Phase 3: citation precision/recall over generated claims | ✅ Done — same item-1 work; now scored against real narration, twice (2-RFC and 16-RFC corpus) | Correctness |
+| Phase 3: ALCE-style recall | ✅ Done — `scorer.py` matches ALCE's concatenated-source definitions | Correctness |
+| Phase 3/4: one checker doing two different jobs | ✅ Done — split; fixed the isolated bug, broke the real-catalog rate, both reported | Correctness |
+| Phase 1: full RFC corpus | ✅ Done — 16 RFCs, 945 chunks; results mixed, see docs/corpus-expansion-results.md | Correctness |
+| Plan caveats: re-verify upstream facts | Partly done below | Correctness |
+| Phase 1: hybrid BM25 + dense retrieval | ✅ Done — opt-in, fixed item 4b's false assertion; kubernetes-style gap remains | Missing scope |
+| Phase 2: second data source proves the abstraction | ✅ Done — RPKI toolset, detection accuracy 4/13 → 5/13 | Missing scope |
+| Phase 3: **Bespoke-MiniCheck-7B primary** | Not used | **Deviate — plan is wrong** |
+| Phase 4: NLI-filter contradictions with the same stack | Same checker as Phase 3 | **Deviate — plan is wrong** |
+| Phase 3: ALCE + RAGChecker as libraries | Metrics reimplemented | Defend |
+| Phase 1: LlamaIndex + Chroma/Qdrant | Hand-rolled BM25 + citation engine | Defend |
+| Phase 2: YAML toolsets | TOML toolsets | Defend |
+| Data: PyBGPStream | mrtparse + stdlib, real MRT archives | Defend (better) |
+| Phase 6: RFC corpus | ✅ Done (this item) | Correctly deferred, now closed |
+| Phase 6: hybrid retrieval, provenance graph, live feed | Not started | Correctly deferred |
+
+---
+
+## Where the original plan is wrong
+
+### A. Bespoke-MiniCheck-7B is the wrong checker for this project
+
+The plan names it primary with "DeBERTa-MNLI or T5-TRUE as lighter fallbacks."
+Verification against the live model card changes this:
+
+- **It is licensed CC BY-NC 4.0** — non-commercial. Making a non-commercial
+  model the default checker in an open-source portfolio tool is a licensing
+  problem, and "commercial licensing, contact company@bespokelabs.ai" is not
+  something you want in the dependency path of a repo you're showing off.
+- It is 8B params, needs a GPU or vLLM for usable throughput, and the plan
+  already flagged this as a risk.
+
+**`lytang/MiniCheck-Flan-T5-Large` dominates it for this use case:** MIT
+licensed, 0.8B, explicitly "the best fact-checking model with size < 1B,"
+reported at GPT-4 parity and ~400× cheaper, CPU-feasible. Same authors, same
+paper, same `minicheck` package (`model_name='flan-t5-large'`).
+
+It is also a real upgrade over what you run today. `cross-encoder/nli-deberta-v3-base`
+is a **general NLI** model; MiniCheck is **purpose-trained on claim-vs-document
+grounding**, which is exactly your Phase 3 task.
+
+### B. Phase 3 and Phase 4 need two different checkers
+
+This is the more important finding, and it explains a bug you already
+documented.
+
+MiniCheck outputs a **binary** label: `MiniCheck-Model(document, claim) -> {0, 1}`,
+supported or not supported. It has no way to express *contradiction*. Your
+Phase 4 adversarial retrieval needs exactly that — passages that genuinely
+**CONTRADICT** a hypothesis, not passages that merely fail to support it.
+
+Your current design uses one `EntailmentChecker` for both jobs, and the
+failure you documented in the README is the predictable symptom: RFC 4271's
+AS_PATH loop-detection section flagged as `CONTRADICTS`-ing an unrelated MOAS
+claim, "apparently because both texts happen to contain the word 'not.'" That
+is the classic MNLI annotation artifact — models trained on MNLI learn
+negation as a contradiction cue and systematically collapse *neutral* into
+*contradiction* for topically unrelated pairs. An unrelated passage should be
+NEUTRAL. Your pipeline has no neutral.
+
+**The fix is architectural, not a bigger model:**
+
+- **Phase 3 (does the cited source support this claim?)** →
+  `lytang/MiniCheck-Flan-T5-Large`. Binary is the right shape here.
+- **Phase 4 (does this passage refute this hypothesis?)** → a genuine 3-way
+  NLI model that can say *neutral*:
+  `MoritzLaurer/DeBERTa-v3-large-mnli-fever-anli-ling-wanli` (435M, MIT,
+  trained on MNLI + FEVER-NLI + **ANLI** + LingNLI + WANLI). ANLI is
+  adversarially collected specifically to break the lexical-overlap and
+  negation shortcuts that produced your false positive.
+
+Then require `CONTRADICTION` to beat *both* `ENTAILMENT` and `NEUTRAL` by a
+margin before a passage counts as counter-evidence.
+
+This is a better story than "I used the model the plan named." You found a
+failure mode, diagnosed it as a task/model mismatch rather than a capacity
+problem, and fixed it by splitting one interface into two — after your own
+scaling experiment (xsmall → base) showed capacity only *reduced* it. Your
+`EntailmentChecker` Protocol already makes both swaps cheap.
+
+---
+
+## P0 — Correctness
+
+### 1. Actually run the LLM path — ✅ done
+
+Phase 0's done-criterion was "a hello world completion routes through LiteLLM
+to both an API model and local Ollama." `litellm` is now an installed,
+verified dependency (`llm` extra in `pyproject.toml`, already correctly
+placed there before this pass) and the flagship README demo has been
+re-generated against real model output.
+
+Ran: `claude-haiku-4-5` (hosted, via `ANTHROPIC_API_KEY`) and
+`ollama/llama3.1:8b` (local, no key, no network egress), both against the
+same incident (`pakistan-youtube-2008`) and the same evidence-referencing
+question, with `--seek-contradictions --score-citations`. Both are captured
+in the README's [Real LLM narration](../README.md#real-llm-narration-hosted--local)
+section.
+
+This mattered far beyond Phase 0 because of what it does to Phase 3:
+`score_citations` measures whether *generated claims* are entailed by the
+sources they cite. Under `NoOpBackend` the "answer" is the echoed prompt, so
+the harness had only ever seen synthetic fixtures
+(`tests/evaluation/test_scorer.py`) and text that trivially matches its own
+sources. Pointed at real output for the first time:
+
+- **`claude-haiku-4-5`**: 100% citation precision, 60% recall — 5 claims, 2
+  with no corpus support anywhere (retriever errors), 0 miscited.
+- **`ollama/llama3.1:8b`**: 33%/33% — 3 claims, 1 retriever error *and* 1
+  generator error (a claim the corpus could have supported but that didn't
+  get cited).
+
+Neither backend was fully grounded once it committed to a claim — confirming
+the plan's prediction that real numbers would be worse than the synthetic
+baseline, and demonstrating the differentiator actually works: this failure
+mode was invisible under `NoOpBackend` and is now caught. One caveat worth
+recording: the agent's prompt (`investigator/agent.py`) only carries
+retrieved RFC text and the question, not the analyzer's specific findings —
+a generic question ("why did connectivity change?") caused *both* models to
+correctly abstain outright, and a sharper, evidence-referencing question was
+needed before either would commit to a claim at all. That's arguably
+correct behavior (no fabrication without grounding) but is worth a follow-up
+note if it surprises users running their own questions.
+
+**Done when:** the README shows a real narrated investigation and a
+citation-correctness scorecard computed over model-generated prose, from both
+a hosted and a local backend. ✅
+
+### 2. Fix the ALCE recall definition
+
+`scorer.py:138` computes recall as `entailed_by_any_cited` — i.e. at least one
+cited source, *on its own*, entails the claim.
+
+ALCE defines it differently: a statement's citation recall is 1 iff it has at
+least one citation **and the concatenation of all cited passages** fully
+supports it. The difference bites exactly where RFC grounding lives — a claim
+supported jointly by RFC 7908 §4 and RFC 4271 §9.1.2, with neither sufficient
+alone, scores 0 under your rule and 1 under ALCE's.
+
+Precision has a similar gap: ALCE gates a citation's precision on the
+statement's recall being 1, and counts a citation as precise if it fully *or
+partially* supports the statement; your version is a flat
+`entailed_citations / total_citations`.
+
+Either match the definitions or rename the metric and state the difference
+explicitly in `docs/design.md`. Both are defensible; silently calling a
+different metric "ALCE-style" is not. Note that concatenated-source scoring
+is also what MiniCheck is built for — it takes a whole document, not a single
+span.
+
+### 3. Split the checkers (see section B above) — ✅ done
+
+`investigator/evaluation/entailment.py` now exposes `MiniCheckSupportChecker`
+(Phase 3, `lytang/MiniCheck-Flan-T5-Large`) and `MarginNLIContradictionChecker`
+(Phase 4, `MoritzLaurer/DeBERTa-v3-large-mnli-fever-anli-ling-wanli`, margin
+requirement), selected independently via `default_support_checker()` /
+`default_contradiction_checker()` and `[citation_eval].support_checker` /
+`.contradiction_checker`. Opt-in only; `lexical` stays the shipped default.
+
+The README's AS_PATH false positive was re-tested against the new stack, at
+two different levels, with both results reported:
+
+- **Isolated re-test: fixed.** The exact documented case (RFC 4271 §9.1.2
+  vs. the real MOAS analyzer's statement, both pulled verbatim, not
+  paraphrased) scores 99.5% neutral, 0.4% contradiction, where the old
+  checker confidently said `CONTRADICTS`. Permanent regression test:
+  `tests/evaluation/test_entailment.py::test_margin_nli_contradiction_checker_fixes_the_documented_as_path_false_positive`.
+- **Real-catalog re-test: worse, not better.** Swapped in as the production
+  contradiction checker against all 13 real incidents: false-assertion rate
+  went from 3 correct/1 false/9 abstained (lexical, on the expanded corpus)
+  to 0 correct/1 false/12 abstained — the new model's much stricter
+  strict-`ENTAILED` threshold collapses `investigator/ach.py`'s
+  `supporting_count` to near-zero, re-triggering the original
+  100%-abstention problem the two-tier evidence bar (Phase 5) was built to
+  fix. Diagnosed, not just measured — see `docs/design.md`'s "Phase 3/4
+  checker split" section for the full mechanism and a second, structural
+  finding behind the one new false assertion (`indosat-2014`).
+
+One correction to this plan's own diagnosis, found while implementing it:
+the claim "your pipeline has no neutral" isn't accurate —
+`EntailmentLabel.UNCLEAR` already existed and was already wired into the
+two-tier evidence bar. The prescription (a better, ANLI-trained 3-way
+model, margin requirement) still measurably works on the case it targeted;
+the diagnosis's wording was off.
+
+**Real installation friction, worth flagging for anyone following this
+plan elsewhere:** PyPI's `minicheck` package is an unrelated formal-
+verification tool (name collision) — install the real one from GitHub:
+`pip install "minicheck @ git+https://github.com/Liyan06/MiniCheck.git@main"`.
+Two more undocumented runtime dependencies: `accelerate` and NLTK's
+`punkt_tab` data.
+
+### 4. Expand the RFC corpus
+
+Target the topically dense BGP/routing-security subset, ~15–20 full RFCs:
+4271, 4272, 7908, 9234, 8212, 7454 (BCP 194), 6811, 6480, 8205, 8206, 8207,
+4760, 1997, 4456, 5065, 2439. Per-RFC text at
+`https://www.rfc-editor.org/rfc/rfc<N>.txt`.
+
+*(Correction to an earlier draft of this plan: I claimed the full IETF dump
+would "dilute IDF." That is backwards — adding unrelated documents raises N
+while `df` for BGP terms stays flat, so IDF for your discriminative terms goes
+**up**. The real arguments for a curated subset are (a) precision@k, since
+top-4 over ~500k chunks gives far more chances for a lexically-similar but
+topically-irrelevant chunk to win, and (b) **evaluation attribution** — with a
+focused corpus, an abstention means the RFC series genuinely doesn't address
+the claim, rather than retrieval losing it in the noise. That distinction is
+precisely what your RAGChecker-style retriever-vs-generator split measures, so
+a focused corpus makes your headline metric interpretable.)*
+
+Three things break on real RFC text:
+
+- **Page furniture.** Form feeds, running headers, `[Page 42]` footers get
+  appended as prose. Needs a cleaner that also strips Status of This Memo,
+  Copyright, the table of contents, References, and Authors' Addresses. The
+  TOC especially — dense with section titles, it will outrank real body text
+  on exactly the queries that matter.
+- **`_SECTION_RE` over-matches.** Any line starting with digits-and-dots,
+  including TOC entries and numbered list items, becomes a section label. A
+  mislabeled citation is worse than no citation given what you claim to
+  measure.
+- **`min_score = 1.0` is corpus-size dependent.** An absolute BM25 score
+  calibrated against a two-document index. Since IDF for your query terms
+  *rises* with N, this floor gets progressively easier to clear as the corpus
+  grows — your abstention rate will drift down for reasons that have nothing
+  to do with evidence quality. Make it relative (fraction of top-hit score, or
+  a percentile of the score distribution) and document why.
+
+**Capture baseline harness numbers before expanding.** The before/after delta
+is the artifact; it cannot be reconstructed afterwards. Done —
+[docs/corpus-baseline-2rfc.md](corpus-baseline-2rfc.md): 4/13 detection
+accuracy (corpus-independent, recorded as a sanity check), 0/3 false
+assertions / 3 correct / 10 abstained on ACH, with the 10 abstentions split
+4 "no analyzer findings fired" (no corpus can fix these) vs. 6 "no genuine
+supporting evidence in the corpus" (the ones worth re-checking after 4b).
+
+Expect ACH results to move. The two-tier evidence bar exists because hedged
+RFC text couldn't strictly entail incident-specific claims; more corpus may or
+may not change that, and either outcome is worth writing up.
+
+**Done** — all three "three things break on real RFC text" issues above
+fixed and tested (`investigator/retrieval/corpus.py`, `tests/test_corpus.py`,
+`tests/test_citations.py`); all 16 target RFCs fetched and swapped in for
+the 2 hand-picked excerpts. Results moved, and not uniformly for the better:
+[docs/corpus-expansion-results.md](corpus-expansion-results.md) — a new
+false ACH assertion (0/3 → 1/4) and worse local-model citation-correctness
+on the flagship demo (33%/33% → 0%/0%), alongside the expected reduction in
+uninformative abstentions. Reported as measured, per this section's own
+instruction, not adjusted after the fact.
+
+### 5. Verification pass on the plan's own caveats
+
+The plan closes by noting web tools were unavailable and that every
+architectural detail "MUST be re-verified." `docs/design.md` now carries a
+lineage table asserting correspondence to K8sGPT's `IAI`, HolmesGPT's toolset
+model, and LlamaIndex's `CitationQueryEngine` — precisely the claims a
+technical reader checks first.
+
+Already verified while writing this plan:
+
+- ✅ `bespokelabs/Bespoke-MiniCheck-7B` exists at that path — **but is CC BY-NC 4.0**.
+- ✅ arXiv 2404.10774 (MiniCheck, EMNLP 2024) resolves.
+- ✅ ALCE metric definitions — and your implementation differs (item 2).
+- ✅ RFC 9234 and RFC 7454/BCP 194 are correctly identified. Note RFC 7454 is
+  in the process of being updated (`bgpopsecupd`) — worth a footnote.
+- ✅ `MoritzLaurer/DeBERTa-v3-large-mnli-fever-anli-ling-wanli` exists, MIT.
+
+Still to verify: K8sGPT `IAnalyzer` / `IAI` signatures and `Result`/`Failure`
+field names; K8sGPT's current CNCF tier; HolmesGPT's built-in toolset list and
+truncation internals; LlamaIndex `citation_chunk_size` / `citation_chunk_overlap`
+defaults; the remaining six arXiv IDs.
+
+**Verification pass — done, five of six items:**
+
+- ✅ **K8sGPT `IAI` interface** (`pkg/ai/iai.go`): `Configure(config
+  IAIConfig) error`, `GetCompletion(ctx, prompt) (string, error)`,
+  `GetName() string`, `Close()`. Matches `investigator/llm.py`'s docstring
+  claim exactly ("Configure / GetCompletion / GetName / Close") — no
+  correction needed.
+- ✅ **K8sGPT `IAnalyzer` interface**: `Analyze(a Analyzer) ([]Result,
+  error)` — single method, matches.
+- ✅ **K8sGPT `Result`/`Failure` structs** (`pkg/common/types.go`): `Result{
+  Kind, Name, Error []Failure, Details, ParentObject }`,
+  `Failure{ Text, KubernetesDoc, Sensitive }`. Cross-checked against
+  `investigator/types.py`'s `Result`/`Finding`: `kind`↔`Kind`,
+  `name`↔`Name`, `findings`↔`Error` (list of sub-items), `details`↔`Details`,
+  and `Finding.text`↔`Failure.Text`, `Finding.rfc_hint`↔`Failure.KubernetesDoc`
+  (both "pointer to the doc/concept to ground this in"),
+  `Finding.sensitive`↔`Failure.Sensitive` — a genuinely close field-level
+  correspondence, confirmed rather than assumed.
+- ✅ **K8sGPT `coreAnalyzerMap`**: real identifier, `pkg/analyzer/analyzer.go`,
+  ~14 default analyzers (Pod, Service, Deployment, Node, Ingress,
+  StatefulSet, Job, CronJob, PVC, ReplicaSet, Event, ConfigMap,
+  MutatingWebhook, ValidatingWebhook) plus an `additionalAnalyzerMap` for
+  opt-in ones. Matches design.md's lineage-table claim.
+- ✅ **K8sGPT's CNCF tier**: still Sandbox as of this pass (accepted
+  2023-12-19, next review flagged mid-2026) — not currently asserted
+  anywhere in this repo's docs, so nothing to correct, but confirmed in
+  case that changes and someone adds the claim later.
+- ✅ **LlamaIndex `CitationQueryEngine` defaults**: `citation_chunk_size=512`,
+  `citation_chunk_overlap=20` (`DEFAULT_CITATION_CHUNK_SIZE` /
+  `DEFAULT_CITATION_CHUNK_OVERLAP` in `citation_query_engine.py`). Not
+  currently asserted as specific numbers anywhere in this repo — the
+  general "mirrors `CitationQueryEngine`" claim holds structurally
+  (numbered sources, cite-or-abstain), just not at this parameter level;
+  nothing to correct.
+- **Correction found: HolmesGPT's truncation mechanism**, not just its
+  existence. The real mechanism is percentage-of-context-window-based
+  (`TOOL_MAX_ALLOCATED_CONTEXT_WINDOW_PCT`, default 15%) with an absolute
+  *token* ceiling (`TOOL_MAX_ALLOCATED_CONTEXT_WINDOW_TOKENS`, default
+  25K), plus history-compaction and disk-spillover for very large output —
+  this project's `investigator/agent.py` is a fixed *character* count
+  (4000 default), mirroring the spirit (bound what one search adds to a
+  prompt) but not the mechanism (no window-percentage scaling, no token
+  counting, no compaction, no spillover). Already an honestly-flagged
+  approximation ("character-based, not a real tokenizer"); now the
+  specific gap vs. the real mechanism is documented too, in
+  `docs/design.md`'s Phase 2 section.
+- ⏳ **The remaining six arXiv IDs — not verifiable from this repo alone.**
+  Only two arXiv IDs actually appear anywhere in this codebase or its
+  docs (2310.01798, MiniCheck's 2404.10774), both already confirmed above
+  and earlier in this document. The other six must be from the *original*
+  external build plan document, which isn't part of this repository —
+  there's nothing here to extract IDs from. Needs the original plan text
+  (or the six IDs directly) to close out; flagged rather than guessed at.
+
+### 6. Housekeeping
+
+- `.gitattributes` with `*.json text eol=lf`, then re-checkout. 24 incident
+  files show as modified with ~179k insertions and ~179k deletions — a pure
+  line-ending flip that will pollute the next commit.
+- `requirements.txt` ships with every real dependency commented out, so
+  `pip install -r requirements.txt` does not give the documented capability.
+  Move to extras (`llm`, `nli`, `retrieval`).
+
+---
+
+## P1 — Missing scope
+
+### 7. Hybrid BM25 + dense retrieval — ✅ done
+
+Plan Phase 1 specified hybrid; the repo was BM25-only. Done after the
+corpus expansion, per this section's own instruction, so the justification
+is measured. Full write-up:
+[docs/hybrid-retrieval-results.md](hybrid-retrieval-results.md).
+
+The near-synonym gap predicted here was demonstrated with the *real*
+analyzer hypothesis templates, not paraphrased approximations:
+`WithdrawalStorm`'s real statement ("Total 403 withdrawals; peak burst 63
+in window.") returns BM25 matches on the bare digits, not the concept;
+`RouteLeak`'s real statement returns **zero** BM25 hits despite RFC 7908
+having an entire route-leak taxonomy. Dense retrieval on the same two
+queries surfaces RFC 2439 (Route Flap Damping) and RFC 7908's leak
+definitions.
+
+`DenseIndex` (`BAAI/bge-small-en-v1.5`) + reciprocal rank fusion,
+implemented in `investigator/retrieval/citations.py`, opt-in via
+`[rfc_search].retrieval = "hybrid"` — same config-switch pattern as
+`[citation_eval].checker`, `bm25` stays the dependency-free default.
+`sentence-transformers` is already a soft dependency, confirmed no new
+toolchain needed.
+
+Two things found beyond the plan's own prediction:
+
+- Dense retrieval needed its own abstention floor for a real reason the
+  plan didn't call out: cosine similarity has no natural "found nothing"
+  signal, so hybrid mode would never abstain without one — verified
+  directly (a "sourdough bread" query returned sources with no floor).
+  Calibrating that floor hit the *same* on-topic/off-topic separation
+  problem `min_score_fraction` did (item 4b) — a "kubernetes ingress
+  controller" query beats the real `WithdrawalStorm` query even under the
+  dense floor. Reported, not hidden: hybrid retrieval does not fix BM25's
+  register-vs-topic confusion, it reproduces it.
+- **Real-catalog measurement: fixes item 4b's false assertion.**
+  `evaluate.py --ach` with hybrid enabled: 3 correct/0 false (was 1)/10
+  abstained — back to the pre-expansion numbers, now on the full 16-RFC
+  corpus. Diagnosed, not just measured: RRF fusion displaces the same
+  spurious "strict entailment" evidence (RFC 6811 §2 pseudo-code) item 3's
+  checker-split investigation independently flagged as questionable — two
+  unrelated fixes converging on the same root cause.
+
+Not flipped to the shipped default (new real dependency, the separation
+gap above is real and unresolved, one incident's worth of catalog signal
+is a real but small result) — stays opt-in, same as `cross_encoder`,
+`minicheck`, and `nli_margin`.
+
+### 8. Prove the toolset abstraction with a second data source — ✅ done
+
+Phase 2's done-criterion was "a new data source can be added without touching
+the core loop." The abstraction existed; the proof didn't. Full write-up:
+[docs/rpki-toolset-results.md](rpki-toolset-results.md).
+
+Built the **RPKI/ROA validation toolset** this section proposed, not
+Batfish (needs Docker) — `investigator/rpki.py` (RIPEstat `rpki-validation`
+API, no auth, cached locally, same fetch-once/analyze-offline split as
+`investigator/ingest.py`) + `investigator/analyzers/rpki.py`
+(`RPKIAnalyzer`, reads only the local cache, no network at `analyze()`
+time) + one `[[toolset]]` block. **The diff is the evidence**: zero changes
+to `engine.py`, `cli.py`, or the registry.
+
+Turns "AS10297 announced 205.251.192.0/24" into "AS10297 announced
+205.251.192.0/24 and no ROA authorizes it" for the real
+`amazon-route53-mew-2018` incident (the MyEtherWallet DNS hijack) — and it
+measurably matters: detection accuracy **4/13 → 5/13**, genuinely new
+signal (MOAS needs both origins visible in-window; RPKI only needs the
+anomalous one to lack a valid ROA).
+
+**Caveat verified as real, not hypothetical, twice.** Current RPKI state
+isn't necessarily incident-time state — checked directly: neither of
+`pakistan-youtube-2008`'s 2008 contenders is today's valid origin for its
+prefix (RPKI predates ~2011 anyway). Found a second, subtler version while
+fetching the real catalog: `google-japan-leak-2017` (a route leak, not a
+hijack) comes back `invalid_asn` for Google's own legitimate ASN — almost
+certainly ROA drift over the years, not evidence of anything. Not mapped
+to the `route_leak` label for exactly this reason.
+
+**ACH's false-assertion rate didn't move (3/1/9, unchanged), and that's
+the more interesting finding, not a null result.** `RPKIViolation`
+hypotheses get created and weighed, but `rank_hypotheses()` routes them
+through the same RFC-citation entailment gate as everything else — a
+structural mismatch, since a ROA is self-certifying and doesn't need RFC
+prose to corroborate it. Flagged as real follow-up work, not silently
+patched (would be scope creep beyond this item's own done-criterion).
+
+---
+
+## Defend, don't fix
+
+- **Hand-rolled BM25 instead of LlamaIndex + Chroma.** The core runs on the
+  standard library with no install; the `CitationEngine` mirrors
+  `CitationQueryEngine` semantics so the swap is contained. Adding dense
+  retrieval (#7) is the honest response, not adopting the framework.
+- **Metrics reimplemented instead of importing ALCE/RAGChecker.** ALCE is a
+  benchmark harness over ASQA/QAMPARI/ELI5, not a library that drops onto a
+  BGP corpus; the definitions are what transfer — so get them right (#2).
+- **TOML instead of YAML toolsets.** Same config-driven model, and `tomllib`
+  is stdlib in 3.11+, preserving zero-install. Cosmetic.
+- **mrtparse instead of PyBGPStream.** Exceeds the plan. PyBGPStream wraps a C
+  library with no Windows wheels; the plan's own risk note said to start from
+  curated incidents and defer live feeds — you ingested 13 real incidents from
+  raw RIS/RouteViews MRT archives anyway. Lead with this.
+- **Four analyzers, the ACH ranking-bug fix, the two-tier evidence bar.**
+  Beyond plan scope. `test_zero_evidence_does_not_beat_genuine_mixed_evidence`
+  is the best story in the repo — the eval harness caught something
+  hand-written tests missed, which is the entire thesis.
+
+---
+
+## Sequencing
+
+| # | Item | Est. | Notes |
+|---|---|---|---|
+| 1 | Run the LLM path, regenerate README demo + scorecard | ✅ done | Unblocks honest Phase 3 numbers |
+| 6 | Housekeeping (line endings, extras) | ✅ done | — |
+| 2 | ALCE definition fix | ✅ done | Do before re-measuring |
+| 4a | Baseline harness numbers **before** corpus change | ✅ done | Blocks 4b |
+| 4b | Corpus expansion + cleaner + scale-invariant floor | ✅ done | Blocks 7; see docs/corpus-expansion-results.md |
+| 3 | Split support vs. contradiction checkers | ✅ done | Fixed the isolated case; broke the real-catalog rate -- both reported |
+| 5 | Finish verification pass | ✅ done (5/6) | 1 correction found (HolmesGPT truncation); 6 arXiv IDs need the original plan text |
+| 7 | Hybrid dense retrieval, if measurement justifies | ✅ done | Fixed item 4b's false assertion; kubernetes-style gap remains, opt-in only |
+| 8 | RPKI/ROA toolset | ✅ done | Detection accuracy 4/13 -> 5/13; found a real ACH-integration gap |
+
+Items 1–6 decide whether existing claims hold. Stop there and the project is
+honest and defensible. Items 7–8 are scope.
+
+**Items 1–6 are now all done** (item 5 at 5/6 — the six arXiv IDs need the
+original external plan text, not reconstructable from this repo alone).
+The project's claims have been re-verified, not just re-asserted: two real
+bugs were found and fixed (section-regex, preamble-skip), one design
+decision was recalibrated after being wrong on the first try
+(`min_score_fraction`), one fix was proven to work in isolation and proven
+to break the real system it was plugged into (the checker split), and one
+upstream-lineage claim was found to differ from the real mechanism
+(HolmesGPT's truncation). None of that was smoothed over to make the
+"done" line read cleaner.
+
+**Items 7–8 are now also done.** Both delivered genuine, measured value
+(hybrid retrieval fixed item 4b's false assertion; the RPKI toolset moved
+detection accuracy 4/13 → 5/13) and both surfaced a real limitation of
+their own that wasn't smoothed over either (hybrid retrieval reproduces
+BM25's register-vs-topic confusion rather than fixing it; RPKI evidence
+doesn't yet integrate into ACH's reasoning on its own terms). Every item
+in this plan — P0 and P1 — is now closed, one way or another, with the
+honest result attached.
+
+Phase 6 stays out until the numbers are stable, per the plan's own gate.
+
+---
+
+## Sources
+
+- [bespokelabs/Bespoke-MiniCheck-7B](https://huggingface.co/bespokelabs/Bespoke-MiniCheck-7B) — CC BY-NC 4.0, 8B
+- [lytang/MiniCheck-Flan-T5-Large](https://huggingface.co/lytang/MiniCheck-Flan-T5-Large) — MIT, 0.8B
+- [MiniCheck (EMNLP 2024), arXiv:2404.10774](https://arxiv.org/pdf/2404.10774.pdf) · [GitHub](https://github.com/Liyan06/MiniCheck)
+- [LLM-AggreFact leaderboard](https://llm-aggrefact.github.io/blog)
+- [MoritzLaurer/DeBERTa-v3-large-mnli-fever-anli-ling-wanli](https://huggingface.co/MoritzLaurer/DeBERTa-v3-large-mnli-fever-anli-ling-wanli) — MIT, 3-way NLI
+- [ALCE: Enabling LLMs to Generate Text with Citations (EMNLP 2023)](https://aclanthology.org/2023.emnlp-main.398.pdf)
+- [RFC 9234](https://www.rfc-editor.org/rfc/rfc9234.html) · [RFC 7454 / BCP 194 update status](https://ayuda.la/en/blog/bgpopsecupd-en/)

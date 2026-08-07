@@ -30,12 +30,12 @@ from pathlib import Path
 
 from investigator.ach import ACHMatrix, build_ach_matrix
 from investigator.analyzers import all_analyzers
-from investigator.evaluation.entailment import EntailmentChecker, default_checker
+from investigator.evaluation.entailment import EntailmentChecker, default_contradiction_checker
 from investigator.ingest import DEFAULT_CATALOG, incident_output_path, load_catalog
-from investigator.retrieval.citations import CitationEngine
+from investigator.retrieval.citations import build_citation_engine
 from investigator.retrieval.contradiction import hypotheses_from_results
 from investigator.retrieval.corpus import load_corpus
-from investigator.toolsets import DEFAULT_TOOLSETS_PATH, load_citation_eval_config
+from investigator.toolsets import DEFAULT_TOOLSETS_PATH, load_citation_eval_config, load_rfc_search_config
 from investigator.types import Incident, Result
 
 DEFAULT_RFC_DIR = str(Path(__file__).resolve().parent.parent / "data" / "rfcs")
@@ -44,7 +44,15 @@ DEFAULT_RFC_DIR = str(Path(__file__).resolve().parent.parent / "data" / "rfcs")
 # would count as a hit. An empty set is a deliberate, honest gap: no analyzer
 # detects that class of incident today.
 LABEL_TO_ANALYZER_KINDS: dict[str, set[str]] = {
-    "prefix_hijack": {"MOAS"},
+    # RPKIViolation (investigator/analyzers/rpki.py, item 8) is an
+    # independent evidence axis, not a heuristic paraphrase of MOAS -- an
+    # origin with no valid ROA is real, cryptographically-groundable hijack
+    # evidence even when the legitimate origin's own announcements weren't
+    # captured in the same window (MOAS needs both to fire; RPKI only needs
+    # the anomalous one). Not mapped to route_leak: an unauthorized-origin
+    # finding says nothing about a propagation-scope violation, which is
+    # what route_leak actually means.
+    "prefix_hijack": {"MOAS", "RPKIViolation"},
     "moas": {"MOAS"},
     "withdrawal_storm": {"WithdrawalStorm"},
     "as_path_loop": {"ASPathLoop"},
@@ -259,9 +267,10 @@ def main(argv: list[str] | None = None) -> int:
     print(summarize(rows))
 
     if args.ach:
-        citations = CitationEngine(load_corpus(args.rfc_dir))
-        checker_name = load_citation_eval_config(args.toolsets).get("checker")
-        checker = default_checker(checker_name)
+        rfc_search_config = load_rfc_search_config(args.toolsets)
+        citations = build_citation_engine(load_corpus(args.rfc_dir), rfc_search_config)
+        checker_name = load_citation_eval_config(args.toolsets).get("contradiction_checker")
+        checker = default_contradiction_checker(checker_name)
         ach_rows = [evaluate_entry_ach(entry, incidents_dir, citations, checker) for entry in catalog]
         print()
         print(render_ach_table(ach_rows))

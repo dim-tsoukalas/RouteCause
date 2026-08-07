@@ -1,0 +1,46 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "network-investigator"
+version = "0.1.0"
+description = "A citation-grounded BGP-incident investigator: deterministic anomaly detection + cited RFC retrieval, abstains rather than guessing when it can't ground a claim."
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = []
+
+# The core (deterministic analyzers, BM25 citation retrieval, offline CLI,
+# competing-hypothesis / contradiction / citation-correctness scoring with
+# the default lexical checker) runs on the standard library alone -- these
+# extras only activate the production paths documented in the README/
+# docs/design.md. requirements.txt installs the [all] extra so the two
+# never drift apart.
+[project.optional-dependencies]
+ingest = ["mrtparse>=2.0"]            # investigator/ingest.py: real RIPE RIS / RouteViews data
+llm = ["litellm>=1.40"]               # provider-agnostic LLM narration
+# Real entailment checking, all three opt-in EntailmentCheckers:
+# CrossEncoderNLIChecker (general MNLI), MiniCheckSupportChecker (Phase 3,
+# purpose-trained claim-vs-document grounding), MarginNLIContradictionChecker
+# (Phase 4, genuine 3-way NLI) -- see investigator/evaluation/entailment.py.
+# `accelerate` is needed by transformers' device_map="auto" for the latter
+# two; note MiniCheckSupportChecker also needs `nltk.download("punkt_tab")`
+# at runtime (a one-time data download, not a pip dependency, so not
+# automated here -- surfaces as a clear LookupError if skipped).
+nli = [
+    "sentence-transformers>=3.0",
+    "accelerate>=1.0",
+    "minicheck @ git+https://github.com/Liyan06/MiniCheck.git@main",
+]
+dev = ["pytest>=8.0"]
+all = ["network-investigator[ingest,llm,nli,dev]"]
+
+[project.scripts]
+investigate = "investigator.cli:investigate_main"
+ask = "investigator.cli:ask_main"
+investigator-ingest = "investigator.ingest:main"
+investigator-evaluate = "investigator.evaluate:main"
+investigator-rpki = "investigator.rpki:main"
+
+[tool.setuptools.packages.find]
+include = ["investigator*"]

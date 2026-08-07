@@ -2,9 +2,11 @@
 
 The report mirrors the structure the full vision calls for: grounded
 observations (from deterministic analyzers, each tied to raw evidence), a
-cited explanation (from RFC retrieval), and next-step checks. Hypotheses /
-contradicting-evidence / citation-correctness scoring are later phases; the
-report leaves labelled slots for them so the shape is stable.
+cited explanation (from RFC retrieval), and next-step checks. Competing-
+hypothesis / contradicting-evidence / citation-correctness scoring
+(investigator/ach.py, investigator/retrieval/contradiction.py,
+investigator/evaluation/) hang off this report via CLI flags rather than
+living in the report body itself, so the core shape here stays stable.
 """
 from __future__ import annotations
 
@@ -70,9 +72,9 @@ class Report:
 
         # --- Footer ----------------------------------------------------------
         out.append("\n---")
-        out.append("_Citation-correctness scoring (`--score-citations`) and "
-                   "adversarial counter-evidence retrieval (`--seek-contradictions`) "
-                   "are both available now, opt-in -- see investigator/evaluation/ and "
-                   "investigator/retrieval/contradiction.py. Competing-hypothesis (ACH) "
-                   "scoring is still a later phase._")
+        out.append("_Citation-correctness scoring (`--score-citations`), adversarial "
+                   "counter-evidence retrieval, and competing-hypothesis (ACH) ranking "
+                   "are all available now via `--seek-contradictions` -- see "
+                   "investigator/evaluation/, investigator/retrieval/contradiction.py, "
+                   "and investigator/ach.py._")
         return "\n".join(out)

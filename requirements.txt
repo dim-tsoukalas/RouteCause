@@ -1,23 +1,20 @@
-# Phase 1 core runs on the standard library only — no install required.
-# The extras below activate the production paths described in the build plan.
-
-# --- LLM narration (the `--explain` / real-completion path) ---
-# litellm>=1.40        # provider-agnostic completions (OpenAI/Anthropic/Ollama/…)
-
-# --- Production retrieval (swap the built-in BM25 for hybrid BM25+dense) ---
-# llama-index-core>=0.11
-# chromadb>=0.5        # or qdrant-client
-# sentence-transformers>=3.0   # also powers the citation-correctness cross-encoder below
-
-# --- Citation-correctness entailment checking (investigator/evaluation/) ---
-# The default LexicalOverlapChecker needs nothing extra. For the real
-# CrossEncoderNLIChecker (CITATION_CHECKER=cross_encoder or
-# [citation_eval].checker="cross_encoder" in toolsets.toml):
-# sentence-transformers>=3.0   # pulls in transformers + torch (CPU wheel is fine)
-
-# --- Real BGP incident data (replaces the synthetic sample) ---
-mrtparse>=2.0          # pure-Python MRT parser for investigator/ingest.py
-                       # (not pybgpstream: that wraps a C library with no Windows wheels)
-
-# --- Dev ---
-pytest>=8.0
+# Dependency versions live in pyproject.toml's [project.optional-dependencies]
+# (extras: ingest, llm, nli, dev, all) so there is a single source of truth.
+# This file installs the package editable with every extra:
+#
+#   ingest -> mrtparse (investigator/ingest.py; not pybgpstream, which wraps a
+#             C library with no Windows wheels)
+#   llm    -> litellm (provider-agnostic completions: OpenAI/Anthropic/Ollama/…)
+#   nli    -> sentence-transformers, minicheck, accelerate (three opt-in
+#             EntailmentCheckers: general cross-encoder, and the Phase 3/4
+#             split -- MiniCheckSupportChecker / MarginNLIContradictionChecker,
+#             selected via [citation_eval].support_checker /
+#             .contradiction_checker in toolsets.toml, or the
+#             CITATION_SUPPORT_CHECKER / CITATION_CONTRADICTION_CHECKER env
+#             vars). MiniCheckSupportChecker also needs a one-time
+#             `nltk.download("punkt_tab")` at runtime, not a pip dependency.
+#   dev    -> pytest
+#
+# For a narrower install, skip this file and run `pip install -e ".[llm]"`
+# (or any other single extra) directly instead.
+-e .[all]

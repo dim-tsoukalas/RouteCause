@@ -37,6 +37,13 @@ module = "investigator.analyzers.route_leak"
 enabled = true
 description = "Detects a newly-appearing shared transit AS across peers (possible leak)."
 
+[[toolset]]
+name = "rpki"
+kind = "analyzer"
+module = "investigator.analyzers.rpki"
+enabled = true
+description = "Flags observed origins with no valid RPKI ROA, from a locally cached RIPEstat lookup (python -m investigator.rpki) -- a data source independent of the RFC corpus."
+
 [rfc_search]
 # Context-budget cap for the agentic search loop (investigator/agent.py):
 # the max characters of RFC source text included in a single prompt, across
@@ -44,9 +51,25 @@ description = "Detects a newly-appearing shared transit AS across peers (possibl
 # dependency, documented as an approximation.
 max_context_chars = 4000
 
+# "bm25" (default, dependency-free) or "hybrid" (BM25 + dense embeddings via
+# sentence-transformers, needs `pip install -e ".[nli]"` -- see
+# investigator/retrieval/citations.py's DenseIndex). Hybrid widens the
+# candidate pool BM25 alone would return, including queries BM25 abstains on
+# outright -- a real, measured gap for BGP-analyzer phrasing vs. RFC prose
+# vocabulary (docs/alignment-plan.md item 7).
+retrieval = "bm25"
+
 [citation_eval]
-# Which EntailmentChecker investigator/evaluation/entailment.py's
-# default_checker() should prefer. "lexical" (default) is dependency-free;
-# "cross_encoder" needs `pip install sentence-transformers` (see
-# requirements.txt) and falls back to lexical if that's not installed.
-checker = "lexical"
+# Two independent EntailmentChecker selections (investigator/evaluation/
+# entailment.py) -- Phase 3 (citation correctness: does the cited source
+# support the claim?) and Phase 4 (adversarial retrieval / ACH: does this
+# passage refute the hypothesis?) are different jobs, and one checker doing
+# both produced a documented false positive (see MarginNLIContradictionChecker's
+# docstring). "lexical" (default, both) is dependency-free.
+#
+# support_checker: "lexical" | "cross_encoder" (pip install -e ".[nli]") |
+#   "minicheck" (pip install "minicheck @ git+https://github.com/Liyan06/MiniCheck.git@main")
+# contradiction_checker: "lexical" | "cross_encoder" (pip install -e ".[nli]") |
+#   "nli_margin" (pip install -e ".[nli]")
+support_checker = "lexical"
+contradiction_checker = "lexical"
