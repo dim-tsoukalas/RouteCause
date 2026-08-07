@@ -40,6 +40,7 @@ investigate = "investigator.cli:investigate_main"
 ask = "investigator.cli:ask_main"
 investigator-ingest = "investigator.ingest:main"
 investigator-evaluate = "investigator.evaluate:main"
+investigator-rpki = "investigator.rpki:main"
 
 [tool.setuptools.packages.find]
 include = ["investigator*"]

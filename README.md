@@ -107,6 +107,40 @@ against real data, not asserted in a design doc:
   `docs/design.md`'s "Phase 3/4 checker split" section and
   `investigator/retrieval/contradiction.py`'s module docstring.
 
+- **Two unrelated fixes converged on the same root cause from different
+  directions.** Hybrid (BM25 + dense) retrieval was built for a different
+  reason entirely — BM25 returning *zero* hits for `RouteLeak`'s real
+  hypothesis statement despite RFC 7908 having a full route-leak taxonomy —
+  but measured against the real catalog, it also fixed the corpus
+  expansion's false assertion (3 correct/**0** false/10 abstained, was
+  3/1/9). Diagnosed, not coincidental: RRF fusion displaces the exact same
+  spurious "strict entailment" evidence (RFC 6811 §2 — literally
+  pseudo-code) the checker-split investigation above *independently*
+  flagged as questionable. Two different fixes, aimed at two different
+  problems, agreeing on what the real problem was — see
+  [docs/hybrid-retrieval-results.md](docs/hybrid-retrieval-results.md).
+  Also not adopted as default: the same "kubernetes ingress controller"
+  query that broke the corpus-expansion floor breaks the dense-retrieval
+  floor too (0.642, above the real `WithdrawalStorm` query's 0.631) — dense
+  retrieval doesn't fix BM25's register-vs-topic confusion, it reproduces it.
+
+- **A new, independent evidence axis genuinely improved detection accuracy
+  — and exposed a real architectural gap in how it gets used.** Added an
+  RPKI/ROA validation toolset (`investigator/analyzers/rpki.py`) — two new
+  files plus one `[[toolset]]` config entry, proving the toolset
+  abstraction with a second data source per Phase 2's own done-criterion.
+  Real result: detection accuracy **4/13 → 5/13** —
+  `amazon-route53-mew-2018` (the real MyEtherWallet DNS hijack) now
+  correctly detected, genuinely new signal MOAS couldn't produce (MOAS
+  needs both origins visible in-window; RPKI only needs the anomalous one
+  to lack a valid ROA). But the ACH false-assertion rate didn't move,
+  and *why* is itself the finding: `rank_hypotheses()` routes RPKI evidence
+  through the same RFC-citation entailment gate as everything else, even
+  though a ROA is self-certifying and shouldn't need RFC prose to
+  corroborate it — a structural mismatch, not a capacity problem, flagged
+  as real follow-up work rather than silently worked around. See
+  [docs/rpki-toolset-results.md](docs/rpki-toolset-results.md).
+
 ## See it work: the 2008 Pakistan Telecom / YouTube hijack
 
 Real MRT archive data (RIPE RIS + RouteViews, 2008-02-24 18:47–20:54 UTC) for
@@ -349,7 +383,8 @@ sources verbatim.
 ## What it does — and deliberately does not — do (yet)
 
 **Does:** deterministic BGP anomaly detection (MOAS/hijack, withdrawal storm,
-AS_PATH loop, route leak), an agentic search loop over RFCs (the LLM may run
+AS_PATH loop, route leak, RPKI/ROA authorization — see
+[RPKI toolset results](docs/rpki-toolset-results.md)), an agentic search loop over RFCs (the LLM may run
 multiple `search_rfcs` queries before answering, `investigator/agent.py`)
 with numbered `[n]` citations, abstention when no source is relevant, a
 pluggable LLM backend, config-driven analyzer toolsets
@@ -459,14 +494,15 @@ investigator/
   toolsets.toml              # config-driven analyzer manifest (TOML, stdlib-only)
   toolsets.py                # manifest loader + dynamic analyzer registration
   analyzers/               # deterministic detectors + registry
-    base.py  moas.py  withdrawal_storm.py  as_path_loop.py  route_leak.py
-  retrieval/               # BM25 + CitationEngine (numbered sources, abstain)
+    base.py  moas.py  withdrawal_storm.py  as_path_loop.py  route_leak.py  rpki.py
+  retrieval/               # BM25 + dense (hybrid, opt-in) + CitationEngine (numbered sources, abstain)
     corpus.py  citations.py  contradiction.py
   llm.py                   # LLMBackend: NoOp (offline) + LiteLLM (real)
   agent.py                  # bounded, context-budgeted agentic search loop (ReAct-style, RFC retrieval only)
   engine.py  report.py  cli.py
   ach.py                     # ACH ranking + two-tier evidence bar + measured abstention (Phase 5)
   ingest.py                 # RIPE RIS / RouteViews raw MRT -> Incident JSON
+  rpki.py                    # RIPEstat RPKI/ROA fetch + local cache -> RPKIAnalyzer (item 8)
   evaluate.py                # expected-vs-detected accuracy over the catalog; --ach for the false-assertion rate
   evaluation/                # citation-CORRECTNESS harness (claims.py, entailment.py, scorer.py)
 data/
@@ -478,6 +514,7 @@ docs/design.md
 docs/alignment-plan.md      # delta vs. the original build plan, ordered by value
 docs/corpus-expansion-results.md  # before/after of the RFC corpus expansion, honestly reported
 docs/hybrid-retrieval-results.md  # BM25 vs. hybrid (dense) retrieval, honestly reported
+docs/rpki-toolset-results.md      # RPKI/ROA validation toolset, honestly reported
 ```
 
 ## Roadmap
@@ -495,4 +532,5 @@ measured limitations.
 - **RFC corpus expansion ✅** 2 hand-picked excerpts → 16 full RFCs (945 chunks); fixed two real bugs only visible against full RFC text and a corpus-size-dependent relevance floor; the result was a genuine mix of better (more abstentions now have real evidence weighed) and worse (a new false ACH assertion, degraded local-model grounding) — see [docs/corpus-expansion-results.md](docs/corpus-expansion-results.md)
 - **Entailment checker split ✅** purpose-built checkers for Phase 3 (`MiniCheckSupportChecker`) and Phase 4 (`MarginNLIContradictionChecker`) instead of one checker doing both jobs; fixed the documented AS_PATH/MOAS false positive in isolation (99.5% neutral, was a confident `CONTRADICTS`) but made the real-catalog false-assertion rate *worse* when adopted wholesale (0 correct/1 false/12 abstained, was 3/1/9) — both results reported, opt-in only, `lexical` stays default
 - **Hybrid (BM25 + dense) retrieval ✅** opt-in (`[rfc_search].retrieval = "hybrid"`); fixes the corpus expansion's false assertion on the real catalog (0 false, was 1) but reproduces rather than fixes BM25's on-topic/off-topic separation weakness on adjacent-technical-domain queries — see [docs/hybrid-retrieval-results.md](docs/hybrid-retrieval-results.md)
+- **RPKI/ROA validation toolset ✅** proves the toolset abstraction with a second, independent evidence axis (two files + one config entry, zero core changes); real detection-accuracy improvement (4/13 → 5/13) but exposes a real architectural gap — RPKI evidence still gets routed through the same RFC-entailment gate as everything else in ACH, a structural mismatch since a ROA is self-certifying — see [docs/rpki-toolset-results.md](docs/rpki-toolset-results.md)
 - **Phase 6 (effort-gated, not started):** a claims→sources provenance graph, live BGP feed integration

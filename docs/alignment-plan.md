@@ -38,7 +38,7 @@ Four buckets:
 | Phase 1: full RFC corpus | ✅ Done — 16 RFCs, 945 chunks; results mixed, see docs/corpus-expansion-results.md | Correctness |
 | Plan caveats: re-verify upstream facts | Partly done below | Correctness |
 | Phase 1: hybrid BM25 + dense retrieval | ✅ Done — opt-in, fixed item 4b's false assertion; kubernetes-style gap remains | Missing scope |
-| Phase 2: second data source proves the abstraction | Claimed, never demonstrated | Missing scope |
+| Phase 2: second data source proves the abstraction | ✅ Done — RPKI toolset, detection accuracy 4/13 → 5/13 | Missing scope |
 | Phase 3: **Bespoke-MiniCheck-7B primary** | Not used | **Deviate — plan is wrong** |
 | Phase 4: NLI-filter contradictions with the same stack | Same checker as Phase 3 | **Deviate — plan is wrong** |
 | Phase 3: ALCE + RAGChecker as libraries | Metrics reimplemented | Defend |
@@ -418,19 +418,43 @@ gap above is real and unresolved, one incident's worth of catalog signal
 is a real but small result) — stays opt-in, same as `cross_encoder`,
 `minicheck`, and `nli_margin`.
 
-### 8. Prove the toolset abstraction with a second data source
+### 8. Prove the toolset abstraction with a second data source — ✅ done
 
 Phase 2's done-criterion was "a new data source can be added without touching
-the core loop." The abstraction exists; the proof doesn't. The diff itself is
-the evidence — if it touches only a new module plus one `[[toolset]]` block,
-the claim is proven.
+the core loop." The abstraction existed; the proof didn't. Full write-up:
+[docs/rpki-toolset-results.md](rpki-toolset-results.md).
 
-Batfish needs Docker. An **RPKI/ROA validation toolset** over the existing
-incidents is cheaper, needs no new runtime, and is more domain-relevant: it
-turns "AS36561 announced this prefix" into "AS36561 announced this prefix and
-no ROA authorizes it," which is the strongest evidence a hijack analyzer can
-produce. It also gives Phase 5's ACH a genuinely independent evidence axis
-rather than more RFC prose.
+Built the **RPKI/ROA validation toolset** this section proposed, not
+Batfish (needs Docker) — `investigator/rpki.py` (RIPEstat `rpki-validation`
+API, no auth, cached locally, same fetch-once/analyze-offline split as
+`investigator/ingest.py`) + `investigator/analyzers/rpki.py`
+(`RPKIAnalyzer`, reads only the local cache, no network at `analyze()`
+time) + one `[[toolset]]` block. **The diff is the evidence**: zero changes
+to `engine.py`, `cli.py`, or the registry.
+
+Turns "AS10297 announced 205.251.192.0/24" into "AS10297 announced
+205.251.192.0/24 and no ROA authorizes it" for the real
+`amazon-route53-mew-2018` incident (the MyEtherWallet DNS hijack) — and it
+measurably matters: detection accuracy **4/13 → 5/13**, genuinely new
+signal (MOAS needs both origins visible in-window; RPKI only needs the
+anomalous one to lack a valid ROA).
+
+**Caveat verified as real, not hypothetical, twice.** Current RPKI state
+isn't necessarily incident-time state — checked directly: neither of
+`pakistan-youtube-2008`'s 2008 contenders is today's valid origin for its
+prefix (RPKI predates ~2011 anyway). Found a second, subtler version while
+fetching the real catalog: `google-japan-leak-2017` (a route leak, not a
+hijack) comes back `invalid_asn` for Google's own legitimate ASN — almost
+certainly ROA drift over the years, not evidence of anything. Not mapped
+to the `route_leak` label for exactly this reason.
+
+**ACH's false-assertion rate didn't move (3/1/9, unchanged), and that's
+the more interesting finding, not a null result.** `RPKIViolation`
+hypotheses get created and weighed, but `rank_hypotheses()` routes them
+through the same RFC-citation entailment gate as everything else — a
+structural mismatch, since a ROA is self-certifying and doesn't need RFC
+prose to corroborate it. Flagged as real follow-up work, not silently
+patched (would be scope creep beyond this item's own done-criterion).
 
 ---
 
@@ -468,7 +492,7 @@ rather than more RFC prose.
 | 3 | Split support vs. contradiction checkers | ✅ done | Fixed the isolated case; broke the real-catalog rate -- both reported |
 | 5 | Finish verification pass | ✅ done (5/6) | 1 correction found (HolmesGPT truncation); 6 arXiv IDs need the original plan text |
 | 7 | Hybrid dense retrieval, if measurement justifies | ✅ done | Fixed item 4b's false assertion; kubernetes-style gap remains, opt-in only |
-| 8 | RPKI/ROA toolset | 1–2 days | — |
+| 8 | RPKI/ROA toolset | ✅ done | Detection accuracy 4/13 -> 5/13; found a real ACH-integration gap |
 
 Items 1–6 decide whether existing claims hold. Stop there and the project is
 honest and defensible. Items 7–8 are scope.
@@ -482,8 +506,16 @@ decision was recalibrated after being wrong on the first try
 to break the real system it was plugged into (the checker split), and one
 upstream-lineage claim was found to differ from the real mechanism
 (HolmesGPT's truncation). None of that was smoothed over to make the
-"done" line read cleaner. Items 7–8 remain scope, not correctness, and are
-where this pass stops.
+"done" line read cleaner.
+
+**Items 7–8 are now also done.** Both delivered genuine, measured value
+(hybrid retrieval fixed item 4b's false assertion; the RPKI toolset moved
+detection accuracy 4/13 → 5/13) and both surfaced a real limitation of
+their own that wasn't smoothed over either (hybrid retrieval reproduces
+BM25's register-vs-topic confusion rather than fixing it; RPKI evidence
+doesn't yet integrate into ACH's reasoning on its own terms). Every item
+in this plan — P0 and P1 — is now closed, one way or another, with the
+honest result attached.
 
 Phase 6 stays out until the numbers are stable, per the plan's own gate.
 

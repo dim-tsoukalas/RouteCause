@@ -1,0 +1,347 @@
+{
+  "104.18.32.0/21|13335": {
+    "status": "invalid_length",
+    "validating_roas": [
+      {
+        "max_length": 20,
+        "origin": "13335",
+        "prefix": "104.18.32.0/20",
+        "validity": "invalid_length"
+      },
+      {
+        "max_length": 19,
+        "origin": "13335",
+        "prefix": "104.18.32.0/19",
+        "validity": "invalid_length"
+      }
+    ]
+  },
+  "104.244.42.0/24|13414": {
+    "status": "valid",
+    "validating_roas": [
+      {
+        "max_length": 24,
+        "origin": "13414",
+        "prefix": "104.244.42.0/24",
+        "validity": "valid"
+      }
+    ]
+  },
+  "104.27.160.0/21|12389": {
+    "status": "invalid_length",
+    "validating_roas": [
+      {
+        "max_length": 20,
+        "origin": "13335",
+        "prefix": "104.27.160.0/20",
+        "validity": "invalid_length"
+      },
+      {
+        "max_length": 19,
+        "origin": "13335",
+        "prefix": "104.27.160.0/19",
+        "validity": "invalid_length"
+      }
+    ]
+  },
+  "104.27.160.0/21|13335": {
+    "status": "invalid_length",
+    "validating_roas": [
+      {
+        "max_length": 20,
+        "origin": "13335",
+        "prefix": "104.27.160.0/20",
+        "validity": "invalid_length"
+      },
+      {
+        "max_length": 19,
+        "origin": "13335",
+        "prefix": "104.27.160.0/19",
+        "validity": "invalid_length"
+      }
+    ]
+  },
+  "104.27.168.0/21|13335": {
+    "status": "invalid_length",
+    "validating_roas": [
+      {
+        "max_length": 20,
+        "origin": "13335",
+        "prefix": "104.27.160.0/20",
+        "validity": "invalid_length"
+      },
+      {
+        "max_length": 19,
+        "origin": "13335",
+        "prefix": "104.27.160.0/19",
+        "validity": "invalid_length"
+      }
+    ]
+  },
+  "104.28.24.0/21|13335": {
+    "status": "valid",
+    "validating_roas": [
+      {
+        "max_length": 24,
+        "origin": "13335",
+        "prefix": "104.28.0.0/16",
+        "validity": "valid"
+      }
+    ]
+  },
+  "104.31.0.0/21|13335": {
+    "status": "valid",
+    "validating_roas": [
+      {
+        "max_length": 21,
+        "origin": "13335",
+        "prefix": "104.31.0.0/21",
+        "validity": "valid"
+      }
+    ]
+  },
+  "121.53.104.0/24|9457": {
+    "status": "unknown",
+    "validating_roas": []
+  },
+  "192.5.18.0/24|22238": {
+    "status": "unknown",
+    "validating_roas": []
+  },
+  "192.5.18.0/24|23724": {
+    "status": "unknown",
+    "validating_roas": []
+  },
+  "193.0.0.0/21|3333": {
+    "status": "valid",
+    "validating_roas": [
+      {
+        "max_length": 21,
+        "origin": "3333",
+        "prefix": "193.0.0.0/21",
+        "validity": "valid"
+      }
+    ]
+  },
+  "203.0.113.0/24|64500": {
+    "status": "unknown",
+    "validating_roas": []
+  },
+  "203.0.113.0/24|64666": {
+    "status": "unknown",
+    "validating_roas": []
+  },
+  "205.251.192.0/24|10297": {
+    "status": "invalid_asn",
+    "validating_roas": [
+      {
+        "max_length": 24,
+        "origin": "16509",
+        "prefix": "205.251.192.0/23",
+        "validity": "invalid_asn"
+      },
+      {
+        "max_length": 21,
+        "origin": "16509",
+        "prefix": "205.251.192.0/21",
+        "validity": "invalid_length"
+      },
+      {
+        "max_length": 18,
+        "origin": "16509",
+        "prefix": "205.251.192.0/18",
+        "validity": "invalid_length"
+      }
+    ]
+  },
+  "205.251.193.0/24|10297": {
+    "status": "invalid_asn",
+    "validating_roas": [
+      {
+        "max_length": 24,
+        "origin": "16509",
+        "prefix": "205.251.192.0/23",
+        "validity": "invalid_asn"
+      },
+      {
+        "max_length": 21,
+        "origin": "16509",
+        "prefix": "205.251.192.0/21",
+        "validity": "invalid_length"
+      },
+      {
+        "max_length": 18,
+        "origin": "16509",
+        "prefix": "205.251.192.0/18",
+        "validity": "invalid_length"
+      }
+    ]
+  },
+  "205.251.195.0/24|10297": {
+    "status": "invalid_asn",
+    "validating_roas": [
+      {
+        "max_length": 24,
+        "origin": "16509",
+        "prefix": "205.251.194.0/23",
+        "validity": "invalid_asn"
+      },
+      {
+        "max_length": 21,
+        "origin": "16509",
+        "prefix": "205.251.192.0/21",
+        "validity": "invalid_length"
+      },
+      {
+        "max_length": 18,
+        "origin": "16509",
+        "prefix": "205.251.192.0/18",
+        "validity": "invalid_length"
+      }
+    ]
+  },
+  "205.251.197.0/24|10297": {
+    "status": "invalid_asn",
+    "validating_roas": [
+      {
+        "max_length": 24,
+        "origin": "16509",
+        "prefix": "205.251.196.0/23",
+        "validity": "invalid_asn"
+      },
+      {
+        "max_length": 21,
+        "origin": "16509",
+        "prefix": "205.251.192.0/21",
+        "validity": "invalid_length"
+      },
+      {
+        "max_length": 18,
+        "origin": "16509",
+        "prefix": "205.251.192.0/18",
+        "validity": "invalid_length"
+      }
+    ]
+  },
+  "205.251.199.0/24|10297": {
+    "status": "invalid_asn",
+    "validating_roas": [
+      {
+        "max_length": 24,
+        "origin": "16509",
+        "prefix": "205.251.198.0/23",
+        "validity": "invalid_asn"
+      },
+      {
+        "max_length": 21,
+        "origin": "16509",
+        "prefix": "205.251.192.0/21",
+        "validity": "invalid_length"
+      },
+      {
+        "max_length": 18,
+        "origin": "16509",
+        "prefix": "205.251.192.0/18",
+        "validity": "invalid_length"
+      }
+    ]
+  },
+  "208.65.153.0/24|17557": {
+    "status": "invalid_asn",
+    "validating_roas": [
+      {
+        "max_length": 24,
+        "origin": "36040",
+        "prefix": "208.65.153.0/24",
+        "validity": "invalid_asn"
+      },
+      {
+        "max_length": 23,
+        "origin": "36040",
+        "prefix": "208.65.152.0/23",
+        "validity": "invalid_length"
+      },
+      {
+        "max_length": 22,
+        "origin": "36040",
+        "prefix": "208.65.152.0/22",
+        "validity": "invalid_length"
+      },
+      {
+        "max_length": 22,
+        "origin": "43515",
+        "prefix": "208.65.152.0/22",
+        "validity": "invalid_length"
+      }
+    ]
+  },
+  "208.65.153.0/24|36561": {
+    "status": "invalid_asn",
+    "validating_roas": [
+      {
+        "max_length": 24,
+        "origin": "36040",
+        "prefix": "208.65.153.0/24",
+        "validity": "invalid_asn"
+      },
+      {
+        "max_length": 23,
+        "origin": "36040",
+        "prefix": "208.65.152.0/23",
+        "validity": "invalid_length"
+      },
+      {
+        "max_length": 22,
+        "origin": "36040",
+        "prefix": "208.65.152.0/22",
+        "validity": "invalid_length"
+      },
+      {
+        "max_length": 22,
+        "origin": "43515",
+        "prefix": "208.65.152.0/22",
+        "validity": "invalid_length"
+      }
+    ]
+  },
+  "210.171.224.0/24|15169": {
+    "status": "invalid_asn",
+    "validating_roas": [
+      {
+        "max_length": 32,
+        "origin": "0",
+        "prefix": "210.171.224.0/23",
+        "validity": "invalid_asn"
+      }
+    ]
+  },
+  "211.249.221.0/24|9457": {
+    "status": "unknown",
+    "validating_roas": []
+  },
+  "62.84.64.0/19|42334": {
+    "status": "unknown",
+    "validating_roas": []
+  },
+  "62.84.64.0/19|4761": {
+    "status": "unknown",
+    "validating_roas": []
+  },
+  "73.225.0.0/16|33650": {
+    "status": "valid",
+    "validating_roas": [
+      {
+        "max_length": 16,
+        "origin": "33650",
+        "prefix": "73.225.0.0/16",
+        "validity": "valid"
+      },
+      {
+        "max_length": 8,
+        "origin": "7922",
+        "prefix": "73.0.0.0/8",
+        "validity": "invalid_length"
+      }
+    ]
+  }
+}
