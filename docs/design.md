@@ -175,7 +175,18 @@ budgeting.
   table) guard the two places a ReAct prompt can grow unboundedly — a larger
   future RFC corpus, and the sources accumulated across multiple search
   rounds. Character-based, not a real tokenizer, so no new dependency;
-  documented here as an approximation.
+  documented here as an approximation. **Verified against the real
+  mechanism, not assumed equivalent** (docs/alignment-plan.md item 5): the
+  real HolmesGPT caps each tool to a *percentage* of the model's actual
+  context window (`TOOL_MAX_ALLOCATED_CONTEXT_WINDOW_PCT`, default 15%)
+  with an absolute *token* ceiling (`TOOL_MAX_ALLOCATED_CONTEXT_WINDOW_TOKENS`,
+  default 25K), plus a separate compaction step that summarizes old
+  conversation history once the running total nears the window, and can
+  spill very large tool output to disk. This project's fixed character
+  count mirrors the *spirit* (bound what one search adds to the prompt) but
+  not the mechanism (no percentage-of-window scaling, no token counting, no
+  compaction, no disk spillover) — a real, meaningful gap, not glossed
+  over now that it's been checked against the source.
 
 ## Citation-correctness evaluation harness (Phase 3)
 
