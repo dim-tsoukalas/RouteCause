@@ -12,12 +12,17 @@ Retrieval doesn't try to cleverly negate the search query -- lexical BM25
 doesn't understand negation semantics, so a literal "NOT X" query wouldn't
 reliably find refuting passages. Instead: retrieve broadly around the
 hypothesis's own topic (`CitationEngine.retrieve_sources`, unchanged from
-Phase 1), then let the Phase 3 `EntailmentChecker` classify each candidate's
+Phase 1), then let an `EntailmentChecker` classify each candidate's
 *stance*. Only passages the checker labels `CONTRADICTS` count as refuting
 evidence -- verified by the entailment model, never asserted by a generator.
+As of the checker split below, this uses a *different* checker instance
+than Phase 3's citation-correctness scoring
+(`investigator.evaluation.entailment.default_contradiction_checker()`, not
+`default_support_checker()`) -- see that split's rationale further down.
 
-KNOWN, VERIFIED LIMITATION: against the current 2-file RFC corpus, the
-default (dependency-free) `LexicalOverlapChecker` mislabeled a topically-
+KNOWN, VERIFIED LIMITATION (found against the original 2-file RFC corpus;
+see FIXED note below): the default (dependency-free) `LexicalOverlapChecker`
+mislabeled a topically-
 unrelated passage (RFC 4271 §9.1.2, about AS_PATH loop detection) as
 `CONTRADICTS` a MOAS claim about origin-ASN counts. The real
 `CrossEncoderNLIChecker` did too, at first -- but that was model-size-
@@ -41,6 +46,47 @@ clear its relevance floor more easily than they should. Treat
 `contradicting` results as a signal worth human review, not a settled
 verdict -- the same caution this project already applies to MOAS's
 "presumed legitimate origin" heuristic.
+
+FIXED, RE-TESTED: `MarginNLIContradictionChecker`
+(investigator/evaluation/entailment.py), a genuine 3-way NLI model
+(`MoritzLaurer/DeBERTa-v3-large-mnli-fever-anli-ling-wanli`, trained
+partly on ANLI, which is adversarially collected specifically to break
+this exact negation-shortcut pattern) requiring `CONTRADICTS` to beat both
+`ENTAILED` and `UNCLEAR` by a margin, not just be the argmax. Re-tested
+directly against the documented case above, not just assumed fixed by a
+bigger model: scores it 99.5% neutral, 0.4% contradiction --
+`tests/evaluation/test_entailment.py::test_margin_nli_contradiction_checker_fixes_the_documented_as_path_false_positive`.
+One correction to the source plan's own diagnosis of this bug: it claimed
+"your pipeline has no neutral" -- not accurate, `EntailmentLabel.UNCLEAR`
+already existed and `CrossEncoderNLIChecker` already mapped "neutral" to
+it (that's what the two-tier evidence bar below is built on). The real
+problem was narrower: even a real 3-way model's raw argmax sometimes
+picked `CONTRADICTS` over `NEUTRAL` on this exact case due to the
+negation-shortcut bias above, not that the label didn't exist. The plan's
+recommended fix (a better, ANLI-trained model, used only for this job)
+still measurably works -- the diagnosis's wording was off, the
+prescription wasn't.
+
+NOT ADOPTED AS THE DEFAULT, AND HERE'S WHY -- MEASURED, NOT ASSUMED:
+`MarginNLIContradictionChecker` fixes the one documented false positive
+above, but swapping it in for the real 13-incident catalog
+(`CITATION_CONTRADICTION_CHECKER=nli_margin`) makes the false-assertion
+rate *worse*, not better: 0 correct assertions, 1 false, 12 abstained
+(was 3/1/9 with lexical on the same corpus) -- `pakistan-youtube-2008` and
+`china-telecom-18min-2010`, both previously *correct* MOAS assertions, now
+abstain. Root cause: `investigator/ach.py`'s `rank_hypotheses()` abstains
+outright if *every* hypothesis has `supporting_count == 0` (strict
+`ENTAILED`), and this model is dramatically more conservative about that
+label than the lexical checker -- verified directly, the two chunks the
+lexical checker called "strict entailment" for MOAS (RFC 6811 §2.1,
+literally pseudo-code, and RFC 7454 §6.1.2.2, generic RIR-filter prose)
+both score `UNCLEAR` here, arguably a more *correct* judgment that
+nonetheless collapses `supporting_count` to 0 almost everywhere,
+re-triggering the original 100%-abstention problem the two-tier bar below
+exists to fix. Full diagnosis, including the second, structural pattern
+behind the one new false assertion, in `docs/design.md`'s "Phase 3/4
+checker split" section. Stays available, opt-in only; `lexical` remains
+the shipped default.
 
 TWO-TIER EVIDENCE BAR: the flip side of that same false-positive-prone
 `CONTRADICTS` signal is that strict `ENTAILED` (the lexical checker's

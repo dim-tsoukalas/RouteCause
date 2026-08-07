@@ -5,9 +5,14 @@
 #   ingest -> mrtparse (investigator/ingest.py; not pybgpstream, which wraps a
 #             C library with no Windows wheels)
 #   llm    -> litellm (provider-agnostic completions: OpenAI/Anthropic/Ollama/…)
-#   nli    -> sentence-transformers (real cross-encoder entailment checking,
-#             CITATION_CHECKER=cross_encoder or [citation_eval].checker in
-#             toolsets.toml)
+#   nli    -> sentence-transformers, minicheck, accelerate (three opt-in
+#             EntailmentCheckers: general cross-encoder, and the Phase 3/4
+#             split -- MiniCheckSupportChecker / MarginNLIContradictionChecker,
+#             selected via [citation_eval].support_checker /
+#             .contradiction_checker in toolsets.toml, or the
+#             CITATION_SUPPORT_CHECKER / CITATION_CONTRADICTION_CHECKER env
+#             vars). MiniCheckSupportChecker also needs a one-time
+#             `nltk.download("punkt_tab")` at runtime, not a pip dependency.
 #   dev    -> pytest
 #
 # For a narrower install, skip this file and run `pip install -e ".[llm]"`

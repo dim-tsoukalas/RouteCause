@@ -32,7 +32,7 @@ from pathlib import Path
 
 from investigator.ach import rank_hypotheses
 from investigator.engine import InvestigationEngine
-from investigator.evaluation.entailment import default_checker
+from investigator.evaluation.entailment import default_contradiction_checker, default_support_checker
 from investigator.evaluation.scorer import score_citations
 from investigator.retrieval.contradiction import hypotheses_from_results, seek_contradictions
 from investigator.toolsets import DEFAULT_TOOLSETS_PATH, load_citation_eval_config
@@ -102,16 +102,16 @@ def _build_parser() -> argparse.ArgumentParser:
 
 
 def _print_scorecard(answer, engine, toolsets_path: str) -> None:
-    checker_name = load_citation_eval_config(toolsets_path).get("checker")
-    checker = default_checker(checker_name)
+    checker_name = load_citation_eval_config(toolsets_path).get("support_checker")
+    checker = default_support_checker(checker_name)
     scorecard = score_citations(answer, engine.citations, checker)
     print()
     print(scorecard.render())
 
 
 def _print_contradictions(report, engine, toolsets_path: str) -> None:
-    checker_name = load_citation_eval_config(toolsets_path).get("checker")
-    checker = default_checker(checker_name)
+    checker_name = load_citation_eval_config(toolsets_path).get("contradiction_checker")
+    checker = default_contradiction_checker(checker_name)
     hypotheses = hypotheses_from_results(report.results)
     print()
     print("Competing considerations (verified counter-evidence, not asserted):")

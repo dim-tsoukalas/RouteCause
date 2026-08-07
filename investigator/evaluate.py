@@ -30,7 +30,7 @@ from pathlib import Path
 
 from investigator.ach import ACHMatrix, build_ach_matrix
 from investigator.analyzers import all_analyzers
-from investigator.evaluation.entailment import EntailmentChecker, default_checker
+from investigator.evaluation.entailment import EntailmentChecker, default_contradiction_checker
 from investigator.ingest import DEFAULT_CATALOG, incident_output_path, load_catalog
 from investigator.retrieval.citations import DEFAULT_MIN_SCORE_FRACTION, CitationEngine
 from investigator.retrieval.contradiction import hypotheses_from_results
@@ -260,8 +260,8 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.ach:
         citations = CitationEngine(load_corpus(args.rfc_dir), min_score_fraction=DEFAULT_MIN_SCORE_FRACTION)
-        checker_name = load_citation_eval_config(args.toolsets).get("checker")
-        checker = default_checker(checker_name)
+        checker_name = load_citation_eval_config(args.toolsets).get("contradiction_checker")
+        checker = default_contradiction_checker(checker_name)
         ach_rows = [evaluate_entry_ach(entry, incidents_dir, citations, checker) for entry in catalog]
         print()
         print(render_ach_table(ach_rows))
