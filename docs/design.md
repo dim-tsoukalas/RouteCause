@@ -304,6 +304,115 @@ settled verdict — the same caution already applied to MOAS's "presumed
 legitimate origin" heuristic. A larger, more topically-diverse RFC corpus
 remains the most likely further fix; not attempted here.
 
+### The Phase 3/4 checker split (docs/alignment-plan.md item 3)
+
+One `EntailmentChecker` instance did both jobs above Phase 3 (citation
+correctness: does the *cited* source support this specific claim) and
+Phase 4 (does this passage *refute* this hypothesis). The source plan
+argued this conflation explains the AS_PATH-vs-MOAS false positive above,
+and prescribed two purpose-built models instead of one general one:
+`lytang/MiniCheck-Flan-T5-Large` (MIT, 0.8B, purpose-trained claim-vs-
+document grounding, binary by design) for Phase 3, and
+`MoritzLaurer/DeBERTa-v3-large-mnli-fever-anli-ling-wanli` (MIT, 435M,
+genuine 3-way NLI trained partly on ANLI — adversarially collected
+specifically to break lexical-overlap/negation-shortcut heuristics) for
+Phase 4, requiring `CONTRADICTS` to beat both `ENTAILED` and `UNCLEAR` by a
+margin before counting as counter-evidence. Both implemented as new
+`EntailmentChecker`s (`MiniCheckSupportChecker`,
+`MarginNLIContradictionChecker`, `investigator/evaluation/entailment.py`),
+selected independently via `default_support_checker()` /
+`default_contradiction_checker()` and
+`[citation_eval].support_checker` / `.contradiction_checker` in
+`toolsets.toml` — additive, opt-in, `lexical` stays the shipped default for
+both, same pattern as `cross_encoder` before it.
+
+**Correction to the source plan's own diagnosis, found while implementing
+it:** it claimed "your pipeline has no neutral." Not accurate —
+`EntailmentLabel.UNCLEAR` already existed, and `CrossEncoderNLIChecker`
+already mapped a 3-way model's "neutral" output to it; the two-tier
+evidence bar (Phase 5, below) is built entirely on that existing tier. The
+real mechanism was narrower: even a real 3-way model's raw argmax
+sometimes still picked `CONTRADICTS` over `NEUTRAL` on this exact case
+(the documented negation-shortcut bias), not that the pipeline had nowhere
+to put "neutral" if a model said so. The plan's *prescription* — a bigger,
+ANLI-trained model, a margin requirement, used only for the contradiction
+job — still measurably works; the diagnosis's wording was wrong, the fix
+wasn't.
+
+**Re-tested directly, not assumed fixed by a bigger model:** ran
+`MarginNLIContradictionChecker` against the exact documented case (RFC
+4271 §9.1.2's AS_PATH loop-detection text vs. the real MOAS analyzer's `"2
+origin ASNs observed for a single prefix."` statement, both pulled
+verbatim from the running system, not paraphrased) —
+**99.5% neutral, 0.4% contradiction.** Fixed. Covered by a permanent
+regression test,
+`tests/evaluation/test_entailment.py::test_margin_nli_contradiction_checker_fixes_the_documented_as_path_false_positive`,
+alongside a sanity check that the same checker still correctly flags a
+genuine contradiction
+(`test_margin_nli_contradiction_checker_still_detects_genuine_contradiction`).
+
+**Real installation friction, reported rather than smoothed over:** the
+PyPI package literally named `minicheck` is an unrelated formal-
+verification tool (`check_liveness`, `z3_available`, TLA+/Promela export)
+— a name collision, not the fact-checking model. The real package installs
+from GitHub:
+`pip install "minicheck @ git+https://github.com/Liyan06/MiniCheck.git@main"`.
+Two more runtime dependencies surfaced only by actually running it, not
+listed on the model card: `accelerate` (transformers' `device_map="auto"`
+requires it) and NLTK's `punkt_tab` tokenizer data (`nltk.download("punkt_tab")`).
+
+**Measured against the real 13-incident catalog — and the result is the
+opposite of what the narrow re-test predicted.** Swapping
+`MarginNLIContradictionChecker` in as the production contradiction checker
+(`CITATION_CONTRADICTION_CHECKER=nli_margin python -m investigator.evaluate
+--ach`) does not improve the false-assertion rate; it craters it: **0
+correct assertions, 1 false assertion, 12 abstained** (was 3 correct, 1
+false, 9 abstained with the default lexical checker on the same expanded
+corpus). `pakistan-youtube-2008` and `china-telecom-18min-2010` — both
+previously *correct* `MOAS` assertions — now abstain outright.
+
+**Diagnosed, not just measured, because the isolated fix above was real and
+this result needed explaining, not dismissing.** `rank_hypotheses()`
+(`investigator/ach.py`) has a gate that runs *before* the two-tier
+relevant-vs-contradicting comparison: `if all(s.supporting_count == 0 for s
+in scores): abstain`. `supporting_count` is the count of sources this
+checker calls strict `ENTAILED` — and this specific model is dramatically
+more conservative about that label than the lexical checker was. Verified
+directly: the two chunks the lexical checker called "strict entailment"
+support for `pakistan-youtube-2008`'s MOAS hypothesis (RFC 6811 §2.1 —
+literally pseudo-code — and RFC 7454 §6.1.2.2, generic RIR-filter prose)
+both score `UNCLEAR` under `MarginNLIContradictionChecker` (0.62 and 0.999
+neutral respectively) — arguably a *more correct* judgment (pseudo-code
+doesn't semantically entail "2 origin ASNs observed for a single prefix"),
+but it means `supporting_count` collapses to 0 for most hypotheses on most
+incidents, re-triggering almost exactly the original 100%-abstention
+problem the two-tier bar was built to fix in the first place (see above) —
+just via a stricter, better-calibrated entailment judgment instead of a
+demanding threshold.
+
+The one new false assertion (`indosat-2014`, expected `prefix_hijack`/MOAS,
+asserts `[ASPathLoop]` instead) reveals a second, structural pattern, not a
+fluke: `ASPathLoop`'s hypothesis template ("N announcement(s) with a
+repeated ASN in AS_PATH") is a near-paraphrase of RFC 4271's own
+loop-detection definition, so it systematically clears strict entailment
+more easily than MOAS or RouteLeak's phrasing does — a property of how
+closely each analyzer's own statement wording happens to mirror RFC
+phrasing, orthogonal to which hypothesis is actually correct for the
+incident.
+
+**Conclusion: the isolated re-test and the system-level re-test both
+happened and both are reported, even though they point in opposite
+directions.** `MarginNLIContradictionChecker` demonstrably fixes the one
+documented false positive it was built to fix. It is *not* recommended as
+a wholesale replacement for the production contradiction checker without
+also addressing `rank_hypotheses()`'s hard dependency on `supporting_count
+> 0` — likely by decoupling "is this genuinely a strict match" from
+whichever checker also does the contradiction classification, a real
+follow-up, not attempted here. Stays available, opt-in only
+(`CITATION_CONTRADICTION_CHECKER=nli_margin` or
+`[citation_eval].contradiction_checker = "nli_margin"`), `lexical` remains
+the shipped default.
+
 ## Competing-hypothesis (ACH) reasoning + measured abstention (Phase 5)
 
 The last phase of the original 0–5 plan: enumerate hypotheses, score each

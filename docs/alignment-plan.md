@@ -34,7 +34,7 @@ Four buckets:
 | Phase 0: LiteLLM routes to API model *and* local Ollama | ✅ Done — `claude-haiku-4-5` (hosted) + `ollama/llama3.1:8b` (local), README updated | Correctness |
 | Phase 3: citation precision/recall over generated claims | ✅ Done — same item-1 work; now scored against real narration, twice (2-RFC and 16-RFC corpus) | Correctness |
 | Phase 3: ALCE-style recall | ✅ Done — `scorer.py` matches ALCE's concatenated-source definitions | Correctness |
-| Phase 3/4: one checker doing two different jobs | Conflated; explains a documented bug | Correctness |
+| Phase 3/4: one checker doing two different jobs | ✅ Done — split; fixed the isolated bug, broke the real-catalog rate, both reported | Correctness |
 | Phase 1: full RFC corpus | ✅ Done — 16 RFCs, 945 chunks; results mixed, see docs/corpus-expansion-results.md | Correctness |
 | Plan caveats: re-verify upstream facts | Partly done below | Correctness |
 | Phase 1: hybrid BM25 + dense retrieval | BM25 only; corpus expansion made this gap *more* visible, not less | Missing scope |
@@ -182,12 +182,47 @@ different metric "ALCE-style" is not. Note that concatenated-source scoring
 is also what MiniCheck is built for — it takes a whole document, not a single
 span.
 
-### 3. Split the checkers (see section B above)
+### 3. Split the checkers (see section B above) — ✅ done
 
-**Done when:** `investigator/evaluation/entailment.py` exposes a
-support-checker and a separate 3-way contradiction-checker, the README's
-AS_PATH false positive is re-tested against the new stack, and the result —
-fixed or not — is reported.
+`investigator/evaluation/entailment.py` now exposes `MiniCheckSupportChecker`
+(Phase 3, `lytang/MiniCheck-Flan-T5-Large`) and `MarginNLIContradictionChecker`
+(Phase 4, `MoritzLaurer/DeBERTa-v3-large-mnli-fever-anli-ling-wanli`, margin
+requirement), selected independently via `default_support_checker()` /
+`default_contradiction_checker()` and `[citation_eval].support_checker` /
+`.contradiction_checker`. Opt-in only; `lexical` stays the shipped default.
+
+The README's AS_PATH false positive was re-tested against the new stack, at
+two different levels, with both results reported:
+
+- **Isolated re-test: fixed.** The exact documented case (RFC 4271 §9.1.2
+  vs. the real MOAS analyzer's statement, both pulled verbatim, not
+  paraphrased) scores 99.5% neutral, 0.4% contradiction, where the old
+  checker confidently said `CONTRADICTS`. Permanent regression test:
+  `tests/evaluation/test_entailment.py::test_margin_nli_contradiction_checker_fixes_the_documented_as_path_false_positive`.
+- **Real-catalog re-test: worse, not better.** Swapped in as the production
+  contradiction checker against all 13 real incidents: false-assertion rate
+  went from 3 correct/1 false/9 abstained (lexical, on the expanded corpus)
+  to 0 correct/1 false/12 abstained — the new model's much stricter
+  strict-`ENTAILED` threshold collapses `investigator/ach.py`'s
+  `supporting_count` to near-zero, re-triggering the original
+  100%-abstention problem the two-tier evidence bar (Phase 5) was built to
+  fix. Diagnosed, not just measured — see `docs/design.md`'s "Phase 3/4
+  checker split" section for the full mechanism and a second, structural
+  finding behind the one new false assertion (`indosat-2014`).
+
+One correction to this plan's own diagnosis, found while implementing it:
+the claim "your pipeline has no neutral" isn't accurate —
+`EntailmentLabel.UNCLEAR` already existed and was already wired into the
+two-tier evidence bar. The prescription (a better, ANLI-trained 3-way
+model, margin requirement) still measurably works on the case it targeted;
+the diagnosis's wording was off.
+
+**Real installation friction, worth flagging for anyone following this
+plan elsewhere:** PyPI's `minicheck` package is an unrelated formal-
+verification tool (name collision) — install the real one from GitHub:
+`pip install "minicheck @ git+https://github.com/Liyan06/MiniCheck.git@main"`.
+Two more undocumented runtime dependencies: `accelerate` and NLTK's
+`punkt_tab` data.
 
 ### 4. Expand the RFC corpus
 
@@ -341,7 +376,7 @@ rather than more RFC prose.
 | 2 | ALCE definition fix | ✅ done | Do before re-measuring |
 | 4a | Baseline harness numbers **before** corpus change | ✅ done | Blocks 4b |
 | 4b | Corpus expansion + cleaner + scale-invariant floor | ✅ done | Blocks 7; see docs/corpus-expansion-results.md |
-| 3 | Split support vs. contradiction checkers | 1–2 days | Highest-signal single change |
+| 3 | Split support vs. contradiction checkers | ✅ done | Fixed the isolated case; broke the real-catalog rate -- both reported |
 | 5 | Finish verification pass | 1 hour | — |
 | 7 | Hybrid dense retrieval, if measurement justifies | 2–3 days | — |
 | 8 | RPKI/ROA toolset | 1–2 days | — |

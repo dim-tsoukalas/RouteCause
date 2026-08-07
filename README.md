@@ -84,6 +84,29 @@ against real data, not asserted in a design doc:
   [Real LLM narration](#real-llm-narration-hosted--local) below for the
   current transcript.
 
+- **A checker fix that provably fixes the bug it targeted also provably
+  breaks the system it's plugged into — both measured, not just the
+  flattering half.** Split the single entailment checker Phase 3 and
+  Phase 4 shared into two purpose-built ones: `MiniCheckSupportChecker`
+  (binary, citation correctness) and `MarginNLIContradictionChecker`
+  (genuine 3-way NLI, adversarial retrieval). Isolated re-test of the
+  documented RFC 4271-vs-MOAS false positive: **fixed** — 99.5% neutral,
+  0.4% contradiction, where the old checker confidently said `CONTRADICTS`.
+  Re-tested against the real 13-incident catalog, not stopped at the
+  isolated win: false-assertion rate went from 3 correct/1 false/9 abstained
+  (lexical checker) to **0 correct/1 false/12 abstained** — two previously-
+  *correct* MOAS assertions now abstain outright. Root cause: the new
+  model is far more conservative about strict `ENTAILED` than the lexical
+  checker was (verified directly — the exact chunks the lexical checker
+  called "strict entailment" for MOAS turn out to be pseudo-code and
+  generic filter prose that a real NLI model correctly refuses to call
+  entailment), which collapses `investigator/ach.py`'s `supporting_count`
+  to zero almost everywhere and re-triggers the original 100%-abstention
+  problem the two-tier evidence bar was built to fix. Not adopted as the
+  default; stays available, opt-in only. Full diagnosis in
+  `docs/design.md`'s "Phase 3/4 checker split" section and
+  `investigator/retrieval/contradiction.py`'s module docstring.
+
 ## See it work: the 2008 Pakistan Telecom / YouTube hijack
 
 Real MRT archive data (RIPE RIS + RouteViews, 2008-02-24 18:47–20:54 UTC) for

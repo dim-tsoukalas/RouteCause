@@ -4,7 +4,11 @@ from investigator.evaluation.entailment import (
     CrossEncoderNLIChecker,
     EntailmentLabel,
     LexicalOverlapChecker,
+    MarginNLIContradictionChecker,
+    MiniCheckSupportChecker,
     default_checker,
+    default_contradiction_checker,
+    default_support_checker,
 )
 
 SOURCE = (
@@ -70,3 +74,89 @@ def test_cross_encoder_checker_real_model():
         "An unexpected origin AS change is completely normal and never a hijack signal.", SOURCE
     )
     assert contradiction.label == EntailmentLabel.CONTRADICTS
+
+
+# --------------------------------------------------------------------------- #
+# Phase 3/4 checker split (docs/alignment-plan.md item 3)
+# --------------------------------------------------------------------------- #
+
+def test_default_support_checker_falls_back_to_lexical_without_selection():
+    checker = default_support_checker()
+    assert isinstance(checker, LexicalOverlapChecker)
+
+
+def test_default_support_checker_selects_minicheck_when_requested_and_available():
+    pytest.importorskip("minicheck.minicheck")
+    checker = default_support_checker("minicheck")
+    assert isinstance(checker, MiniCheckSupportChecker)
+
+
+def test_default_contradiction_checker_falls_back_to_lexical_without_selection():
+    checker = default_contradiction_checker()
+    assert isinstance(checker, LexicalOverlapChecker)
+
+
+def test_default_contradiction_checker_selects_nli_margin_when_requested_and_available():
+    pytest.importorskip("transformers")
+    checker = default_contradiction_checker("nli_margin")
+    assert isinstance(checker, MarginNLIContradictionChecker)
+
+
+def test_minicheck_support_checker_real_model():
+    pytest.importorskip("minicheck.minicheck")
+    checker = MiniCheckSupportChecker()
+
+    supported = checker.check(
+        "An unexpected origin AS change is a strong indicator of a prefix hijack.", SOURCE
+    )
+    assert supported.label == EntailmentLabel.ENTAILED
+
+    unsupported = checker.check("Sourdough bread requires a long fermentation time.", SOURCE)
+    assert unsupported.label == EntailmentLabel.NOT_ENTAILED
+
+    # Binary by design -- MiniCheck has no CONTRADICTS/UNCLEAR concept, so a
+    # flat negation of SOURCE must still land on one of the two labels it
+    # actually supports, not silently produce a label outside its contract.
+    negated = checker.check(
+        "An unexpected origin AS change is never an indicator of a prefix hijack.", SOURCE
+    )
+    assert negated.label in (EntailmentLabel.ENTAILED, EntailmentLabel.NOT_ENTAILED)
+
+
+# The exact documented false positive (docs/design.md's Phase 4 section,
+# contradiction.py's module docstring): RFC 4271 §9.1.2's AS_PATH
+# loop-detection text, flagged CONTRADICTS against a MOAS hypothesis, by
+# both the lexical checker and the original nli-deberta-v3-xsmall cross-
+# encoder. Real text pulled verbatim from the loaded corpus and the real
+# MOAS analyzer's statement format, not paraphrased.
+_AS_PATH_LOOP_SECTION = (
+    "If the AS_PATH attribute of a BGP route contains an AS loop, the BGP route "
+    "should be excluded from the Phase 2 decision function.  AS loop detection "
+    "is done by scanning the full AS path (as specified in the AS_PATH "
+    "attribute), and checking that the autonomous system number of the local "
+    "system does not appear in the AS path.  Operations of a BGP speaker that "
+    "is configured to accept routes with its own autonomous system number in "
+    "the AS path are outside the scope of this document. It is critical that "
+    "BGP speakers within an AS do not make conflicting decisions regarding "
+    "route selection that would cause forwarding loops to occur."
+)
+_MOAS_CLAIM = "2 origin ASNs observed for a single prefix."
+
+
+def test_margin_nli_contradiction_checker_fixes_the_documented_as_path_false_positive():
+    pytest.importorskip("transformers")
+    checker = MarginNLIContradictionChecker()
+    verdict = checker.check(_MOAS_CLAIM, _AS_PATH_LOOP_SECTION)
+    # The documented failure was CONTRADICTS; a genuinely unrelated passage
+    # should be UNCLEAR (neutral), not a confident refutation.
+    assert verdict.label == EntailmentLabel.UNCLEAR
+
+
+def test_margin_nli_contradiction_checker_still_detects_genuine_contradiction():
+    pytest.importorskip("transformers")
+    checker = MarginNLIContradictionChecker()
+    verdict = checker.check(
+        "AS loop detection is never performed by scanning the AS_PATH.",
+        _AS_PATH_LOOP_SECTION,
+    )
+    assert verdict.label == EntailmentLabel.CONTRADICTS

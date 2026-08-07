@@ -25,3 +25,6 @@ Thumbs.db
 
 # Claude Code local settings
 .claude/settings.local.json
+
+# Local model cache (MiniCheckSupportChecker's cache_dir; multi-GB)
+.minicheck_cache/
