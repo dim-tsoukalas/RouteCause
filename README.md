@@ -416,10 +416,20 @@ result was **not** an unconditional improvement — see
 false-assertion regression and the LLM-narration degradation this exposed,
 reported honestly rather than adjusted after the fact.
 
-**Does not (Phase 6, effort-gated):** hybrid BM25+dense retrieval (the
-retrieval-precision gap the corpus expansion made *more* visible, not
-less — see the corpus-expansion results doc), a claims→sources provenance
-graph, live BGP feed integration. See [`docs/design.md`](docs/design.md).
+**Also does:** opt-in hybrid retrieval (`investigator/retrieval/citations.py`'s
+`DenseIndex`, BM25 + dense embeddings via reciprocal rank fusion,
+`[rfc_search].retrieval = "hybrid"`) — motivated by a measured BM25 failure
+(the real `RouteLeak` analyzer statement returns *zero* BM25 hits against a
+corpus that has an entire route-leak taxonomy), and it fixes the corpus
+expansion's false assertion on the real 13-incident catalog (0 false, was
+1). Not the shipped default: a real "kubernetes ingress controller" query
+still beats a real on-topic query under dense retrieval's own relevance
+floor, the same register-vs-topic confusion BM25 has — dense retrieval
+doesn't fix that failure mode, it reproduces it. See
+[docs/hybrid-retrieval-results.md](docs/hybrid-retrieval-results.md).
+
+**Does not (Phase 6, effort-gated):** a claims→sources provenance graph,
+live BGP feed integration. See [`docs/design.md`](docs/design.md).
 
 ## Architecture
 
@@ -467,6 +477,7 @@ tests/                     # analyzer + toolset + retrieval/abstention/contradic
 docs/design.md
 docs/alignment-plan.md      # delta vs. the original build plan, ordered by value
 docs/corpus-expansion-results.md  # before/after of the RFC corpus expansion, honestly reported
+docs/hybrid-retrieval-results.md  # BM25 vs. hybrid (dense) retrieval, honestly reported
 ```
 
 ## Roadmap
@@ -482,4 +493,6 @@ measured limitations.
 - **Phase 4 ✅** adversarial contradiction retrieval (`--seek-contradictions`), reusing Phase 1 retrieval + Phase 3 entailment checking; a real, verified false-positive limitation is documented, not hidden
 - **Phase 5 ✅** competing-hypothesis (ACH) reasoning + measured abstention (`investigator/ach.py`, `--ach`); a real ranking-rule bug was found and fixed against real data, and a follow-up two-tier evidence bar turned the resulting 100% real-catalog abstention rate into 3 correct assertions with 0 false assertions (2-file corpus) — re-measured at 3 correct, 1 false, 9 abstained after the corpus expansion below, diagnosed rather than hidden
 - **RFC corpus expansion ✅** 2 hand-picked excerpts → 16 full RFCs (945 chunks); fixed two real bugs only visible against full RFC text and a corpus-size-dependent relevance floor; the result was a genuine mix of better (more abstentions now have real evidence weighed) and worse (a new false ACH assertion, degraded local-model grounding) — see [docs/corpus-expansion-results.md](docs/corpus-expansion-results.md)
-- **Phase 6 (effort-gated, not started):** hybrid BM25+dense retrieval, a claims→sources provenance graph, live BGP feed integration
+- **Entailment checker split ✅** purpose-built checkers for Phase 3 (`MiniCheckSupportChecker`) and Phase 4 (`MarginNLIContradictionChecker`) instead of one checker doing both jobs; fixed the documented AS_PATH/MOAS false positive in isolation (99.5% neutral, was a confident `CONTRADICTS`) but made the real-catalog false-assertion rate *worse* when adopted wholesale (0 correct/1 false/12 abstained, was 3/1/9) — both results reported, opt-in only, `lexical` stays default
+- **Hybrid (BM25 + dense) retrieval ✅** opt-in (`[rfc_search].retrieval = "hybrid"`); fixes the corpus expansion's false assertion on the real catalog (0 false, was 1) but reproduces rather than fixes BM25's on-topic/off-topic separation weakness on adjacent-technical-domain queries — see [docs/hybrid-retrieval-results.md](docs/hybrid-retrieval-results.md)
+- **Phase 6 (effort-gated, not started):** a claims→sources provenance graph, live BGP feed integration

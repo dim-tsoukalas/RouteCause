@@ -1,4 +1,12 @@
-from investigator.retrieval.citations import ABSTAIN_MARKER, BM25, CitationEngine
+import pytest
+
+from investigator.retrieval.citations import (
+    ABSTAIN_MARKER,
+    BM25,
+    CitationEngine,
+    DenseIndex,
+    _reciprocal_rank_fusion,
+)
 from investigator.retrieval.corpus import Chunk
 
 
@@ -111,3 +119,78 @@ def test_min_score_fraction_catches_a_leak_that_an_absolute_floor_misses():
         _corpus_with_filler(500), top_k=1, min_score=0.0, min_score_fraction=0.6
     )
     assert large_engine_relative.retrieve_sources(_OFFTOPIC_QUERY) == []
+
+
+# --------------------------------------------------------------------------- #
+# Hybrid (BM25 + dense) retrieval (docs/alignment-plan.md item 7)
+# --------------------------------------------------------------------------- #
+_CHUNK_A = Chunk("A", "alpha")
+_CHUNK_B = Chunk("B", "beta")
+_CHUNK_C = Chunk("C", "gamma")
+
+
+def test_reciprocal_rank_fusion_rewards_cross_list_agreement():
+    # B appears in both lists (even at middling rank); A and C each appear
+    # in only one list. Appearing in both must beat appearing in only one,
+    # however well-ranked there.
+    bm25_ranked = [_CHUNK_A, _CHUNK_B]
+    dense_ranked = [_CHUNK_B, _CHUNK_C]
+    fused = _reciprocal_rank_fusion([bm25_ranked, dense_ranked], top_k=3)
+    assert fused[0][0] == _CHUNK_B
+
+
+def test_reciprocal_rank_fusion_respects_top_k():
+    fused = _reciprocal_rank_fusion([[_CHUNK_A, _CHUNK_B, _CHUNK_C]], top_k=2)
+    assert len(fused) == 2
+
+
+# A near-synonym pair BM25 cannot bridge: the query shares almost no
+# vocabulary with the chunk that actually answers it, mirroring the real
+# WithdrawalStorm/RouteLeak failures documented in DenseIndex's docstring
+# (BM25 abstains outright on RouteLeak's real hypothesis template).
+_FLAP_DAMPING_CHUNK = Chunk(
+    "RFC 2439", "Route flap damping suppresses a route that is repeatedly withdrawn and "
+                "re-announced by assigning it an instability penalty."
+)
+_UNRELATED_CHUNK = Chunk(
+    "RFC 9999", "BGPsec path validation uses digital signatures to protect the AS_PATH "
+                "attribute from tampering by untrusted parties."
+)
+_WITHDRAWAL_STORM_QUERY = "Total 403 withdrawals; peak burst 63 in window."
+
+
+def test_dense_index_finds_near_synonym_bm25_would_miss():
+    pytest.importorskip("sentence_transformers")
+    dense = DenseIndex([_FLAP_DAMPING_CHUNK, _UNRELATED_CHUNK])
+    hits = dense.score(_WITHDRAWAL_STORM_QUERY, top_k=2)
+    assert hits[0][0] == _FLAP_DAMPING_CHUNK
+
+    # Confirm this really is a case BM25 cannot bridge -- the whole point of
+    # the test -- not a redundant check of something BM25 already handled.
+    bm25 = BM25([_FLAP_DAMPING_CHUNK, _UNRELATED_CHUNK])
+    assert bm25.score(_WITHDRAWAL_STORM_QUERY, top_k=2) == []
+
+
+def test_citation_engine_hybrid_recovers_a_query_bm25_alone_abstains_on():
+    pytest.importorskip("sentence_transformers")
+    chunks = [_FLAP_DAMPING_CHUNK, _UNRELATED_CHUNK]
+    dense = DenseIndex(chunks)
+
+    bm25_only = CitationEngine(chunks, top_k=1, min_score=0.1)
+    assert bm25_only.retrieve_sources(_WITHDRAWAL_STORM_QUERY) == []
+
+    hybrid = CitationEngine(chunks, top_k=1, min_score=0.1, dense_index=dense, min_dense_score=0.4)
+    sources = hybrid.retrieve_sources(_WITHDRAWAL_STORM_QUERY)
+    assert sources and sources[0].source_id == "RFC 2439"
+
+
+def test_citation_engine_hybrid_still_abstains_below_min_dense_score():
+    pytest.importorskip("sentence_transformers")
+    chunks = [_FLAP_DAMPING_CHUNK, _UNRELATED_CHUNK]
+    dense = DenseIndex(chunks)
+    # An impossibly high floor -- dense always finds *something* (cosine
+    # similarity has no free "found nothing" signal the way BM25 does), so
+    # min_dense_score is the only thing that can make hybrid retrieval
+    # abstain when BM25 also has nothing.
+    hybrid = CitationEngine(chunks, top_k=1, min_score=0.1, dense_index=dense, min_dense_score=0.99)
+    assert hybrid.retrieve_sources(_WITHDRAWAL_STORM_QUERY) == []

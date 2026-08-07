@@ -44,6 +44,14 @@ description = "Detects a newly-appearing shared transit AS across peers (possibl
 # dependency, documented as an approximation.
 max_context_chars = 4000
 
+# "bm25" (default, dependency-free) or "hybrid" (BM25 + dense embeddings via
+# sentence-transformers, needs `pip install -e ".[nli]"` -- see
+# investigator/retrieval/citations.py's DenseIndex). Hybrid widens the
+# candidate pool BM25 alone would return, including queries BM25 abstains on
+# outright -- a real, measured gap for BGP-analyzer phrasing vs. RFC prose
+# vocabulary (docs/alignment-plan.md item 7).
+retrieval = "bm25"
+
 [citation_eval]
 # Two independent EntailmentChecker selections (investigator/evaluation/
 # entailment.py) -- Phase 3 (citation correctness: does the cited source

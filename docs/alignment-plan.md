@@ -37,7 +37,7 @@ Four buckets:
 | Phase 3/4: one checker doing two different jobs | ✅ Done — split; fixed the isolated bug, broke the real-catalog rate, both reported | Correctness |
 | Phase 1: full RFC corpus | ✅ Done — 16 RFCs, 945 chunks; results mixed, see docs/corpus-expansion-results.md | Correctness |
 | Plan caveats: re-verify upstream facts | Partly done below | Correctness |
-| Phase 1: hybrid BM25 + dense retrieval | BM25 only; corpus expansion made this gap *more* visible, not less | Missing scope |
+| Phase 1: hybrid BM25 + dense retrieval | ✅ Done — opt-in, fixed item 4b's false assertion; kubernetes-style gap remains | Missing scope |
 | Phase 2: second data source proves the abstraction | Claimed, never demonstrated | Missing scope |
 | Phase 3: **Bespoke-MiniCheck-7B primary** | Not used | **Deviate — plan is wrong** |
 | Phase 4: NLI-filter contradictions with the same stack | Same checker as Phase 3 | **Deviate — plan is wrong** |
@@ -371,17 +371,52 @@ defaults; the remaining six arXiv IDs.
 
 ## P1 — Missing scope
 
-### 7. Hybrid BM25 + dense retrieval
+### 7. Hybrid BM25 + dense retrieval — ✅ done
 
-Plan Phase 1 specified hybrid; the repo is BM25-only. Do this **after** the
-corpus expansion so the justification is measured. RFC prose is full of
-near-synonyms a lexical matcher can't bridge ("withdrawal storm" vs. "route
-flap", "origin change" vs. "unauthorized announcement"), so recall degradation
-at 20 RFCs is likely — but demonstrate it.
+Plan Phase 1 specified hybrid; the repo was BM25-only. Done after the
+corpus expansion, per this section's own instruction, so the justification
+is measured. Full write-up:
+[docs/hybrid-retrieval-results.md](hybrid-retrieval-results.md).
 
-`sentence-transformers` is already a soft dependency, so BGE or E5 adds no new
-toolchain. Keep it behind the same config switch pattern as
-`[citation_eval].checker` so the dependency-free path survives.
+The near-synonym gap predicted here was demonstrated with the *real*
+analyzer hypothesis templates, not paraphrased approximations:
+`WithdrawalStorm`'s real statement ("Total 403 withdrawals; peak burst 63
+in window.") returns BM25 matches on the bare digits, not the concept;
+`RouteLeak`'s real statement returns **zero** BM25 hits despite RFC 7908
+having an entire route-leak taxonomy. Dense retrieval on the same two
+queries surfaces RFC 2439 (Route Flap Damping) and RFC 7908's leak
+definitions.
+
+`DenseIndex` (`BAAI/bge-small-en-v1.5`) + reciprocal rank fusion,
+implemented in `investigator/retrieval/citations.py`, opt-in via
+`[rfc_search].retrieval = "hybrid"` — same config-switch pattern as
+`[citation_eval].checker`, `bm25` stays the dependency-free default.
+`sentence-transformers` is already a soft dependency, confirmed no new
+toolchain needed.
+
+Two things found beyond the plan's own prediction:
+
+- Dense retrieval needed its own abstention floor for a real reason the
+  plan didn't call out: cosine similarity has no natural "found nothing"
+  signal, so hybrid mode would never abstain without one — verified
+  directly (a "sourdough bread" query returned sources with no floor).
+  Calibrating that floor hit the *same* on-topic/off-topic separation
+  problem `min_score_fraction` did (item 4b) — a "kubernetes ingress
+  controller" query beats the real `WithdrawalStorm` query even under the
+  dense floor. Reported, not hidden: hybrid retrieval does not fix BM25's
+  register-vs-topic confusion, it reproduces it.
+- **Real-catalog measurement: fixes item 4b's false assertion.**
+  `evaluate.py --ach` with hybrid enabled: 3 correct/0 false (was 1)/10
+  abstained — back to the pre-expansion numbers, now on the full 16-RFC
+  corpus. Diagnosed, not just measured: RRF fusion displaces the same
+  spurious "strict entailment" evidence (RFC 6811 §2 pseudo-code) item 3's
+  checker-split investigation independently flagged as questionable — two
+  unrelated fixes converging on the same root cause.
+
+Not flipped to the shipped default (new real dependency, the separation
+gap above is real and unresolved, one incident's worth of catalog signal
+is a real but small result) — stays opt-in, same as `cross_encoder`,
+`minicheck`, and `nli_margin`.
 
 ### 8. Prove the toolset abstraction with a second data source
 
@@ -432,7 +467,7 @@ rather than more RFC prose.
 | 4b | Corpus expansion + cleaner + scale-invariant floor | ✅ done | Blocks 7; see docs/corpus-expansion-results.md |
 | 3 | Split support vs. contradiction checkers | ✅ done | Fixed the isolated case; broke the real-catalog rate -- both reported |
 | 5 | Finish verification pass | ✅ done (5/6) | 1 correction found (HolmesGPT truncation); 6 arXiv IDs need the original plan text |
-| 7 | Hybrid dense retrieval, if measurement justifies | 2–3 days | — |
+| 7 | Hybrid dense retrieval, if measurement justifies | ✅ done | Fixed item 4b's false assertion; kubernetes-style gap remains, opt-in only |
 | 8 | RPKI/ROA toolset | 1–2 days | — |
 
 Items 1–6 decide whether existing claims hold. Stop there and the project is

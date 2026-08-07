@@ -596,17 +596,60 @@ grounding discipline improving to match; `--score-citations` is exactly the
 mechanism that catches this, and without it this would read as a *better*
 answer, not a worse one.
 
+## Hybrid (BM25 + dense) retrieval (item 7)
+
+Full write-up: [docs/hybrid-retrieval-results.md](hybrid-retrieval-results.md).
+Summary: `DenseIndex` (`BAAI/bge-small-en-v1.5`, `sentence-transformers`
+already an optional dependency) layered onto BM25 via reciprocal rank
+fusion, opt-in (`[rfc_search].retrieval = "hybrid"`), `bm25` stays default.
+
+Motivated by a measured, not assumed, failure: the *real* `WithdrawalStorm`
+and `RouteLeak` analyzer hypothesis templates, run against real RFC text,
+either retrieve garbage (BM25 matching bare digits in "Total 403
+withdrawals; peak burst 63" as if they were meaningful terms) or abstain
+outright (zero BM25 hits for `RouteLeak`'s real statement, despite RFC 7908
+having an entire route-leak taxonomy). Dense retrieval on the same two
+queries surfaces RFC 2439 (Route Flap Damping) and RFC 7908's route-leak
+definitions — neither meaningfully found by BM25 alone.
+
+Needed its own abstention floor (`min_dense_score`) for a real, verified
+reason: cosine similarity has no free "found nothing" signal the way BM25
+does (zero shared terms -> zero score), so hybrid mode would never abstain
+without one — checked directly before shipping, not assumed: a "sourdough
+bread" query returned sources with no floor in place. Calibrating that
+floor hit the *same* separation problem `min_score_fraction` did (item
+4b): a "kubernetes ingress controller" query scores 0.642, *above* the
+real `WithdrawalStorm` query's 0.631 — technical-register vocabulary
+overlap reads as topical similarity under both a lexical-ceiling-ratio and
+a dense-cosine floor. Dense retrieval does not fix that failure mode; it
+reproduces it, reported rather than tuned around.
+
+**Real-catalog result: fixes item 4b's false assertion.** `evaluate.py
+--ach` with hybrid enabled: 3 correct / **0** false (was 1) / 10 abstained
+— back to the original 2-file-corpus numbers, now on the full 16-RFC
+corpus. Diagnosed: RRF fusion displaces the same spurious "strict
+entailment" evidence (RFC 6811 §2 pseudo-code) the item-3 checker-split
+investigation *independently* found and flagged as questionable — two
+unrelated fixes (a better contradiction checker, better retrieval)
+converging on the same root cause from different directions, reasonably
+strong evidence the diagnosis is right. Not flipped to the shipped default:
+adds a real dependency, and the kubernetes-style separation gap is real
+and unresolved.
+
 ## Deliberate limitations
 
-- Retrieval is lexical BM25 only (no dense/hybrid yet). The RFC corpus
-  expansion (above) made this limitation *more* visible, not less: BM25's
+- Retrieval is BM25 by default, with opt-in hybrid dense retrieval now
+  implemented (above) rather than only planned. BM25-only's
   lexical-coincidence false-positive rate (a query matching one rare corpus
   term can outrank a genuinely on-topic multi-term query) doesn't improve
   with more text, and `min_score_fraction`'s calibration against real
   queries confirmed it directly — a "kubernetes ingress controller" query
-  outscored the flagship on-topic MOAS query on ratio-to-ceiling. Hybrid
-  dense retrieval is the planned fix, behind the same `CitationEngine`
-  interface, not attempted here.
+  outscored the flagship on-topic MOAS query on ratio-to-ceiling. Dense
+  retrieval measurably helps on two real, demonstrated cases and fixes a
+  real false assertion, but does *not* fix this specific
+  register-vs-topic confusion — the same kubernetes query beats a real
+  on-topic query under the dense floor too. `bm25` stays the shipped
+  default; `hybrid` is real, tested, and opt-in.
 - The route-leak analyzer (see Phase 2 above) is a heuristic bounded by what
   a bare BGP update stream can show, not proof of an AS-relationship policy
   violation — stated in its own docstring, not just here. The corpus
