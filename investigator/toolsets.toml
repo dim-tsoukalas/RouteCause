@@ -37,6 +37,13 @@ module = "investigator.analyzers.route_leak"
 enabled = true
 description = "Detects a newly-appearing shared transit AS across peers (possible leak)."
 
+[[toolset]]
+name = "rpki"
+kind = "analyzer"
+module = "investigator.analyzers.rpki"
+enabled = true
+description = "Flags observed origins with no valid RPKI ROA, from a locally cached RIPEstat lookup (python -m investigator.rpki) -- a data source independent of the RFC corpus."
+
 [rfc_search]
 # Context-budget cap for the agentic search loop (investigator/agent.py):
 # the max characters of RFC source text included in a single prompt, across

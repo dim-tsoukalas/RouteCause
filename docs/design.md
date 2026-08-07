@@ -636,6 +636,48 @@ strong evidence the diagnosis is right. Not flipped to the shipped default:
 adds a real dependency, and the kubernetes-style separation gap is real
 and unresolved.
 
+## RPKI/ROA validation toolset (item 8)
+
+Full write-up: [docs/rpki-toolset-results.md](rpki-toolset-results.md).
+Proves Phase 2's toolset abstraction with a second, genuinely independent
+evidence axis rather than just claiming it works: two new files
+(`investigator/rpki.py`, `investigator/analyzers/rpki.py`) + one
+`[[toolset]]` block, zero changes to `engine.py`, `cli.py`, or the registry
+— the diff itself is the evidence, per this item's own done-criterion.
+
+Same fetch-once/analyze-offline split as `investigator/ingest.py`:
+`investigator/rpki.py` queries RIPE NCC's public `rpki-validation` API and
+caches results in `data/rpki_cache.json`; `RPKIAnalyzer` only reads that
+cache, no network call during `analyze()`, staying a pure offline
+`Analyzer` like every other one here.
+
+Caveat verified as real, not hypothetical: current ROA state isn't
+necessarily incident-time state (RPKI predates ~2011; neither of
+`pakistan-youtube-2008`'s 2008 contenders is today's valid origin for its
+prefix). A second, subtler version of the same caveat was found while
+fetching the real catalog: `google-japan-leak-2017` (a route leak, not a
+hijack) comes back `invalid_asn` for Google's own legitimate ASN, almost
+certainly ROA registration drift over the years rather than evidence of
+anything — `RPKIViolation` is deliberately not mapped to the `route_leak`
+label for exactly this reason.
+
+**Real-catalog result: detection accuracy improved, 4/13 → 5/13.**
+`amazon-route53-mew-2018` (the real MyEtherWallet hijack) flips to a `HIT`
+— genuinely new detection power, not a MOAS paraphrase: MOAS needs both
+the legitimate and anomalous origin visible in the capture window, RPKI
+only needs the anomalous one to have no valid ROA.
+
+**Real-catalog result: ACH false-assertion rate unchanged (3/1/9), and
+that's itself a diagnosed finding, not a null result glossed over.**
+`RPKIViolation` hypotheses get created and weighed, but `rank_hypotheses()`
+routes them through the same RFC-citation entailment check every other
+hypothesis uses — and RPKI evidence is self-certifying (a ROA either does
+or doesn't authorize an origin; it doesn't need RFC prose to corroborate
+it), so that gate is a structural mismatch for this specific evidence type,
+not a capacity problem. A real follow-up, not attempted here (would be
+scope creep beyond this item's done-criterion): let `RPKIViolation`
+hypotheses count as strict-tier support on their own terms.
+
 ## Deliberate limitations
 
 - Retrieval is BM25 by default, with opt-in hybrid dense retrieval now
