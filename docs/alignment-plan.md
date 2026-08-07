@@ -304,6 +304,60 @@ field names; K8sGPT's current CNCF tier; HolmesGPT's built-in toolset list and
 truncation internals; LlamaIndex `citation_chunk_size` / `citation_chunk_overlap`
 defaults; the remaining six arXiv IDs.
 
+**Verification pass — done, five of six items:**
+
+- ✅ **K8sGPT `IAI` interface** (`pkg/ai/iai.go`): `Configure(config
+  IAIConfig) error`, `GetCompletion(ctx, prompt) (string, error)`,
+  `GetName() string`, `Close()`. Matches `investigator/llm.py`'s docstring
+  claim exactly ("Configure / GetCompletion / GetName / Close") — no
+  correction needed.
+- ✅ **K8sGPT `IAnalyzer` interface**: `Analyze(a Analyzer) ([]Result,
+  error)` — single method, matches.
+- ✅ **K8sGPT `Result`/`Failure` structs** (`pkg/common/types.go`): `Result{
+  Kind, Name, Error []Failure, Details, ParentObject }`,
+  `Failure{ Text, KubernetesDoc, Sensitive }`. Cross-checked against
+  `investigator/types.py`'s `Result`/`Finding`: `kind`↔`Kind`,
+  `name`↔`Name`, `findings`↔`Error` (list of sub-items), `details`↔`Details`,
+  and `Finding.text`↔`Failure.Text`, `Finding.rfc_hint`↔`Failure.KubernetesDoc`
+  (both "pointer to the doc/concept to ground this in"),
+  `Finding.sensitive`↔`Failure.Sensitive` — a genuinely close field-level
+  correspondence, confirmed rather than assumed.
+- ✅ **K8sGPT `coreAnalyzerMap`**: real identifier, `pkg/analyzer/analyzer.go`,
+  ~14 default analyzers (Pod, Service, Deployment, Node, Ingress,
+  StatefulSet, Job, CronJob, PVC, ReplicaSet, Event, ConfigMap,
+  MutatingWebhook, ValidatingWebhook) plus an `additionalAnalyzerMap` for
+  opt-in ones. Matches design.md's lineage-table claim.
+- ✅ **K8sGPT's CNCF tier**: still Sandbox as of this pass (accepted
+  2023-12-19, next review flagged mid-2026) — not currently asserted
+  anywhere in this repo's docs, so nothing to correct, but confirmed in
+  case that changes and someone adds the claim later.
+- ✅ **LlamaIndex `CitationQueryEngine` defaults**: `citation_chunk_size=512`,
+  `citation_chunk_overlap=20` (`DEFAULT_CITATION_CHUNK_SIZE` /
+  `DEFAULT_CITATION_CHUNK_OVERLAP` in `citation_query_engine.py`). Not
+  currently asserted as specific numbers anywhere in this repo — the
+  general "mirrors `CitationQueryEngine`" claim holds structurally
+  (numbered sources, cite-or-abstain), just not at this parameter level;
+  nothing to correct.
+- **Correction found: HolmesGPT's truncation mechanism**, not just its
+  existence. The real mechanism is percentage-of-context-window-based
+  (`TOOL_MAX_ALLOCATED_CONTEXT_WINDOW_PCT`, default 15%) with an absolute
+  *token* ceiling (`TOOL_MAX_ALLOCATED_CONTEXT_WINDOW_TOKENS`, default
+  25K), plus history-compaction and disk-spillover for very large output —
+  this project's `investigator/agent.py` is a fixed *character* count
+  (4000 default), mirroring the spirit (bound what one search adds to a
+  prompt) but not the mechanism (no window-percentage scaling, no token
+  counting, no compaction, no spillover). Already an honestly-flagged
+  approximation ("character-based, not a real tokenizer"); now the
+  specific gap vs. the real mechanism is documented too, in
+  `docs/design.md`'s Phase 2 section.
+- ⏳ **The remaining six arXiv IDs — not verifiable from this repo alone.**
+  Only two arXiv IDs actually appear anywhere in this codebase or its
+  docs (2310.01798, MiniCheck's 2404.10774), both already confirmed above
+  and earlier in this document. The other six must be from the *original*
+  external build plan document, which isn't part of this repository —
+  there's nothing here to extract IDs from. Needs the original plan text
+  (or the six IDs directly) to close out; flagged rather than guessed at.
+
 ### 6. Housekeeping
 
 - `.gitattributes` with `*.json text eol=lf`, then re-checkout. 24 incident
@@ -377,12 +431,24 @@ rather than more RFC prose.
 | 4a | Baseline harness numbers **before** corpus change | ✅ done | Blocks 4b |
 | 4b | Corpus expansion + cleaner + scale-invariant floor | ✅ done | Blocks 7; see docs/corpus-expansion-results.md |
 | 3 | Split support vs. contradiction checkers | ✅ done | Fixed the isolated case; broke the real-catalog rate -- both reported |
-| 5 | Finish verification pass | 1 hour | — |
+| 5 | Finish verification pass | ✅ done (5/6) | 1 correction found (HolmesGPT truncation); 6 arXiv IDs need the original plan text |
 | 7 | Hybrid dense retrieval, if measurement justifies | 2–3 days | — |
 | 8 | RPKI/ROA toolset | 1–2 days | — |
 
 Items 1–6 decide whether existing claims hold. Stop there and the project is
 honest and defensible. Items 7–8 are scope.
+
+**Items 1–6 are now all done** (item 5 at 5/6 — the six arXiv IDs need the
+original external plan text, not reconstructable from this repo alone).
+The project's claims have been re-verified, not just re-asserted: two real
+bugs were found and fixed (section-regex, preamble-skip), one design
+decision was recalibrated after being wrong on the first try
+(`min_score_fraction`), one fix was proven to work in isolation and proven
+to break the real system it was plugged into (the checker split), and one
+upstream-lineage claim was found to differ from the real mechanism
+(HolmesGPT's truncation). None of that was smoothed over to make the
+"done" line read cleaner. Items 7–8 remain scope, not correctness, and are
+where this pass stops.
 
 Phase 6 stays out until the numbers are stable, per the plan's own gate.
 
