@@ -1,0 +1,37 @@
+name: Deploy demo to GitHub Pages
+
+# Publishes the self-contained demo/ folder to GitHub Pages.
+# The page embeds a real pipeline snapshot, so no build step or backend is
+# needed — the artifact is just the static demo/ directory.
+
+on:
+  push:
+    branches: [main]      # change to your default branch if it isn't `main`
+    paths:
+      - "demo/**"
+      - ".github/workflows/deploy-pages.yml"
+  workflow_dispatch: {}    # lets you trigger it manually from the Actions tab
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./demo
+      - id: deployment
+        uses: actions/deploy-pages@v4
