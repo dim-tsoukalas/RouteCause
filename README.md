@@ -4,6 +4,11 @@
 anomalies with deterministic analyzers, explains them with cited passages from
 IETF RFCs, and refuses to answer when it can't ground a claim in a source.**
 
+[![CI](https://github.com/dim-tsoukalas/RouteCause/actions/workflows/ci.yml/badge.svg)](https://github.com/dim-tsoukalas/RouteCause/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)
+[![Live API](https://img.shields.io/badge/live-API%20%E2%86%92%20%2Fdocs-brightgreen)](https://routecause.onrender.com/docs)
+
 [**▶ Try the live API**](https://routecause.onrender.com/docs) · [Static demo](https://dim-tsoukalas.github.io/RouteCause/) · [Quickstart](#quickstart) · [HTTP API](#http-api) · [Architecture](#architecture) · [Findings & results](docs/findings.md)
 
 ---
