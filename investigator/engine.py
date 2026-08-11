@@ -20,7 +20,12 @@ from investigator.observability import set_attribute, span
 from investigator.report import Report
 from investigator.retrieval.citations import build_citation_engine
 from investigator.retrieval.corpus import load_corpus
-from investigator.toolsets import DEFAULT_TOOLSETS_PATH, load_rfc_search_config, load_toolsets, register_enabled_analyzers
+from investigator.toolsets import (
+    DEFAULT_TOOLSETS_PATH,
+    load_rfc_search_config,
+    load_toolsets,
+    register_enabled_analyzers,
+)
 from investigator.types import Incident
 
 

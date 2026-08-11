@@ -1,9 +1,9 @@
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
 from investigator.analyzers.route_leak import RouteLeakAnalyzer
 from investigator.types import BGPUpdate, Incident
 
-T0 = datetime(2024, 5, 1, 10, 0, tzinfo=timezone.utc)
+T0 = datetime(2024, 5, 1, 10, 0, tzinfo=UTC)
 PREFIX = "203.0.113.0/24"
 
 

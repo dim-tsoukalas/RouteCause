@@ -1,6 +1,9 @@
-import json, pathlib
+import json
+import pathlib
+
 HERE = pathlib.Path(__file__).resolve().parent
-DATA = json.load(open(HERE / 'demo_data.json'))
+with open(HERE / 'demo_data.json') as f:
+    DATA = json.load(f)
 data_js = json.dumps(DATA)
 
 HTML = r'''<!doctype html>

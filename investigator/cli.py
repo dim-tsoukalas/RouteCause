@@ -32,9 +32,15 @@ from pathlib import Path
 
 from investigator.ach import rank_hypotheses
 from investigator.engine import InvestigationEngine
-from investigator.evaluation.entailment import default_contradiction_checker, default_support_checker
+from investigator.evaluation.entailment import (
+    default_contradiction_checker,
+    default_support_checker,
+)
 from investigator.evaluation.scorer import score_citations
-from investigator.retrieval.contradiction import hypotheses_from_results, seek_contradictions
+from investigator.retrieval.contradiction import (
+    hypotheses_from_results,
+    seek_contradictions,
+)
 from investigator.toolsets import DEFAULT_TOOLSETS_PATH, load_citation_eval_config
 from investigator.types import Incident
 

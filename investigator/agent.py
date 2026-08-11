@@ -31,7 +31,12 @@ from __future__ import annotations
 import re
 
 from investigator.llm import LLMBackend
-from investigator.retrieval.citations import ABSTAIN_MARKER, CitationEngine, CitedAnswer, Source
+from investigator.retrieval.citations import (
+    ABSTAIN_MARKER,
+    CitationEngine,
+    CitedAnswer,
+    Source,
+)
 
 _ACTION_RE = re.compile(r'^\s*ACTION:\s*search_rfcs\(\s*"(.+?)"\s*\)\s*$', re.IGNORECASE | re.MULTILINE)
 _FINAL_RE = re.compile(r'^\s*FINAL:\s*(.*)$', re.IGNORECASE | re.DOTALL)

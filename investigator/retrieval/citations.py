@@ -9,6 +9,7 @@ production without changing the engine's interface.
 """
 from __future__ import annotations
 
+import contextlib
 import math
 from collections import Counter
 from dataclasses import dataclass, field
@@ -19,9 +20,7 @@ from investigator.retrieval.corpus import Chunk, _tokenize
 # Small stopword set. Without this, BM25 matches on "the/is/for/a" which are
 # common in RFC prose, defeating the abstention floor on off-topic queries.
 STOPWORDS = frozenset(
-    "a an and are as at be by for from how in into is it of on or that the to "
-    "was what when where which who why with do does did i you we they this these "
-    "those there here best most can could should would".split()
+    ["a", "an", "and", "are", "as", "at", "be", "by", "for", "from", "how", "in", "into", "is", "it", "of", "on", "or", "that", "the", "to", "was", "what", "when", "where", "which", "who", "why", "with", "do", "does", "did", "i", "you", "we", "they", "this", "these", "those", "there", "here", "best", "most", "can", "could", "should", "would"]
 )
 
 
@@ -372,10 +371,8 @@ def build_citation_engine(
     same guarded-fallback pattern as the EntailmentChecker family."""
     dense_index = None
     if rfc_search_config.get("retrieval") == "hybrid":
-        try:
+        with contextlib.suppress(RuntimeError):
             dense_index = DenseIndex(chunks)
-        except RuntimeError:
-            pass
     return CitationEngine(
         chunks,
         backend=backend,

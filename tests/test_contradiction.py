@@ -1,6 +1,10 @@
 from investigator.evaluation.entailment import LexicalOverlapChecker
 from investigator.retrieval.citations import CitationEngine
-from investigator.retrieval.contradiction import Hypothesis, hypotheses_from_results, seek_contradictions
+from investigator.retrieval.contradiction import (
+    Hypothesis,
+    hypotheses_from_results,
+    seek_contradictions,
+)
 from investigator.retrieval.corpus import Chunk
 from investigator.types import Finding, Result
 

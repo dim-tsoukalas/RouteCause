@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import json
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 
@@ -56,7 +56,7 @@ class Incident:
     ground_truth: str | None = None  # label, if known — kept out of the analyzers
 
     @classmethod
-    def from_json(cls, path: str | Path) -> "Incident":
+    def from_json(cls, path: str | Path) -> Incident:
         raw = json.loads(Path(path).read_text())
         updates = [
             BGPUpdate(
@@ -81,9 +81,9 @@ class Incident:
 
 
 def _parse_ts(value: str) -> datetime:
-    dt = datetime.fromisoformat(value.replace("Z", "+00:00"))
+    dt = datetime.fromisoformat(value)
     if dt.tzinfo is None:
-        dt = dt.replace(tzinfo=timezone.utc)
+        dt = dt.replace(tzinfo=UTC)
     return dt
 
 

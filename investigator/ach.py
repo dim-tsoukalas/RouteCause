@@ -38,7 +38,11 @@ from dataclasses import dataclass, field
 
 from investigator.evaluation.entailment import EntailmentChecker
 from investigator.retrieval.citations import CitationEngine
-from investigator.retrieval.contradiction import ContradictionCheck, Hypothesis, seek_contradictions
+from investigator.retrieval.contradiction import (
+    ContradictionCheck,
+    Hypothesis,
+    seek_contradictions,
+)
 
 
 @dataclass

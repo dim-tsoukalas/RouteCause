@@ -1,5 +1,9 @@
 from investigator.analyzers.base import all_analyzers, registered_kinds, reset_registry
-from investigator.toolsets import load_rfc_search_config, load_toolsets, register_enabled_analyzers
+from investigator.toolsets import (
+    load_rfc_search_config,
+    load_toolsets,
+    register_enabled_analyzers,
+)
 
 FIXTURE_TOML = """
 [[toolset]]

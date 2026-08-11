@@ -57,7 +57,7 @@ class WithdrawalStormAnalyzer:
                             f"{int(WINDOW.total_seconds() // 60)} minutes "
                             f"({best_span[0].timestamp:%H:%M:%S}–{best_span[1].timestamp:%H:%M:%S}), "
                             f"across {len(peers)} peer(s): "
-                            f"{', '.join('AS%d' % p for p in peers)}."
+                            f"{', '.join(f'AS{p}' for p in peers)}."
                         ),
                         rfc_hint="BGP UPDATE withdrawal / route unreachability",
                     )

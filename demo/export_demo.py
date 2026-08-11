@@ -10,7 +10,9 @@ Usage (from the repo root):
         google-japan-leak-2017 twitter-rtcomm-2022 > demo/demo_data.json
 """
 from __future__ import annotations
-import json, sys
+
+import json
+import sys
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parent.parent
@@ -21,7 +23,10 @@ sys.path.insert(0, str(REPO))
 from investigator.ach import rank_hypotheses
 from investigator.engine import InvestigationEngine
 from investigator.evaluation.entailment import default_contradiction_checker
-from investigator.retrieval.contradiction import hypotheses_from_results, seek_contradictions
+from investigator.retrieval.contradiction import (
+    hypotheses_from_results,
+    seek_contradictions,
+)
 from investigator.toolsets import DEFAULT_TOOLSETS_PATH, load_citation_eval_config
 from investigator.types import Incident
 

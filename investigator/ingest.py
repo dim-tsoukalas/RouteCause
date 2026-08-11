@@ -34,7 +34,7 @@ import re
 import sys
 import urllib.error
 import urllib.request
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
 from investigator.types import BGPUpdate, Incident
@@ -88,7 +88,7 @@ def _month_dir_url(collector: str, month_start: datetime) -> str:
 def _iter_months(start: datetime, end: datetime):
     y, m = start.year, start.month
     while (y, m) <= (end.year, end.month):
-        yield datetime(y, m, 1, tzinfo=timezone.utc)
+        yield datetime(y, m, 1, tzinfo=UTC)
         m += 1
         if m > 12:
             m, y = 1, y + 1
@@ -105,7 +105,7 @@ def _collector_file_urls(collector: str, start: datetime, end: datetime) -> list
             continue
         for match in _FILENAME_RE.finditer(listing):
             fname, date_part, time_part = match.group(0), match.group(1), match.group(2)
-            ts = datetime.strptime(date_part + time_part, "%Y%m%d%H%M").replace(tzinfo=timezone.utc)
+            ts = datetime.strptime(date_part + time_part, "%Y%m%d%H%M").replace(tzinfo=UTC)
             if start - _LOOKBACK <= ts <= end:
                 urls.append(dir_url + fname)
     return sorted(set(urls))
@@ -119,8 +119,8 @@ def _rib_dir_url(collector: str, month_start: datetime) -> str:
 
 def _prev_month(dt: datetime) -> datetime:
     if dt.month == 1:
-        return datetime(dt.year - 1, 12, 1, tzinfo=timezone.utc)
-    return datetime(dt.year, dt.month - 1, 1, tzinfo=timezone.utc)
+        return datetime(dt.year - 1, 12, 1, tzinfo=UTC)
+    return datetime(dt.year, dt.month - 1, 1, tzinfo=UTC)
 
 
 def _nearest_rib_dump_url(collector: str, at: datetime) -> str | None:
@@ -129,7 +129,7 @@ def _nearest_rib_dump_url(collector: str, at: datetime) -> str | None:
     (no announce/withdraw) going into the window -- which silently hides a
     real MOAS condition if the legitimate origin's session just hadn't
     changed recently. The RIB snapshot is what actually fixes that."""
-    for month_start in (datetime(at.year, at.month, 1, tzinfo=timezone.utc), _prev_month(at)):
+    for month_start in (datetime(at.year, at.month, 1, tzinfo=UTC), _prev_month(at)):
         dir_url = _rib_dir_url(collector, month_start)
         try:
             listing = _download(dir_url).decode("utf-8", errors="ignore")
@@ -139,7 +139,7 @@ def _nearest_rib_dump_url(collector: str, at: datetime) -> str | None:
         candidates = []
         for match in _RIB_FILENAME_RE.finditer(listing):
             fname, date_part, time_part = match.group(0), match.group(1), match.group(2)
-            ts = datetime.strptime(date_part + time_part, "%Y%m%d%H%M").replace(tzinfo=timezone.utc)
+            ts = datetime.strptime(date_part + time_part, "%Y%m%d%H%M").replace(tzinfo=UTC)
             if ts <= at:
                 candidates.append((ts, dir_url + fname))
         if candidates:
@@ -185,7 +185,7 @@ def extract_updates(entry_data: dict, target_prefixes: set[str], collector: str)
         return []
 
     ts_key = next(iter(entry_data["timestamp"]))
-    ts = datetime.fromtimestamp(int(ts_key), tz=timezone.utc)
+    ts = datetime.fromtimestamp(int(ts_key), tz=UTC)
     peer_asn = int(entry_data["peer_as"])
 
     updates: list[BGPUpdate] = []
@@ -301,7 +301,7 @@ def fetch_updates_for_prefixes(
             for entry in _mrt_reader(mrt):
                 for u in extract_updates(entry.data, target, collector):
                     by_prefix[u.prefix].append(u)
-    for prefix, updates in by_prefix.items():
+    for updates in by_prefix.values():
         updates[:] = sorted((u for u in updates if start <= u.timestamp <= end), key=lambda u: u.timestamp)
     return by_prefix
 
@@ -429,9 +429,9 @@ def find_catalog_entry(name: str, catalog: list[dict]) -> dict:
 
 
 def _parse_ts(value: str) -> datetime:
-    dt = datetime.fromisoformat(value.replace("Z", "+00:00"))
+    dt = datetime.fromisoformat(value)
     if dt.tzinfo is None:
-        dt = dt.replace(tzinfo=timezone.utc)
+        dt = dt.replace(tzinfo=UTC)
     return dt
 
 

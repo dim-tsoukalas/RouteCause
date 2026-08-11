@@ -9,7 +9,6 @@ from investigator.retrieval.citations import (
 )
 from investigator.retrieval.corpus import Chunk
 
-
 CHUNKS = [
     Chunk("RFC 4271 §9.1.2", "An AS loop is detected when the local system's own "
           "autonomous system number appears in the AS_PATH attribute of a received route."),

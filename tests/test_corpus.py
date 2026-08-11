@@ -1,4 +1,4 @@
-from investigator.retrieval.corpus import _clean_rfc_text, _SECTION_RE, load_corpus
+from investigator.retrieval.corpus import _SECTION_RE, _clean_rfc_text, load_corpus
 
 # A synthetic but structurally real IETF-shaped RFC: form-feed page breaks,
 # running header/footer pairs, a Status-of-Memo/Copyright preamble, a Table

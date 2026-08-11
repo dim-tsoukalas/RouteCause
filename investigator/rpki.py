@@ -35,7 +35,12 @@ import urllib.request
 from pathlib import Path
 
 from investigator.ingest import DATA_DIR as INCIDENTS_DIR
-from investigator.ingest import DEFAULT_CATALOG, find_catalog_entry, incident_output_path, load_catalog
+from investigator.ingest import (
+    DEFAULT_CATALOG,
+    find_catalog_entry,
+    incident_output_path,
+    load_catalog,
+)
 from investigator.types import Incident
 
 CACHE_PATH = Path(__file__).resolve().parent.parent / "data" / "rpki_cache.json"

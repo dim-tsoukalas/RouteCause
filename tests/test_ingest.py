@@ -1,6 +1,10 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
-from investigator.ingest import extract_rib_entries, extract_updates, incident_output_path
+from investigator.ingest import (
+    extract_rib_entries,
+    extract_updates,
+    incident_output_path,
+)
 
 TS = {1561372200: "2019-06-24 12:30:00"}  # epoch is authoritative; mrtparse's label string is local-time
 
@@ -51,7 +55,7 @@ def test_extract_announce_filters_to_target_prefix():
     assert u.as_path == (396503, 53356, 6939)
     assert u.origin_asn == 6939
     assert u.collector == "rrc00"
-    assert u.timestamp == datetime(2019, 6, 24, 10, 30, tzinfo=timezone.utc)
+    assert u.timestamp == datetime(2019, 6, 24, 10, 30, tzinfo=UTC)
 
 
 def test_extract_announce_no_match_is_empty():
@@ -113,7 +117,7 @@ def _rib_record(prefix, length, entries):
     }
 
 
-AT = datetime(2018, 4, 24, 11, 0, tzinfo=timezone.utc)
+AT = datetime(2018, 4, 24, 11, 0, tzinfo=UTC)
 
 
 def test_extract_rib_entries_produces_baseline_announce():

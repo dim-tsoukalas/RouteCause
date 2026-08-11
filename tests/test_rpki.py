@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 import investigator.analyzers.rpki as rpki_analyzer_module
 from investigator.analyzers.rpki import RPKIAnalyzer
@@ -10,7 +10,7 @@ from investigator.rpki import (
 )
 from investigator.types import BGPUpdate, Incident
 
-T0 = datetime(2024, 5, 1, 10, 0, tzinfo=timezone.utc)
+T0 = datetime(2024, 5, 1, 10, 0, tzinfo=UTC)
 
 
 def _ann(prefix, origin, peer):

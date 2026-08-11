@@ -31,7 +31,11 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 
 from investigator.evaluation.claims import Claim, extract_claims
-from investigator.evaluation.entailment import EntailmentChecker, EntailmentLabel, EntailmentVerdict
+from investigator.evaluation.entailment import (
+    EntailmentChecker,
+    EntailmentLabel,
+    EntailmentVerdict,
+)
 from investigator.retrieval.citations import CitationEngine, CitedAnswer, Source
 
 # The literal marker NoOpBackend (investigator/llm.py) always prepends. Its

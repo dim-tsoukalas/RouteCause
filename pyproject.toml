@@ -58,3 +58,18 @@ investigator-serve = "investigator.api:main"
 
 [tool.setuptools.packages.find]
 include = ["investigator*"]
+
+[tool.ruff]
+target-version = "py311"
+
+[tool.ruff.lint]
+# Keep ruff's defaults (E4/E7/E9 + F) and add a modern, opinionated set.
+# extend-select (not select) so E501 line-length stays off, as before.
+extend-select = ["I", "B", "UP", "SIM", "PERF", "FURB", "BLE", "RUF"]
+ignore = [
+    "UP042",   # StrEnum migration would change str() semantics; (str, Enum) is intentional
+    "RUF001",  # `×`, `–`, `§` in user-facing output are intentional typography, not typos
+    "RUF002",
+    "RUF003",
+    "PERF401", # explicit append loops in render() methods read more clearly than comprehensions
+]

@@ -49,7 +49,7 @@ def _resolve() -> None:
         import opentelemetry.trace  # noqa: F401
 
         _state["mode"] = "otel"
-    except Exception:
+    except Exception:  # noqa: BLE001 -- any otel-probe failure falls back to the stderr tracer
         _state["mode"] = "stderr"
 
 
@@ -74,7 +74,9 @@ def configure_tracing() -> None:
     provider = TracerProvider(resource=Resource.create({"service.name": SERVICE_NAME}))
     setting = os.environ.get("INVESTIGATOR_TRACING", "").strip().lower()
     if setting == "otlp":
-        from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter
+        from opentelemetry.exporter.otlp.proto.http.trace_exporter import (
+            OTLPSpanExporter,
+        )
 
         exporter = OTLPSpanExporter()  # honours OTEL_EXPORTER_OTLP_ENDPOINT / headers
     else:

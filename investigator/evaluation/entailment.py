@@ -121,7 +121,7 @@ class CrossEncoderNLIChecker:
 
     def __init__(self, model_name: str | None = None):
         try:
-            from sentence_transformers import CrossEncoder  # noqa: F401
+            from sentence_transformers import CrossEncoder
         except ImportError as exc:  # pragma: no cover
             raise RuntimeError(
                 "sentence-transformers/transformers/torch are not installed. "

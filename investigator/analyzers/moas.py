@@ -41,7 +41,7 @@ class MOASAnalyzer:
                 text=(
                     f"Prefix {incident.prefix} was announced by "
                     f"{len(origins)} distinct origin ASNs "
-                    f"({', '.join('AS%d' % a for a in origins)}). Expected a single "
+                    f"({', '.join(f'AS{a}' for a in origins)}). Expected a single "
                     f"origin; presumed legitimate origin is AS{legit_asn}."
                 ),
                 rfc_hint="BGP origin AS semantics and prefix hijack (MOAS)",

@@ -30,12 +30,19 @@ from pathlib import Path
 
 from investigator.ach import ACHMatrix, build_ach_matrix
 from investigator.analyzers import all_analyzers
-from investigator.evaluation.entailment import EntailmentChecker, default_contradiction_checker
+from investigator.evaluation.entailment import (
+    EntailmentChecker,
+    default_contradiction_checker,
+)
 from investigator.ingest import DEFAULT_CATALOG, incident_output_path, load_catalog
-from investigator.retrieval.citations import build_citation_engine
+from investigator.retrieval.citations import CitationEngine, build_citation_engine
 from investigator.retrieval.contradiction import hypotheses_from_results
 from investigator.retrieval.corpus import load_corpus
-from investigator.toolsets import DEFAULT_TOOLSETS_PATH, load_citation_eval_config, load_rfc_search_config
+from investigator.toolsets import (
+    DEFAULT_TOOLSETS_PATH,
+    load_citation_eval_config,
+    load_rfc_search_config,
+)
 from investigator.types import Incident, Result
 
 DEFAULT_RFC_DIR = str(Path(__file__).resolve().parent.parent / "data" / "rfcs")

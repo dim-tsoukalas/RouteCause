@@ -23,18 +23,19 @@ without it the pipeline still runs fully — retrieval, contradiction search,
 and ACH ranking are all LLM-free.
 """
 from __future__ import annotations
-import json
+
+import sys
 from pathlib import Path
 
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import HTMLResponse, JSONResponse
 
-import sys
 HERE = Path(__file__).resolve().parent
 REPO = HERE.parent
 sys.path.insert(0, str(HERE))  # so `export_demo` resolves however app is launched
 
-from export_demo import export_incident, DEFAULT_INCIDENTS  # noqa: E402
+from export_demo import DEFAULT_INCIDENTS, export_incident
+
 INCIDENTS_DIR = REPO / "data" / "incidents"
 
 app = FastAPI(title="Network Investigator demo")
@@ -62,4 +63,4 @@ def investigate(incident: str) -> JSONResponse:
     try:
         return JSONResponse(export_incident(incident))
     except Exception as e:  # surface real errors to the caller, don't hide them
-        raise HTTPException(500, f"{type(e).__name__}: {e}")
+        raise HTTPException(500, f"{type(e).__name__}: {e}") from e

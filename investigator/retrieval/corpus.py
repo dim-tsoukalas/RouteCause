@@ -124,7 +124,7 @@ def load_corpus(directory: str | Path, target_words: int = 90) -> list[Chunk]:
         buf: list[str] = []
         buf_words = 0
 
-        def flush():
+        def flush(section, rfc=rfc):
             nonlocal buf, buf_words
             if buf:
                 label = f"{rfc} §{section}" if section else rfc
@@ -136,16 +136,16 @@ def load_corpus(directory: str | Path, target_words: int = 90) -> list[Chunk]:
             stripped = line.strip()
             m = _SECTION_RE.match(line)
             if m:
-                flush()
+                flush(section)
                 section = m.group(1)
             if not stripped:
                 if buf_words >= target_words:
-                    flush()
+                    flush(section)
                 continue
             buf.append(stripped)
             buf_words += len(stripped.split())
             if buf_words >= target_words * 1.6:
-                flush()
-        flush()
+                flush(section)
+        flush(section)
 
     return chunks
