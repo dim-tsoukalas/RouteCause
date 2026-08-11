@@ -1,0 +1,21 @@
+# Keep the build context small and reproducible.
+.git
+.github
+.venv
+venv
+env
+__pycache__
+*.py[cod]
+*.egg-info
+.pytest_cache
+.mypy_cache
+.ruff_cache
+.minicheck_cache
+.claude
+.env
+demo
+docs
+*.md
+!README.md
+.DS_Store
+Thumbs.db

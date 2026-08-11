@@ -1,16 +1,40 @@
-# network-investigator
+# RouteCause
 
-A citation-grounded network-incident investigator. It analyzes BGP incident
-evidence with **deterministic analyzers** (no LLM in the detection path) and
-explains them using **cited passages from RFCs**, refusing to answer when it
-can't ground a claim in a source.
+**A citation-grounded BGP-incident investigator — it detects network routing
+anomalies with deterministic analyzers, explains them with cited passages from
+IETF RFCs, and refuses to answer when it can't ground a claim in a source.**
 
-> **Phase 1 (baseline parity) through Phase 5 (competing-hypothesis
-> reasoning) are all done** — see [Roadmap](#roadmap). Deterministic
-> anomaly detection, cited RFC retrieval, adversarial counter-evidence
-> search, and measured abstention are the differentiators over a plain
-> cited-QA tool; the incident below is the real, end-to-end result of all
-> four working together.
+[**▶ Live demo**](https://dim-tsoukalas.github.io/RouteCause/) · [Quickstart](#install) · [Architecture](#architecture) · [What I measured](#what-i-found)
+
+---
+
+### What it is, in 30 seconds
+
+When internet traffic gets misrouted — a BGP hijack, a route leak — engineers
+sift through raw routing data to find the cause. RouteCause automates the first
+pass: **deterministic detectors** (no LLM in the detection path) flag the
+anomaly, then a **retrieval-augmented LLM** explains *why*, citing the exact RFC
+clause behind every claim and abstaining when it can't ground one. The system is
+built to **measure its own grounding** — citation precision/recall, adversarial
+counter-evidence search, competing-hypothesis ranking — instead of trusting the
+model's fluency. See it end-to-end on the real
+[2008 Pakistan Telecom / YouTube hijack](#see-it-work-the-2008-pakistan-telecom--youtube-hijack) below.
+
+**Stack:** Python · RAG (BM25 + dense hybrid retrieval, RRF fusion) · agentic
+tool-calling loop · LiteLLM (hosted + local models) · NLI/entailment models for
+automated citation checking · FastAPI service · Docker · OpenTelemetry tracing ·
+offline evaluation harness · 123 tests.
+
+### Try it in two commands
+
+```bash
+pip install -e .                                    # core runs on the stdlib alone
+investigate pakistan-youtube-2008 --seek-contradictions
+```
+
+No install and no API key required — the deterministic detection, cited
+retrieval, and competing-hypothesis reasoning all run offline. Add an LLM only
+for natural-language narration (see [Install](#install)).
 
 ## What I found
 
@@ -292,10 +316,120 @@ scored, twice, against two different corpus sizes. See
 [docs/corpus-expansion-results.md](docs/corpus-expansion-results.md) for the
 full before/after and diagnosis.
 
+## Run with Docker
+
+No local Python needed — the image bundles the 16-RFC corpus and the real
+incident data, so the flagship demo runs fully offline:
+
+```bash
+docker build -t routecause .
+docker run --rm routecause                          # runs the 2008 Pakistan/YouTube hijack demo
+docker run --rm routecause rostelecom-2020 --seek-contradictions
+docker run --rm --entrypoint ask routecause "how is a BGP AS_PATH loop detected?"
+docker run --rm --entrypoint pytest routecause -q   # the full test suite
+```
+
+Ready-to-run incidents: `pakistan-youtube-2008`, `rostelecom-2020`,
+`indosat-2014`, `level3-comcast-2017`, `telekom-malaysia-2015`,
+`google-japan-leak-2017`, `mainone-google-2018`, `twitter-rtcomm-2022`,
+`celer-cbridge-aws-2022`. Others in the catalog need ingesting first (they
+ship split per-prefix) — see [Real incidents](#real-incidents-ripe-ris--routeviews).
+
+Turn on LLM narration by passing a model and key at run time (nothing is baked
+into the image):
+
+```bash
+docker run --rm -e INVESTIGATOR_MODEL=openai/gpt-4o-mini -e OPENAI_API_KEY=$OPENAI_API_KEY \
+  routecause pakistan-youtube-2008 --seek-contradictions
+```
+
+The image installs the `ingest`, `llm`, `dev` (pytest), and `api` extras by
+default; add the heavier entailment-checker models with
+`docker build --build-arg EXTRAS=ingest,llm,dev,api,nli .`.
+
+**One-command smoke test** — builds the image and checks the demo output, a
+second incident, `ask`, and the test suite:
+
+```bash
+./scripts/docker-smoke.sh          # macOS / Linux / WSL / CI
+.\scripts\docker-smoke.ps1         # Windows PowerShell
+```
+
+## HTTP API
+
+The same engine is exposed as a small FastAPI service — a thin layer over
+`InvestigationEngine`, so the API and the CLI can't drift. The corpus is loaded
+and indexed once at startup and reused across requests.
+
+```bash
+pip install -e ".[ingest,api]"     # or ".[all]"
+investigator-serve                 # -> http://127.0.0.1:8000  (interactive docs at /docs)
+
+# or in Docker (already includes the api extra):
+docker run --rm -p 8000:8000 -e HOST=0.0.0.0 --entrypoint investigator-serve routecause
+```
+
+Endpoints:
+
+- `GET /health` — liveness + whether LLM narration is enabled.
+- `GET /incidents` — the incident catalog, each flagged `ready` (bundled) or not.
+- `POST /investigate` — `{"incident": "pakistan-youtube-2008", "question": "...", "seek_contradictions": true}` returns structured findings, the cited explanation, ACH ranking, and the rendered Markdown report.
+- `POST /ask` — `{"question": "how is a BGP AS_PATH loop detected?"}` returns a cited answer over the RFC corpus (or an honest abstention).
+
+```bash
+curl -s localhost:8000/investigate \
+  -H 'content-type: application/json' \
+  -d '{"incident":"pakistan-youtube-2008","seek_contradictions":true}' | jq .
+```
+
+Runs offline by default; set `INVESTIGATOR_MODEL` (+ a provider key) before
+starting the server to turn on natural-language narration.
+
+**Deploy a live copy (free):**
+
+- **Render** — a [`render.yaml`](render.yaml) blueprint deploys the API as a
+  free Docker web service (no credit card). In the Render dashboard: *New →
+  Blueprint → connect this repo*, and open `/<service>.onrender.com/docs` when
+  it's live. (Free instances sleep when idle and cold-start on the next hit.)
+- **Hugging Face Spaces** — config in
+  [`deploy/huggingface/`](deploy/huggingface/) if you have a plan that allows
+  Docker Spaces; steps in
+  [deploy/huggingface/README.md](deploy/huggingface/README.md).
+
+## Observability (tracing)
+
+The LLM/agent path is instrumented with spans — one per investigation and one
+per model completion (model, prompt size, latency, completion size) — so you
+can watch retrieval breadth and model latency/verbosity per request. It's off
+by default and never touches the deterministic detection path; flip one env
+var:
+
+```bash
+INVESTIGATOR_TRACING=console investigate pakistan-youtube-2008   # structured span lines on stderr, zero extra deps
+```
+
+```json
+{"span": "llm.complete", "llm.model": "gpt-4o-mini", "llm.prompt_chars": 3451, "llm.completion_chars": 512, "duration_ms": 812.4}
+{"span": "engine.investigate", "incident_id": "pakistan-youtube-2008", "findings": 4, "abstained": false, "duration_ms": 1043.2}
+```
+
+For real distributed tracing, export to any OpenTelemetry collector — Arize
+Phoenix, Langfuse, Jaeger, Grafana Tempo — with the `obs` extra:
+
+```bash
+pip install -e ".[obs]"
+export INVESTIGATOR_TRACING=otlp
+export OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4318
+investigator-serve
+```
+
+If OpenTelemetry isn't installed, any setting falls back to the dependency-free
+stderr tracer, so enabling tracing can never crash the app.
+
 ## Install
 
 ```bash
-pip install -e .
+pip install -e .             # core runs on the standard library alone — no extras required
 
 investigate pakistan-youtube-2008
 investigate pakistan-youtube-2008 --seek-contradictions

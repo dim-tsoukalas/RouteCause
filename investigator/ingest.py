@@ -37,9 +37,25 @@ import urllib.request
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
-from mrtparse import Reader
-
 from investigator.types import BGPUpdate, Incident
+
+
+def _mrt_reader(mrt):
+    """Lazily import mrtparse (the optional `ingest` extra).
+
+    Kept out of module import on purpose: the core RPKI analyzer imports this
+    module only for its stdlib-only helpers (DATA_DIR, catalog loaders,
+    incident_output_path), so requiring mrtparse just to *import* the module
+    would break the "core runs on the standard library alone" guarantee. The
+    dependency is needed only to actually parse MRT archives, below."""
+    try:
+        from mrtparse import Reader
+    except ImportError as exc:  # pragma: no cover
+        raise RuntimeError(
+            "mrtparse is required for MRT ingestion. Install the ingest extra: "
+            'pip install -e ".[ingest]"'
+        ) from exc
+    return Reader(mrt)
 
 DATA_DIR = Path(__file__).resolve().parent.parent / "data" / "incidents"
 DEFAULT_CATALOG = DATA_DIR / "catalog.json"
@@ -237,7 +253,7 @@ def fetch_rib_baseline(prefixes: set[str], at: datetime, collector: str) -> list
     mrt = _open_mrt(raw, url)
     peer_asns: dict[int, int] = {}
     baseline: list[BGPUpdate] = []
-    for entry in Reader(mrt):
+    for entry in _mrt_reader(mrt):
         d = entry.data
         if _TYPE_TABLE_DUMP_V2 not in d.get("type", {}):
             continue
@@ -282,7 +298,7 @@ def fetch_updates_for_prefixes(
                 print(f"warning: failed to fetch {url}: {exc}", file=sys.stderr)
                 continue
             mrt = _open_mrt(raw, url)
-            for entry in Reader(mrt):
+            for entry in _mrt_reader(mrt):
                 for u in extract_updates(entry.data, target, collector):
                     by_prefix[u.prefix].append(u)
     for prefix, updates in by_prefix.items():

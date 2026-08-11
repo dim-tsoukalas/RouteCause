@@ -16,6 +16,7 @@ from investigator.agent import DEFAULT_MAX_CONTEXT_CHARS, AgentLoop
 from investigator.analyzers import all_analyzers
 from investigator.analyzers.base import reset_registry
 from investigator.llm import LLMBackend, default_backend
+from investigator.observability import set_attribute, span
 from investigator.report import Report
 from investigator.retrieval.citations import build_citation_engine
 from investigator.retrieval.corpus import load_corpus
@@ -50,34 +51,38 @@ class InvestigationEngine:
         )
 
     def investigate(self, incident: Incident, question: str) -> Report:
-        # Layer 1: deterministic detection.
-        results = []
-        for analyzer in all_analyzers():
-            results.extend(analyzer.analyze(incident))
+        with span("engine.investigate", incident_id=incident.incident_id, backend=self.backend.name()) as s:
+            # Layer 1: deterministic detection.
+            results = []
+            for analyzer in all_analyzers():
+                results.extend(analyzer.analyze(incident))
 
-        report = Report(incident_id=incident.incident_id, question=question, results=results)
+            report = Report(incident_id=incident.incident_id, question=question, results=results)
+            set_attribute(s, "findings", sum(1 for r in results if not r.is_empty()))
 
-        # Layer 2: cited grounding via the agentic search loop. Seed it with a
-        # query built from the question plus the finding hints, so the first
-        # search is anchored to what was actually observed; the loop may then
-        # search further before answering.
-        hints = [
-            f.rfc_hint
-            for r in results
-            for f in r.findings
-            if f.rfc_hint
-        ]
-        seed_query = question
-        if hints:
-            seed_query = f"{question} ({'; '.join(dict.fromkeys(hints))})"
-        report.explanation = self.agent.run(question, seed_query=seed_query)
+            # Layer 2: cited grounding via the agentic search loop. Seed it with
+            # a query built from the question plus the finding hints, so the
+            # first search is anchored to what was actually observed; the loop
+            # may then search further before answering.
+            hints = [
+                f.rfc_hint
+                for r in results
+                for f in r.findings
+                if f.rfc_hint
+            ]
+            seed_query = question
+            if hints:
+                seed_query = f"{question} ({'; '.join(dict.fromkeys(hints))})"
+            report.explanation = self.agent.run(question, seed_query=seed_query)
+            set_attribute(s, "abstained", bool(report.explanation and report.explanation.abstained))
 
-        report.next_steps = self._next_steps(results)
-        return report
+            report.next_steps = self._next_steps(results)
+            return report
 
     def ask(self, question: str):
         """Doc-only Q&A path (the `ask` verb) — agentic retrieval + citation, no analyzers."""
-        return self.agent.run(question, seed_query=question)
+        with span("engine.ask", backend=self.backend.name()):
+            return self.agent.run(question, seed_query=question)
 
     @staticmethod
     def _next_steps(results) -> list[str]:

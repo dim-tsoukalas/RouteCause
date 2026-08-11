@@ -33,7 +33,12 @@ nli = [
     "minicheck @ git+https://github.com/Liyan06/MiniCheck.git@main",
 ]
 dev = ["pytest>=8.0"]
-all = ["network-investigator[ingest,llm,nli,dev]"]
+api = ["fastapi>=0.110", "uvicorn[standard]>=0.29"]   # investigator/api.py: HTTP service
+obs = [                                               # investigator/observability.py: OpenTelemetry tracing
+    "opentelemetry-sdk>=1.25",
+    "opentelemetry-exporter-otlp-proto-http>=1.25",
+]
+all = ["network-investigator[ingest,llm,nli,dev,api,obs]"]
 
 [project.scripts]
 investigate = "investigator.cli:investigate_main"
@@ -41,6 +46,7 @@ ask = "investigator.cli:ask_main"
 investigator-ingest = "investigator.ingest:main"
 investigator-evaluate = "investigator.evaluate:main"
 investigator-rpki = "investigator.rpki:main"
+investigator-serve = "investigator.api:main"
 
 [tool.setuptools.packages.find]
 include = ["investigator*"]

@@ -70,16 +70,44 @@ class LiteLLMBackend:
         return self.model
 
 
+class InstrumentedBackend:
+    """Wraps any backend to emit one tracing span per completion (model, prompt
+    size, latency, completion size). Transparent: same `complete`/`name`
+    contract, so callers and `isinstance` checks on the *protocol* are
+    unaffected. Only applied when tracing is enabled (see
+    investigator/observability.py); otherwise `default_backend` returns the raw
+    backend and this class is never in the path."""
+
+    def __init__(self, inner: LLMBackend):
+        self._inner = inner
+
+    def complete(self, prompt: str) -> str:
+        from investigator.observability import set_attribute, span
+
+        with span("llm.complete", **{"llm.model": self._inner.name(), "llm.prompt_chars": len(prompt)}) as s:
+            output = self._inner.complete(prompt)
+            set_attribute(s, "llm.completion_chars", len(output))
+            return output
+
+    def name(self) -> str:
+        return self._inner.name()
+
+
 def default_backend() -> LLMBackend:
     """Pick a backend from the environment.
 
     Uses LiteLLM if INVESTIGATOR_MODEL is set *and* litellm is importable;
-    otherwise falls back to the offline NoOp backend.
+    otherwise falls back to the offline NoOp backend. When tracing is enabled
+    the chosen backend is wrapped in InstrumentedBackend.
     """
+    backend: LLMBackend = NoOpBackend()
     if os.environ.get("INVESTIGATOR_MODEL"):
         try:
             import litellm  # noqa: F401
-            return LiteLLMBackend()
+            backend = LiteLLMBackend()
         except ImportError:
             pass
-    return NoOpBackend()
+
+    from investigator.observability import tracing_enabled
+
+    return InstrumentedBackend(backend) if tracing_enabled() else backend

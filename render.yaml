@@ -1,0 +1,29 @@
+# Render Blueprint — deploys the RouteCause API as a free Docker web service.
+# Docs: https://render.com/docs/blueprint-spec
+#
+# One-time setup:
+#   1. Push this repo to GitHub (already at github.com/dim-tsoukalas/RouteCause).
+#   2. In the Render dashboard: New → Blueprint → connect this repo.
+#      Render reads this file and creates the service. No credit card needed.
+#   3. When it's live, open <your-service>.onrender.com/docs
+#
+# Free tier spins down after ~15 min idle and cold-starts (~1 min) on the next
+# request — fine for a portfolio demo.
+services:
+  - type: web
+    name: routecause
+    runtime: docker
+    plan: free
+    dockerfilePath: ./deploy/render/Dockerfile
+    dockerContext: .
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: HOST
+        value: 0.0.0.0
+      # To turn on LLM narration, add the `llm` extra in deploy/render/Dockerfile,
+      # then set these in the Render dashboard (Environment):
+      # - key: INVESTIGATOR_MODEL
+      #   value: openai/gpt-4o-mini
+      # - key: OPENAI_API_KEY
+      #   sync: false
