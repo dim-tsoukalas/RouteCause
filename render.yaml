@@ -21,9 +21,10 @@ services:
     envVars:
       - key: HOST
         value: 0.0.0.0
-      # To turn on LLM narration, add the `llm` extra in deploy/render/Dockerfile,
-      # then set these in the Render dashboard (Environment):
-      # - key: INVESTIGATOR_MODEL
-      #   value: openai/gpt-4o-mini
-      # - key: OPENAI_API_KEY
-      #   sync: false
+      # LLM narration via Groq's free tier (14,400 requests/day, no credit card).
+      - key: INVESTIGATOR_MODEL
+        value: groq/llama-3.3-70b-versatile
+      # Secret — NOT stored in the repo. Render prompts you for it on first
+      # deploy; get a free key at https://console.groq.com/keys
+      - key: GROQ_API_KEY
+        sync: false

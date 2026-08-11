@@ -5,9 +5,10 @@
 # launch the API server. Render builds this with the repo root as context, so
 # the bundled corpus + incident data (data/) are included.
 #
-# Lean by design (ingest + api only) to fit Render's free 512 MB tier; the demo
-# runs offline. To enable narration, add the `llm` extra here and set
-# INVESTIGATOR_MODEL + a provider key in the Render dashboard.
+# ingest + api + llm: litellm enables narration via Groq's free tier (set
+# INVESTIGATOR_MODEL + GROQ_API_KEY in render.yaml / the Render dashboard).
+# Still no local model — Groq runs remotely — so this stays within the free
+# 512 MB tier. Runs offline automatically if no key is set.
 
 FROM python:3.11-slim
 
@@ -19,7 +20,7 @@ WORKDIR /app
 
 COPY pyproject.toml README.md ./
 COPY investigator ./investigator
-RUN pip install --no-cache-dir -e ".[ingest,api]"
+RUN pip install --no-cache-dir -e ".[ingest,api,llm]"
 COPY data ./data
 
 RUN useradd -m -u 1000 app && chown -R app:app /app

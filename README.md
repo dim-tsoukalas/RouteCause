@@ -99,8 +99,10 @@ The same engine, exposed as a small FastAPI service (a thin layer over
 indexed once at startup.
 
 **Live instance:** https://routecause.onrender.com/docs — try it in the browser.
-(Free Render tier, so the first request after a while cold-starts for ~30–60s,
-then it's fast.)
+`/investigate` returns real LLM narration **plus the citation-correctness
+scorecard** that flags any claim the cited RFC doesn't actually support (Groq
+free tier). Free Render tier, so the first request after a while cold-starts for
+~30–60s, then it's fast.
 
 ```bash
 pip install -e ".[ingest,api]"

@@ -26,7 +26,11 @@ from pydantic import BaseModel, Field
 
 from investigator.ach import rank_hypotheses
 from investigator.engine import InvestigationEngine
-from investigator.evaluation.entailment import default_contradiction_checker
+from investigator.evaluation.entailment import (
+    default_contradiction_checker,
+    default_support_checker,
+)
+from investigator.evaluation.scorer import score_citations
 from investigator.retrieval.contradiction import (
     hypotheses_from_results,
     seek_contradictions,
@@ -81,12 +85,24 @@ class ExplanationOut(BaseModel):
     sources: list[SourceOut] = []
 
 
+class CitationScorecardOut(BaseModel):
+    applicable: bool
+    not_applicable_reason: str | None = None
+    claims: int = 0
+    citation_precision: float | None = None
+    citation_recall: float | None = None
+    retriever_errors: int = 0  # claims the whole corpus couldn't support (model editorialized)
+    generator_errors: int = 0  # claims the corpus supported but the model failed to cite
+    markdown: str | None = None
+
+
 class InvestigateResponse(BaseModel):
     incident_id: str
     question: str
     has_findings: bool
     results: list[ResultOut]
     explanation: ExplanationOut | None = None
+    citation_scorecard: CitationScorecardOut | None = None
     next_steps: list[str]
     competing_hypotheses_markdown: str | None = None
     ach_ranking_markdown: str | None = None
@@ -187,6 +203,23 @@ def investigate(req: InvestigateRequest) -> InvestigateResponse:
             sources=[_source_out(s) for s in report.explanation.sources],
         )
 
+    # Citation-correctness scorecard: does each cited RFC clause actually
+    # entail the claim? Not-applicable in offline/abstained mode.
+    scorecard_out = None
+    if report.explanation is not None:
+        support_name = load_citation_eval_config(str(DEFAULT_TOOLSETS_PATH)).get("support_checker")
+        sc = score_citations(report.explanation, engine.citations, default_support_checker(support_name))
+        scorecard_out = CitationScorecardOut(
+            applicable=not sc.not_applicable_reason,
+            not_applicable_reason=sc.not_applicable_reason or None,
+            claims=len(sc.claim_verdicts),
+            citation_precision=sc.citation_precision,
+            citation_recall=sc.citation_recall,
+            retriever_errors=sc.retriever_error_count,
+            generator_errors=sc.generator_error_count,
+            markdown=sc.render(),
+        )
+
     competing_md = None
     ranking_md = None
     if req.seek_contradictions:
@@ -204,6 +237,7 @@ def investigate(req: InvestigateRequest) -> InvestigateResponse:
         has_findings=report.has_findings,
         results=[_result_out(r) for r in report.results if not r.is_empty()],
         explanation=explanation,
+        citation_scorecard=scorecard_out,
         next_steps=report.next_steps,
         competing_hypotheses_markdown=competing_md,
         ach_ranking_markdown=ranking_md,
