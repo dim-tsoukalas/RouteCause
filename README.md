@@ -4,7 +4,7 @@
 anomalies with deterministic analyzers, explains them with cited passages from
 IETF RFCs, and refuses to answer when it can't ground a claim in a source.**
 
-[**▶ Live demo**](https://dim-tsoukalas.github.io/RouteCause/) · [Quickstart](#install) · [Architecture](#architecture) · [What I measured](#what-i-found)
+[**▶ Live demo**](https://dim-tsoukalas.github.io/RouteCause/) · [Quickstart](#quickstart) · [HTTP API](#http-api) · [Architecture](#architecture) · [Findings & results](docs/findings.md)
 
 ---
 
@@ -17,313 +17,57 @@ anomaly, then a **retrieval-augmented LLM** explains *why*, citing the exact RFC
 clause behind every claim and abstaining when it can't ground one. The system is
 built to **measure its own grounding** — citation precision/recall, adversarial
 counter-evidence search, competing-hypothesis ranking — instead of trusting the
-model's fluency. See it end-to-end on the real
-[2008 Pakistan Telecom / YouTube hijack](#see-it-work-the-2008-pakistan-telecom--youtube-hijack) below.
+model's fluency.
 
 **Stack:** Python · RAG (BM25 + dense hybrid retrieval, RRF fusion) · agentic
 tool-calling loop · LiteLLM (hosted + local models) · NLI/entailment models for
 automated citation checking · FastAPI service · Docker · OpenTelemetry tracing ·
 offline evaluation harness · 123 tests.
 
-### Try it in two commands
+## Quickstart
 
 ```bash
-pip install -e .                                    # core runs on the stdlib alone
+pip install -e .                                    # core runs on the stdlib alone — no extras, no API key
 investigate pakistan-youtube-2008 --seek-contradictions
 ```
 
-No install and no API key required — the deterministic detection, cited
-retrieval, and competing-hypothesis reasoning all run offline. Add an LLM only
-for natural-language narration (see [Install](#install)).
+Detection, cited retrieval, and competing-hypothesis reasoning all run offline.
+Add an LLM (`INVESTIGATOR_MODEL` + a provider key) only for natural-language
+narration. Prefer Docker? `docker run --rm routecause` runs the same demo with
+nothing installed — see [Run with Docker](#run-with-docker).
 
-## What I found
+## What makes it different
 
-Worth reading even if you skip the code — each found by actually measuring
-against real data, not asserted in a design doc:
+Each point was found by measuring against 13 real historical incidents, not
+asserted in a design doc — full write-ups in [docs/findings.md](docs/findings.md):
 
-- **RFC citations are definitional grounding, not case-specific proof.**
-  Measuring the ACH system against all 13 real catalog incidents first
-  produced 0 correct assertions — it abstained on every one, including
-  `pakistan-youtube-2008`, where the leading hypothesis was actually right.
-  The cause was structural: RFC text like "an unexpected change in origin AS
-  is a strong indicator of a hijack" is hedged, general-purpose grounding, so
-  it can't *strictly entail* "these specific 2 ASNs did it here" — no matter
-  how good the checker is. That distinction became a deliberate, labeled
-  two-tier evidence bar (`investigator/ach.py`) — "topically supports" vs.
-  "strictly entails" — which turned that same incident into a correct,
-  honestly-reported assertion instead of a silent abstention.
+- **It measures its own citations.** An evaluation harness scores whether the
+  cited RFC clause actually *entails* each generated claim (ALCE-style
+  precision/recall, RAGChecker-style retriever-vs-generator split) — catching
+  fluent narration that cites four real RFC sections all wrong (0% recall).
+- **It argues against itself.** For every finding it retrieves counter-evidence
+  and keeps only passages an entailment checker verifies as genuinely
+  contradicting, then ranks competing hypotheses by Heuer's ACH method and
+  **abstains** rather than assert when nothing clears the evidence bar.
+- **Honest, reproduced results.** `evaluate.py --ach` over the real catalog
+  reports **3 correct / 1 false / 9 abstained** — the one false assertion is
+  diagnosed, not hidden. Trade-offs (bigger corpus, bigger NLI model, hybrid
+  retrieval) are each shown to help *and* hurt, with the losing half reported.
+- **Deterministic core, LLM as enrichment.** Detection never involves an LLM,
+  so the model can't invent what counts as evidence — it only narrates over
+  already-grounded findings.
 
-- **A bigger entailment model measurably helped — but didn't fix the
-  underlying failure mode.** Both the cheap lexical checker and a real
-  22M-parameter cross-encoder NLI model (`nli-deberta-v3-xsmall`) made the
-  same mistake: flagging RFC 4271's *AS_PATH loop-detection* section as
-  `CONTRADICTS`-ing a completely unrelated MOAS claim, apparently because
-  both texts happen to contain the word "not." Swapping to the
-  184M-parameter `-base` checkpoint fixed that case and a second one
-  outright without breaking anything that already worked — a real, measured
-  improvement, not an assumed one. It left a third, genuinely borderline
-  case unresolved, confirming the honest conclusion: model capacity reduces
-  this negation-shortcut failure mode, it doesn't eliminate it.
-
-- **A ranking bug that only showed up against real, messy data.** The first
-  version of ACH's ranking rule sorted hypotheses by fewest-contradictions-
-  first, straight out of Heuer's method. Running it against the real catalog
-  surfaced a bug no hand-written test had caught: a hypothesis nobody could
-  find *any* evidence for was beating one with real, if mixed, supporting
-  *and* contradicting evidence, purely because zero contradictions beat
-  some. The fix makes genuine supporting evidence the primary sort key so an
-  evidence-free hypothesis can no longer win by default — it's now a
-  permanent regression test
-  (`test_zero_evidence_does_not_beat_genuine_mixed_evidence`).
-
-- **Real model narration finds citation gaps synthetic tests never could.**
-  `--score-citations` had only ever scored `NoOpBackend`'s echoed prompt or
-  hand-written fixtures — both trivially "cite" their own source text. Pointed
-  at actual generated prose for the first time (`claude-haiku-4-5` hosted,
-  `llama3.1:8b` local via Ollama, same incident, same question, against the
-  2-RFC corpus): the hosted run scored 100% citation precision but only 60%
-  recall — two of five generated claims had no supporting passage anywhere in
-  the corpus, i.e. the model editorialized past what its own cited source
-  actually said. The local run did worse and differently: 33%/33%, with both
-  a retriever error *and* a generator error (a claim the corpus could have
-  supported but that didn't get cited). Neither failure mode is visible until
-  real model output — with all its variance across providers — is actually in
-  the loop.
-
-- **A bigger RFC corpus is not an unconditional improvement — measured, not
-  assumed.** Expanding from 2 hand-picked excerpts to 16 full RFCs (945
-  chunks) was expected to reduce abstentions. It did, for some incidents —
-  but it also produced this project's **first false ACH assertion** (0% → 25%
-  false-assertion rate) and made the flagship demo's *local* model narration
-  measurably worse (33%/33% citation precision/recall → 0%/0%), because a
-  larger, topically denser corpus gives a weaker model more plausible-
-  sounding material to draw from without its grounding discipline improving
-  to match — it name-drops real RFC sections that don't actually say what its
-  sentences claim. The hosted model, given the same larger corpus, abstained
-  outright on the same question it answered confidently before. All three are
-  diagnosed, not just reported, in
-  [docs/corpus-expansion-results.md](docs/corpus-expansion-results.md) — the
-  false assertion traces to a pre-existing detection-layer gap the bigger
-  corpus exposed rather than caused. See
-  [Real LLM narration](#real-llm-narration-hosted--local) below for the
-  current transcript.
-
-- **A checker fix that provably fixes the bug it targeted also provably
-  breaks the system it's plugged into — both measured, not just the
-  flattering half.** Split the single entailment checker Phase 3 and
-  Phase 4 shared into two purpose-built ones: `MiniCheckSupportChecker`
-  (binary, citation correctness) and `MarginNLIContradictionChecker`
-  (genuine 3-way NLI, adversarial retrieval). Isolated re-test of the
-  documented RFC 4271-vs-MOAS false positive: **fixed** — 99.5% neutral,
-  0.4% contradiction, where the old checker confidently said `CONTRADICTS`.
-  Re-tested against the real 13-incident catalog, not stopped at the
-  isolated win: false-assertion rate went from 3 correct/1 false/9 abstained
-  (lexical checker) to **0 correct/1 false/12 abstained** — two previously-
-  *correct* MOAS assertions now abstain outright. Root cause: the new
-  model is far more conservative about strict `ENTAILED` than the lexical
-  checker was (verified directly — the exact chunks the lexical checker
-  called "strict entailment" for MOAS turn out to be pseudo-code and
-  generic filter prose that a real NLI model correctly refuses to call
-  entailment), which collapses `investigator/ach.py`'s `supporting_count`
-  to zero almost everywhere and re-triggers the original 100%-abstention
-  problem the two-tier evidence bar was built to fix. Not adopted as the
-  default; stays available, opt-in only. Full diagnosis in
-  `docs/design.md`'s "Phase 3/4 checker split" section and
-  `investigator/retrieval/contradiction.py`'s module docstring.
-
-- **Two unrelated fixes converged on the same root cause from different
-  directions.** Hybrid (BM25 + dense) retrieval was built for a different
-  reason entirely — BM25 returning *zero* hits for `RouteLeak`'s real
-  hypothesis statement despite RFC 7908 having a full route-leak taxonomy —
-  but measured against the real catalog, it also fixed the corpus
-  expansion's false assertion (3 correct/**0** false/10 abstained, was
-  3/1/9). Diagnosed, not coincidental: RRF fusion displaces the exact same
-  spurious "strict entailment" evidence (RFC 6811 §2 — literally
-  pseudo-code) the checker-split investigation above *independently*
-  flagged as questionable. Two different fixes, aimed at two different
-  problems, agreeing on what the real problem was — see
-  [docs/hybrid-retrieval-results.md](docs/hybrid-retrieval-results.md).
-  Also not adopted as default: the same "kubernetes ingress controller"
-  query that broke the corpus-expansion floor breaks the dense-retrieval
-  floor too (0.642, above the real `WithdrawalStorm` query's 0.631) — dense
-  retrieval doesn't fix BM25's register-vs-topic confusion, it reproduces it.
-
-- **A new, independent evidence axis genuinely improved detection accuracy
-  — and exposed a real architectural gap in how it gets used.** Added an
-  RPKI/ROA validation toolset (`investigator/analyzers/rpki.py`) — two new
-  files plus one `[[toolset]]` config entry, proving the toolset
-  abstraction with a second data source per Phase 2's own done-criterion.
-  Real result: detection accuracy **4/13 → 5/13** —
-  `amazon-route53-mew-2018` (the real MyEtherWallet DNS hijack) now
-  correctly detected, genuinely new signal MOAS couldn't produce (MOAS
-  needs both origins visible in-window; RPKI only needs the anomalous one
-  to lack a valid ROA). But the ACH false-assertion rate didn't move,
-  and *why* is itself the finding: `rank_hypotheses()` routes RPKI evidence
-  through the same RFC-citation entailment gate as everything else, even
-  though a ROA is self-certifying and shouldn't need RFC prose to
-  corroborate it — a structural mismatch, not a capacity problem, flagged
-  as real follow-up work rather than silently worked around. See
-  [docs/rpki-toolset-results.md](docs/rpki-toolset-results.md).
-
-## See it work: the 2008 Pakistan Telecom / YouTube hijack
-
-Real MRT archive data (RIPE RIS + RouteViews, 2008-02-24 18:47–20:54 UTC) for
-the incident where Pakistan Telecom (AS17557) originated YouTube's
-`208.65.153.0/24` in response to a government block order, and the
-more-specific route leaked globally via PCCW (AS9491), hijacking YouTube
-traffic worldwide. No synthetic data, no cherry-picked prompt. This is
-
-```bash
-INVESTIGATOR_MODEL=ollama/llama3.1:8b investigate pakistan-youtube-2008 \
-  --question "Using the reference corpus, explain why a prefix (208.65.153.0/24) being announced by two distinct origin ASNs (AS17557 and AS36561) is treated as a strong indicator of a hijack or misconfiguration, and what validation step is recommended." \
-  --seek-contradictions --score-citations
-```
-
-after [install](#install) with the `llm` extra, against the full 16-RFC
-corpus (see [Real incidents](#real-incidents-ripe-ris--routeviews)), trimmed
-only for length (evidence lists are collapsed with `…`):
-
-```
-## Observations (computed from evidence)
-### [CRITICAL] MOAS — 208.65.153.0/24
-- Prefix 208.65.153.0/24 was announced by 2 distinct origin ASNs
-  (AS17557, AS36561). Expected a single origin; presumed legitimate origin
-  is AS17557. (ground in: BGP origin AS semantics and prefix hijack (MOAS))
-- Anomalous origin AS36561 advertised 208.65.153.0/24 (59 announcement(s)).
-  - Evidence:
-    - rrc00@2008-02-24T20:07:25Z ANNOUNCE 208.65.153.0/24 origin=AS36561
-      path=[3549 36561] peer=AS3549
-    - …and 58 more
-
-## Explanation (grounded in reference docs)
-The presence of a prefix (208.65.153.0/24) being announced by two distinct
-origin ASNs (AS17557 and AS36561) is treated as a strong indicator of a
-hijack or misconfiguration because it violates the security guarantees
-provided by BGPsec when used in conjunction with origin validation
-[RFC 8205 §8.1]. Specifically, according to RFC 8205 §4.1, a BGPsec speaker
-should only originate a BGPsec UPDATE message advertising a route for a
-given prefix if there exists a valid ROA authorizing the BGPsec speaker's AS
-to originate routes to this prefix [RFC 6482]. …
-
-Sources:
-  [1] RFC 8206 §3.1   [2] RFC 8205 §4.1   [3] RFC 6811 §2.1   [4] RFC 8205 §8.1
-
-Citation-correctness scorecard (checker: lexical_overlap):
-  claims: 4
-  citation precision: n/a
-  citation recall: 0%
-  retriever errors (no corpus support found): 3
-  generator errors (corpus had support, not cited): 1
-  [MISS] (uncited) The presence of a prefix … is treated as a strong
-       indicator of a hijack or misconfiguration because it violates the
-       security guarantees provided by BGPsec …
-        -> retriever error
-  [MISS] (uncited) Specifically, according to RFC 8205 §4.1, a BGPsec
-       speaker should only originate … if there exists a valid ROA
-       authorizing … [RFC 6482].
-        -> generator error
-  [MISS] (uncited) The presence of two distinct origin ASNs indicates that
-       either one or both … have not been authorized … to originate route
-       advertisements for the given prefix …
-        -> retriever error
-  [MISS] (uncited) This is further supported by RFC 6811 §2.1, which
-       illustrates a procedure for validating prefixes …
-        -> retriever error
-
-Competing considerations (verified counter-evidence, not asserted):
-
-[MOAS] 2 origin ASNs observed for a single prefix.
-  Counter-evidence found (verified by entailment checker):
-    - RFC 8206 §1.2
-    - RFC 8206 §3
-  Supporting evidence (strict entailment):
-    - RFC 6811 §2.1
-    - RFC 7454 §6.1.2.2
-
-ACH ranking (least-refuted first):
-  1. [MOAS] 2 origin ASNs observed for a single prefix.
-     -- 2 topically-relevant (2 strictly entailed), 2 contradicting
-  2. [ASPathLoop] 10 announcement(s) with a repeated ASN in AS_PATH.
-     -- 1 topically-relevant (1 strictly entailed), 3 contradicting
-  3. [RouteLeak] 1 new transit AS(es) appeared mid-window, origin unchanged.
-     -- 0 topically-relevant (0 strictly entailed), 4 contradicting
-Verdict: leading hypothesis is [MOAS] 2 origin ASNs observed for a single
-prefix. (asserted on relevance-tier evidence: 2 vs 2 contradicting;
-conservative strict-entailment count: 2)
-```
-
-This transcript is shown warts and all, on purpose: the detection and ACH
-layers are still exactly right (MOAS, correctly, same verdict as the 2-RFC
-corpus) but the local model's narration is **not** — it reads fluently and
-cites four real RFC sections, and every single one of those citations is
-wrong (`0%` recall). This is precisely the failure `--score-citations`
-exists to catch, and it's a materially worse result than this same command
-produced against the smaller 2-RFC corpus (33%/33%) — a bigger, more
-topically diverse corpus gave the model more plausible-sounding material to
-draw from without its grounding discipline improving to match. See
-[Real LLM narration](#real-llm-narration-hosted--local) for the hosted-model
-comparison (which abstained outright on this exact question) and
-[docs/corpus-expansion-results.md](docs/corpus-expansion-results.md) for the
-full diagnosis, including why this is being shown here rather than swapped
-for a more flattering question.
-
-Real archive data → deterministic MOAS detection → real model narration
-(local, via LiteLLM/Ollama) → citation-correctness scoring that catches the
-narration's ungrounded citations → adversarial counter-evidence search (two
-of MOAS's four candidate sources got flagged as *refuting* it) → a
-competing-hypothesis verdict that survives that contradiction anyway,
-reported against **two labeled evidence bars** ("strictly entailed" and
-"topically relevant") rather than one bar loosened until it passes.
-Measured, not cherry-picked: `investigator/evaluate.py --ach` runs the
-detection + retrieval pipeline over all 13 real catalog incidents and
-reports **3 correct assertions, 1 false assertion, 9 honest abstentions**
-against the expanded corpus (was 3/0/10 against the 2-RFC corpus) — see
-[What it does](#what-it-does--and-deliberately-does-not--do-yet) and
-[docs/corpus-expansion-results.md](docs/corpus-expansion-results.md) for the
-diagnosed false assertion.
-
-### Real LLM narration (hosted + local)
-
-The transcript above is the local model; the same question, same incident,
-same corpus, run against a **hosted** backend (`claude-haiku-4-5` via
-LiteLLM) behaves completely differently: it **abstains outright**, where
-against the smaller 2-RFC corpus it answered confidently (100%/60%
-precision/recall). With more, more topically diffuse sources retrieved for
-this exact question, the model chose `FINAL: INSUFFICIENT EVIDENCE` over
-asserting from what it retrieved — arguably the right call given what it
-saw, but it means there's no hosted narration to show here anymore. Both
-backends are exercised by `investigator/llm.py`'s `LiteLLMBackend` — this is
-provider parity actually run, not just claimed, and provider variance is
-itself part of what's being measured:
-
-| | 2-RFC corpus: `claude-haiku-4-5` | 2-RFC corpus: `llama3.1:8b` | 16-RFC corpus: `claude-haiku-4-5` | 16-RFC corpus: `llama3.1:8b` |
-|---|---|---|---|---|
-| Outcome | answered | answered | **abstained** | answered |
-| Claims made | 5 | 3 | 0 | 4 |
-| Citation precision | 100% | 33% | n/a | n/a (0 entailed) |
-| Citation recall | 60% | 33% | n/a | **0%** |
-
-Neither backend was fully grounded even against the small corpus (the hosted
-model asserted two claims the corpus didn't support; the local model did
-worse, missing a claim entirely and failing to cite a passage that would
-have supported another). Against the expanded corpus, the hosted model
-became *more* conservative and the local model became *less* grounded while
-sounding more confident — two different, both real, reactions to the same
-change in retrieval breadth. This is exactly the differentiator Phase 3
-exists to measure, and it was invisible until real model output — not
-`NoOpBackend`'s echoed prompt, not a hand-written fixture — was actually
-scored, twice, against two different corpus sizes. See
-[docs/corpus-expansion-results.md](docs/corpus-expansion-results.md) for the
-full before/after and diagnosis.
+See the full end-to-end run on the real 2008 Pakistan Telecom / YouTube hijack —
+transcript and scorecard in [docs/findings.md](docs/findings.md#full-transcript-the-2008-pakistan-telecom--youtube-hijack).
 
 ## Run with Docker
 
-No local Python needed — the image bundles the 16-RFC corpus and the real
-incident data, so the flagship demo runs fully offline:
+No local Python needed — the image bundles the 16-RFC corpus and real incident
+data, so the demo runs fully offline:
 
 ```bash
 docker build -t routecause .
-docker run --rm routecause                          # runs the 2008 Pakistan/YouTube hijack demo
+docker run --rm routecause                          # the 2008 Pakistan/YouTube hijack demo
 docker run --rm routecause rostelecom-2020 --seek-contradictions
 docker run --rm --entrypoint ask routecause "how is a BGP AS_PATH loop detected?"
 docker run --rm --entrypoint pytest routecause -q   # the full test suite
@@ -332,23 +76,11 @@ docker run --rm --entrypoint pytest routecause -q   # the full test suite
 Ready-to-run incidents: `pakistan-youtube-2008`, `rostelecom-2020`,
 `indosat-2014`, `level3-comcast-2017`, `telekom-malaysia-2015`,
 `google-japan-leak-2017`, `mainone-google-2018`, `twitter-rtcomm-2022`,
-`celer-cbridge-aws-2022`. Others in the catalog need ingesting first (they
-ship split per-prefix) — see [Real incidents](#real-incidents-ripe-ris--routeviews).
+`celer-cbridge-2022`. Turn on narration by passing `-e INVESTIGATOR_MODEL=… -e
+OPENAI_API_KEY=…` at run time (nothing is baked into the image).
 
-Turn on LLM narration by passing a model and key at run time (nothing is baked
-into the image):
-
-```bash
-docker run --rm -e INVESTIGATOR_MODEL=openai/gpt-4o-mini -e OPENAI_API_KEY=$OPENAI_API_KEY \
-  routecause pakistan-youtube-2008 --seek-contradictions
-```
-
-The image installs the `ingest`, `llm`, `dev` (pytest), and `api` extras by
-default; add the heavier entailment-checker models with
-`docker build --build-arg EXTRAS=ingest,llm,dev,api,nli .`.
-
-**One-command smoke test** — builds the image and checks the demo output, a
-second incident, `ask`, and the test suite:
+**One-command smoke test** — builds the image and checks the demo, a second
+incident, `ask`, and the tests:
 
 ```bash
 ./scripts/docker-smoke.sh          # macOS / Linux / WSL / CI
@@ -357,314 +89,67 @@ second incident, `ask`, and the test suite:
 
 ## HTTP API
 
-The same engine is exposed as a small FastAPI service — a thin layer over
-`InvestigationEngine`, so the API and the CLI can't drift. The corpus is loaded
-and indexed once at startup and reused across requests.
+The same engine, exposed as a small FastAPI service (a thin layer over
+`InvestigationEngine`, so the API and CLI can't drift). Corpus is loaded and
+indexed once at startup.
 
 ```bash
-pip install -e ".[ingest,api]"     # or ".[all]"
+pip install -e ".[ingest,api]"
 investigator-serve                 # -> http://127.0.0.1:8000  (interactive docs at /docs)
 
-# or in Docker (already includes the api extra):
+# or in Docker:
 docker run --rm -p 8000:8000 -e HOST=0.0.0.0 --entrypoint investigator-serve routecause
 ```
 
-Endpoints:
+- `GET /health` · `GET /incidents`
+- `POST /investigate` — `{"incident": "pakistan-youtube-2008", "seek_contradictions": true}` → structured findings, cited explanation, ACH ranking, Markdown report.
+- `POST /ask` — `{"question": "…"}` → a cited answer over the RFC corpus (or an honest abstention).
 
-- `GET /health` — liveness + whether LLM narration is enabled.
-- `GET /incidents` — the incident catalog, each flagged `ready` (bundled) or not.
-- `POST /investigate` — `{"incident": "pakistan-youtube-2008", "question": "...", "seek_contradictions": true}` returns structured findings, the cited explanation, ACH ranking, and the rendered Markdown report.
-- `POST /ask` — `{"question": "how is a BGP AS_PATH loop detected?"}` returns a cited answer over the RFC corpus (or an honest abstention).
+**Deploy a live copy (free):** a [`render.yaml`](render.yaml) blueprint deploys
+the API as a free Docker web service (Render → *New → Blueprint → connect repo*;
+no credit card). A Hugging Face Space config is in
+[`deploy/huggingface/`](deploy/huggingface/).
 
-```bash
-curl -s localhost:8000/investigate \
-  -H 'content-type: application/json' \
-  -d '{"incident":"pakistan-youtube-2008","seek_contradictions":true}' | jq .
-```
+## Observability
 
-Runs offline by default; set `INVESTIGATOR_MODEL` (+ a provider key) before
-starting the server to turn on natural-language narration.
-
-**Deploy a live copy (free):**
-
-- **Render** — a [`render.yaml`](render.yaml) blueprint deploys the API as a
-  free Docker web service (no credit card). In the Render dashboard: *New →
-  Blueprint → connect this repo*, and open `/<service>.onrender.com/docs` when
-  it's live. (Free instances sleep when idle and cold-start on the next hit.)
-- **Hugging Face Spaces** — config in
-  [`deploy/huggingface/`](deploy/huggingface/) if you have a plan that allows
-  Docker Spaces; steps in
-  [deploy/huggingface/README.md](deploy/huggingface/README.md).
-
-## Observability (tracing)
-
-The LLM/agent path is instrumented with spans — one per investigation and one
-per model completion (model, prompt size, latency, completion size) — so you
-can watch retrieval breadth and model latency/verbosity per request. It's off
-by default and never touches the deterministic detection path; flip one env
-var:
+The LLM/agent path is instrumented — one span per investigation, one per model
+completion (model, prompt/completion size, latency). Off by default; one env var
+turns it on:
 
 ```bash
-INVESTIGATOR_TRACING=console investigate pakistan-youtube-2008   # structured span lines on stderr, zero extra deps
+INVESTIGATOR_TRACING=console investigate pakistan-youtube-2008   # structured spans on stderr, zero extra deps
+INVESTIGATOR_TRACING=otlp    investigator-serve                  # export to Phoenix / Langfuse / Jaeger (pip install -e ".[obs]")
 ```
 
-```json
-{"span": "llm.complete", "llm.model": "gpt-4o-mini", "llm.prompt_chars": 3451, "llm.completion_chars": 512, "duration_ms": 812.4}
-{"span": "engine.investigate", "incident_id": "pakistan-youtube-2008", "findings": 4, "abstained": false, "duration_ms": 1043.2}
-```
-
-For real distributed tracing, export to any OpenTelemetry collector — Arize
-Phoenix, Langfuse, Jaeger, Grafana Tempo — with the `obs` extra:
+## Install & extras
 
 ```bash
-pip install -e ".[obs]"
-export INVESTIGATOR_TRACING=otlp
-export OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4318
-investigator-serve
+pip install -e .             # core: analyzers, BM25 retrieval, offline CLI, ACH — stdlib only
+pip install -e ".[ingest]"   # mrtparse — pull real incidents from RIPE RIS / RouteViews
+pip install -e ".[llm]"      # litellm — natural-language narration
+pip install -e ".[nli]"      # sentence-transformers — real cross-encoder / MiniCheck checkers
+pip install -e ".[api,obs]"  # FastAPI service · OpenTelemetry tracing
+pip install -e ".[all]"      # everything, incl. dev (pytest)
 ```
 
-If OpenTelemetry isn't installed, any setting falls back to the dependency-free
-stderr tracer, so enabling tracing can never crash the app.
-
-## Install
-
-```bash
-pip install -e .             # core runs on the standard library alone — no extras required
-
-investigate pakistan-youtube-2008
-investigate pakistan-youtube-2008 --seek-contradictions
-ask "how is a BGP AS_PATH loop detected?"
-```
-
-`investigate` and `ask` are console-script entry points (`pyproject.toml`'s
-`[project.scripts]`) — the core (analyzers, BM25 citation retrieval, the
-offline CLI, contradiction retrieval + ACH with the default lexical
-entailment checker) runs on the standard library alone, no extras required.
-`investigate` also accepts a path to any incident JSON file, not just a
-catalog name — see [Real incidents](#real-incidents-ripe-ris--routeviews)
-below for producing your own from raw MRT archives.
-
-Optional extras, each independent:
-
-```bash
-pip install -e ".[ingest]"   # mrtparse, for pulling real incidents from RIPE RIS/RouteViews
-pip install -e ".[llm]"      # litellm, for natural-language narration (INVESTIGATOR_MODEL=...)
-pip install -e ".[nli]"      # sentence-transformers, for the real cross-encoder entailment checker
-pip install -e ".[dev]"      # pytest
-pip install -e ".[all]"      # everything above
-```
-
-```bash
-pytest -q
-```
-
-Don't want to install anything? Everything above also runs with no install
-at all: `PYTHONPATH=. python -m investigator.cli investigate ...` /
-`PYTHONPATH=. python -m investigator.ingest ...` / `PYTHONPATH=. python -m
-pytest -q`, same as `investigate`/`ask` and the rest, just spelled out in
-full each time.
-
-## Real incidents (RIPE RIS / RouteViews)
-
-`data/incidents/incident_moas_withdrawal.json` is synthetic (TEST-NET-3, private
-ASNs) — a worked example, not evidence. Everything above ran against real
-data: `investigator/ingest.py` (needs the `ingest` extra) pulls raw MRT
-update streams directly from the public RIPE RIS and RouteViews archives for
-a prefix + time window, filters to that prefix, and normalizes the result
-into the same incident JSON shape (pure Python — `mrtparse` only, no
-PyBGPStream/native toolchain, so it installs the same way on any platform):
-
-```bash
-pip install -e ".[ingest]"
-
-# fetch a named historical incident from data/incidents/catalog.json:
-python -m investigator.ingest catalog pakistan-youtube-2008
-python -m investigator.ingest catalog cloudflare-verizon-2019
-
-# or fetch an arbitrary prefix/window directly:
-python -m investigator.ingest fetch \
-  --prefix 104.16.0.0/12 --start 2019-06-24T10:00:00Z --end 2019-06-24T13:00:00Z \
-  --name cloudflare_verizon_2019 --collectors rrc00,route-views2
-
-# then investigate it exactly like the sample above, by catalog name:
-investigate pakistan-youtube-2008
-```
-
-`investigator/evaluate.py` runs every analyzer (and, with `--ach`, the full
-contradiction-retrieval + ACH pipeline) over the whole catalog and reports
-expected-vs-detected, so both detection accuracy and the false-assertion
-rate are measured against documented outcomes rather than eyeballed on one
-example:
-
-```bash
-python -m investigator.evaluate
-python -m investigator.evaluate --ach
-```
-
-The catalog's incident windows are deliberately wide and flagged for
-verification (see `data/incidents/catalog.json`) — treat them as a starting
-point, not authoritative ground truth, until cross-checked against a primary
-source.
-
-Set `INVESTIGATOR_MODEL` (+ a provider key, see `.env.example`, needs the
-`llm` extra) to turn on natural-language narration that cites the same
-numbered sources — verified end-to-end against both a hosted model
-(`claude-haiku-4-5`) and a local one (`ollama/llama3.1:8b`, no key, no
-network egress); see [Real LLM narration](#real-llm-narration-hosted--local).
-Without it, the tool runs in no-LLM mode and shows the grounded findings and
-sources verbatim.
-
-## What it does — and deliberately does not — do (yet)
-
-**Does:** deterministic BGP anomaly detection (MOAS/hijack, withdrawal storm,
-AS_PATH loop, route leak, RPKI/ROA authorization — see
-[RPKI toolset results](docs/rpki-toolset-results.md)), an agentic search loop over RFCs (the LLM may run
-multiple `search_rfcs` queries before answering, `investigator/agent.py`)
-with numbered `[n]` citations, abstention when no source is relevant, a
-pluggable LLM backend, config-driven analyzer toolsets
-(`investigator/toolsets.toml`), a CLI with `pip install -e .` console
-scripts.
-
-**Also does:** real-incident ingestion from RIPE RIS / RouteViews archives
-(`investigator/ingest.py`), a detection-accuracy evaluation harness against a
-small catalog of documented historical incidents (`investigator/evaluate.py`),
-a citation-*correctness* evaluation harness (`investigator/evaluation/`,
-`--score-citations`) — does the cited RFC clause actually entail the LLM's
-claim, not just get mentioned — and adversarial counter-evidence retrieval
-(`investigator/retrieval/contradiction.py`, `--seek-contradictions`): for
-each fired analyzer finding, retrieves broadly and keeps only passages an
-entailment checker verifies as genuinely contradicting it. Pluggable
-entailment checking throughout: a dependency-free lexical heuristic by
-default, or a real HuggingFace MNLI cross-encoder as an opt-in upgrade —
-deliberately not LLM-as-judge, which would undermine the whole point of an
-independent check. **Honestly reported, then re-tested:** run for real,
-both checkers mislabeled an unrelated RFC section as "contradicting" a MOAS
-finding. Tested whether a bigger *specialized* entailment model helps (not
-an LLM-as-judge) — it does, measurably, and is now the default — but it
-doesn't fully eliminate the failure mode. See `docs/design.md`'s Phase 4
-section for the full before/after.
-
-On top of that, competing-hypothesis (ACH) reasoning
-(`investigator/ach.py`, folded into `--seek-contradictions`): ranks fired
-analyzer findings by Heuer's ACH method (fewest refuted first, not most
-confirmed) and abstains rather than asserting when no hypothesis clears a
-real evidence bar. **Measured against the real 13-incident catalog
-(`investigator/evaluate.py --ach`), not left as an untested claim, three
-times:** first, a real ranking-rule bug was found and fixed (a hypothesis
-with zero evidence was beating one with genuine mixed evidence) — after
-which the system correctly abstained on all 13 real incidents rather than
-asserting anything, a legitimate but weak result: RFC citations are hedged/
-definitional grounding, not case-specific logical proof, and a strict
-entailment bar mostly can't clear that distinction against a 2-file corpus.
-Second, a **two-tier evidence bar** was added on top: ACH's assert/abstain
-gate now compares contradicting evidence against a *relevance* tier
-(on-topic, checker-verified, even if short of strict entailment) instead of
-the strict tier alone, while still reporting the strict count alongside
-every verdict as the conservative cross-check — two labeled bars, not one
-loosened until it passes. Re-measured against the 2-file corpus: **3
-correct assertions, 0 false assertions, 10 honest abstentions**. Third,
-after expanding to the full 16-RFC corpus (below): **3 correct assertions,
-1 false assertion, 9 honest abstentions** — a real, diagnosed regression
-(not silently absorbed into the earlier number), traced to a pre-existing
-detection-layer gap the bigger corpus exposed rather than caused. See
-`docs/design.md`'s Phase 5 section and
-[docs/corpus-expansion-results.md](docs/corpus-expansion-results.md) for
-the full diagnosis at each stage.
-
-**Also does (as of the corpus expansion):** a bigger, topically-focused RFC
-corpus — 16 full RFCs (4271, 4272, 7908, 9234, 8212, 7454, 6811, 6480, 8205,
-8206, 8207, 4760, 1997, 4456, 5065, 2439) instead of 2 hand-picked excerpts,
-945 chunks instead of a handful. This surfaced two real bugs only visible
-against real RFC text (a section-header regex that mislabeled Table-of-
-Contents entries, and a preamble-skip that ate an entire RFC's body when it
-used pre-2000-style unnumbered headings — see `investigator/retrieval/corpus.py`)
-and required recalibrating the relevance floor to be scale-invariant rather
-than an absolute BM25 score (`CitationEngine.min_score_fraction`). The
-result was **not** an unconditional improvement — see
-[docs/corpus-expansion-results.md](docs/corpus-expansion-results.md) for the
-false-assertion regression and the LLM-narration degradation this exposed,
-reported honestly rather than adjusted after the fact.
-
-**Also does:** opt-in hybrid retrieval (`investigator/retrieval/citations.py`'s
-`DenseIndex`, BM25 + dense embeddings via reciprocal rank fusion,
-`[rfc_search].retrieval = "hybrid"`) — motivated by a measured BM25 failure
-(the real `RouteLeak` analyzer statement returns *zero* BM25 hits against a
-corpus that has an entire route-leak taxonomy), and it fixes the corpus
-expansion's false assertion on the real 13-incident catalog (0 false, was
-1). Not the shipped default: a real "kubernetes ingress controller" query
-still beats a real on-topic query under dense retrieval's own relevance
-floor, the same register-vs-topic confusion BM25 has — dense retrieval
-doesn't fix that failure mode, it reproduces it. See
-[docs/hybrid-retrieval-results.md](docs/hybrid-retrieval-results.md).
-
-**Does not (Phase 6, effort-gated):** a claims→sources provenance graph,
-live BGP feed integration. See [`docs/design.md`](docs/design.md).
+`investigate` also accepts a path to any incident JSON, and
+`python -m investigator.ingest` builds new incidents from raw MRT archives — see
+[docs/findings.md](docs/findings.md) and `docs/design.md`.
 
 ## Architecture
 
-Two layers, honestly separated (see `docs/design.md`):
+Two layers, honestly separated (full detail in [`docs/design.md`](docs/design.md)):
 
-- **Deterministic layer** — `investigator/analyzers/` (registry mirrors
-  K8sGPT's `IAnalyzer`/`coreAnalyzerMap`), loaded from the config-driven
-  toolset manifest (`investigator/toolsets.toml` + `investigator/toolsets.py`
-  — TOML, not YAML, so the core stays stdlib-only) instead of hardcoded
-  imports, and `investigator/types.py`. Always runs, unconditionally, with no
-  LLM involved — the agentic loop below never gets a say in what counts as
-  evidence.
-- **Reasoning layer** — `investigator/retrieval/` (citation engine mirrors
-  LlamaIndex's `CitationQueryEngine`) wrapped in a bounded, context-budgeted
-  agentic loop (`investigator/agent.py`, mirrors HolmesGPT's tool-calling
-  loop and its context-budget truncation) + `investigator/llm.py` (backend
-  abstraction mirrors K8sGPT's `IAI`), orchestrated in
-  `investigator/engine.py`. Offline mode always does exactly one search
-  round; a real LLM backend may search further before answering.
+- **Deterministic layer** (`investigator/analyzers/`) — a config-driven toolset
+  registry (mirrors K8sGPT's `IAnalyzer`). Always runs, unconditionally, with no
+  LLM involved. The agentic loop never gets a say in what counts as evidence.
+- **Reasoning layer** (`investigator/retrieval/` + `agent.py` + `llm.py`) — a
+  citation engine (LlamaIndex-style `CitationQueryEngine`) inside a bounded,
+  context-budgeted agentic loop (HolmesGPT-style), orchestrated by
+  `engine.py`. Offline does one search round; a real LLM may search further.
 
-## Layout
+## More
 
-```
-pyproject.toml              # pip install -e .; console scripts: investigate, ask
-investigator/
-  types.py                 # Incident/BGPUpdate + Result/Finding (K8sGPT-style)
-  toolsets.toml              # config-driven analyzer manifest (TOML, stdlib-only)
-  toolsets.py                # manifest loader + dynamic analyzer registration
-  analyzers/               # deterministic detectors + registry
-    base.py  moas.py  withdrawal_storm.py  as_path_loop.py  route_leak.py  rpki.py
-  retrieval/               # BM25 + dense (hybrid, opt-in) + CitationEngine (numbered sources, abstain)
-    corpus.py  citations.py  contradiction.py
-  llm.py                   # LLMBackend: NoOp (offline) + LiteLLM (real)
-  agent.py                  # bounded, context-budgeted agentic search loop (ReAct-style, RFC retrieval only)
-  engine.py  report.py  cli.py
-  ach.py                     # ACH ranking + two-tier evidence bar + measured abstention (Phase 5)
-  ingest.py                 # RIPE RIS / RouteViews raw MRT -> Incident JSON
-  rpki.py                    # RIPEstat RPKI/ROA fetch + local cache -> RPKIAnalyzer (item 8)
-  evaluate.py                # expected-vs-detected accuracy over the catalog; --ach for the false-assertion rate
-  evaluation/                # citation-CORRECTNESS harness (claims.py, entailment.py, scorer.py)
-data/
-  incidents/               # sample incident JSON (synthetic) + real, ingested ones
-    catalog.json            # documented historical incidents (ground truth, verify before trusting)
-  rfcs/                     # 16 full IETF RFCs (rfc-editor.org), cleaned + chunked at load time
-tests/                     # analyzer + toolset + retrieval/abstention/contradiction + ach + agent + ingest/evaluate/evaluation/cli tests
-docs/design.md
-docs/alignment-plan.md      # delta vs. the original build plan, ordered by value
-docs/corpus-expansion-results.md  # before/after of the RFC corpus expansion, honestly reported
-docs/hybrid-retrieval-results.md  # BM25 vs. hybrid (dense) retrieval, honestly reported
-docs/rpki-toolset-results.md      # RPKI/ROA validation toolset, honestly reported
-```
-
-## Roadmap
-
-The original build plan's Phases 0-5 are all done as of this line — see
-`docs/design.md` for what "done" meant for each, including the honestly
-measured limitations.
-
-- **Phase 1 ✅** baseline parity: analyzers, cited retrieval, agentic search loop (this repo)
-- **Phase 1.5 ✅** real-incident ingestion (RIPE RIS/RouteViews) + detection-accuracy eval harness
-- **Phase 2 ✅** config-driven toolset abstraction (TOML) + a real route-leak analyzer + LLM context-budget truncation
-- **Phase 3 ✅** citation-correctness eval harness (ALCE-style precision/recall + RAGChecker-style retriever-vs-generator split), pluggable lexical/cross-encoder entailment checking
-- **Phase 4 ✅** adversarial contradiction retrieval (`--seek-contradictions`), reusing Phase 1 retrieval + Phase 3 entailment checking; a real, verified false-positive limitation is documented, not hidden
-- **Phase 5 ✅** competing-hypothesis (ACH) reasoning + measured abstention (`investigator/ach.py`, `--ach`); a real ranking-rule bug was found and fixed against real data, and a follow-up two-tier evidence bar turned the resulting 100% real-catalog abstention rate into 3 correct assertions with 0 false assertions (2-file corpus) — re-measured at 3 correct, 1 false, 9 abstained after the corpus expansion below, diagnosed rather than hidden
-- **RFC corpus expansion ✅** 2 hand-picked excerpts → 16 full RFCs (945 chunks); fixed two real bugs only visible against full RFC text and a corpus-size-dependent relevance floor; the result was a genuine mix of better (more abstentions now have real evidence weighed) and worse (a new false ACH assertion, degraded local-model grounding) — see [docs/corpus-expansion-results.md](docs/corpus-expansion-results.md)
-- **Entailment checker split ✅** purpose-built checkers for Phase 3 (`MiniCheckSupportChecker`) and Phase 4 (`MarginNLIContradictionChecker`) instead of one checker doing both jobs; fixed the documented AS_PATH/MOAS false positive in isolation (99.5% neutral, was a confident `CONTRADICTS`) but made the real-catalog false-assertion rate *worse* when adopted wholesale (0 correct/1 false/12 abstained, was 3/1/9) — both results reported, opt-in only, `lexical` stays default
-- **Hybrid (BM25 + dense) retrieval ✅** opt-in (`[rfc_search].retrieval = "hybrid"`); fixes the corpus expansion's false assertion on the real catalog (0 false, was 1) but reproduces rather than fixes BM25's on-topic/off-topic separation weakness on adjacent-technical-domain queries — see [docs/hybrid-retrieval-results.md](docs/hybrid-retrieval-results.md)
-- **RPKI/ROA validation toolset ✅** proves the toolset abstraction with a second, independent evidence axis (two files + one config entry, zero core changes); real detection-accuracy improvement (4/13 → 5/13) but exposes a real architectural gap — RPKI evidence still gets routed through the same RFC-entailment gate as everything else in ACH, a structural mismatch since a ROA is self-certifying — see [docs/rpki-toolset-results.md](docs/rpki-toolset-results.md)
-- **Phase 6 (effort-gated, not started):** a claims→sources provenance graph, live BGP feed integration
+- [docs/findings.md](docs/findings.md) — measured results, the full transcript, capability list, roadmap, layout
+- [docs/design.md](docs/design.md) — architecture and phase-by-phase design
+- [docs/corpus-expansion-results.md](docs/corpus-expansion-results.md) · [docs/hybrid-retrieval-results.md](docs/hybrid-retrieval-results.md) · [docs/rpki-toolset-results.md](docs/rpki-toolset-results.md) — honest before/after write-ups
