@@ -4,7 +4,7 @@
 anomalies with deterministic analyzers, explains them with cited passages from
 IETF RFCs, and refuses to answer when it can't ground a claim in a source.**
 
-[**▶ Live demo**](https://dim-tsoukalas.github.io/RouteCause/) · [Quickstart](#quickstart) · [HTTP API](#http-api) · [Architecture](#architecture) · [Findings & results](docs/findings.md)
+[**▶ Try the live API**](https://routecause.onrender.com/docs) · [Static demo](https://dim-tsoukalas.github.io/RouteCause/) · [Quickstart](#quickstart) · [HTTP API](#http-api) · [Architecture](#architecture) · [Findings & results](docs/findings.md)
 
 ---
 
@@ -92,6 +92,10 @@ incident, `ask`, and the tests:
 The same engine, exposed as a small FastAPI service (a thin layer over
 `InvestigationEngine`, so the API and CLI can't drift). Corpus is loaded and
 indexed once at startup.
+
+**Live instance:** https://routecause.onrender.com/docs — try it in the browser.
+(Free Render tier, so the first request after a while cold-starts for ~30–60s,
+then it's fast.)
 
 ```bash
 pip install -e ".[ingest,api]"
