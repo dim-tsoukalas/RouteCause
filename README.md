@@ -62,8 +62,77 @@ asserted in a design doc — full write-ups in [docs/findings.md](docs/findings.
   so the model can't invent what counts as evidence — it only narrates over
   already-grounded findings.
 
-See the full end-to-end run on the real 2008 Pakistan Telecom / YouTube hijack —
-transcript and scorecard in [docs/findings.md](docs/findings.md#full-transcript-the-2008-pakistan-telecom--youtube-hijack).
+<details>
+<summary><b>See it in action</b> — the real 2008 Pakistan Telecom / YouTube hijack, real routing data, real hosted LLM (Groq), nothing hand-picked</summary>
+
+_Question: Using the reference corpus, explain why a prefix (208.65.153.0/24)
+being announced by two distinct origin ASNs (AS17557 and AS36561) is treated
+as a strong indicator of a hijack or misconfiguration, and what validation
+step is recommended._
+
+**1. Deterministic detection (no LLM involved):**
+
+```
+### [CRITICAL] MOAS — 208.65.153.0/24
+- Prefix 208.65.153.0/24 was announced by 2 distinct origin ASNs
+  (AS17557, AS36561). Presumed legitimate origin: AS17557.
+    - rrc00@2008-02-24T20:07:25Z ANNOUNCE 208.65.153.0/24 origin=AS36561
+      path=[3549 36561] peer=AS3549
+    - …and 58 more announcements
+```
+
+3 more analyzers also fired (AS-path loop, route leak, RPKI/ROA violation) —
+full detail in [demo/sample-run-full.md](demo/sample-run-full.md).
+
+**2. LLM explanation, cited against the RFC corpus:**
+
+> According to [1], a BGPsec speaker should only originate a BGPsec UPDATE
+> message advertising a route for a given prefix if there exists a valid ROA
+> authorizing the BGPsec speaker's AS to originate routes to this prefix. If
+> two distinct origin ASNs (AS17557 and AS36561) are announcing the same
+> prefix, it indicates that at least one of them does not have a valid ROA —
+> a strong indicator of a hijack or misconfiguration. The recommended
+> validation step is to check the prefix against the RPKI data set, as
+> described in [2].
+
+`[1] RFC 8205 §4.1` · `[2] RFC 7454 §6.1.2.2.2` · `[3] RFC 8206 §3.1` · `[4] RFC 8205 §8.1`
+
+**3. The system checks its own citations** — nothing above is trusted just
+because it reads fluently; an independent entailment checker verifies each
+cited claim actually appears in its source:
+
+```
+citation precision: 100%   citation recall: 25%
+
+[OK]   "a BGPsec speaker should only originate ... if there exists
+        a valid ROA ..."                              -> RFC 8205 §4.1 ✓
+[MISS] "at least one of them does not have a valid ROA ..."
+                                        -> uncited (retriever gap)
+```
+
+Two more of the model's claims went uncited too — reported, not hidden. This
+is the mechanism the whole project is built around.
+
+**4. Competing hypotheses, ranked** (not just the top one asserted):
+
+```
+1. MOAS            — 2 supporting, 2 contradicting   <- leading hypothesis
+2. AS-path loop     — 1 supporting, 3 contradicting
+3. RPKI violation   — 1 supporting, 3 contradicting
+4. Route leak       — 0 supporting, 4 contradicting
+
+Verdict: MOAS asserted on relevance-tier evidence (2 vs 2 contradicting,
+conservative strict-entailment count: 2) — stated explicitly, not silently
+picked.
+```
+
+Reproduce this yourself: `investigate pakistan-youtube-2008 --seek-contradictions --score-citations`
+(needs `INVESTIGATOR_MODEL` + a provider key, e.g. Groq's free tier). Full
+untrimmed transcript — every evidence line, all 4 findings, full ACH detail —
+in [demo/sample-run-full.md](demo/sample-run-full.md); an earlier such run is
+also written up in [docs/findings.md](docs/findings.md#full-transcript-the-2008-pakistan-telecom--youtube-hijack).
+
+</details>
 
 ## Run with Docker
 
