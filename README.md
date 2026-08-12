@@ -46,6 +46,13 @@ nothing installed — see [Run with Docker](#run-with-docker).
 Each point was found by measuring against 13 real historical incidents, not
 asserted in a design doc — full write-ups in [docs/findings.md](docs/findings.md):
 
+| Measured against the real 13-incident catalog | Result |
+|---|---|
+| Detection accuracy (5 analyzers, incl. RPKI/ROA) | **5/13** hit (was 4/13 before RPKI — [rpki-toolset-results.md](docs/rpki-toolset-results.md)) |
+| Competing-hypothesis reasoning (`--ach`, 16-RFC corpus, default BM25) | **3 correct · 1 false · 9 abstained** — the false assertion is diagnosed, not hidden |
+| Same, with opt-in hybrid (BM25 + dense) retrieval | **3 correct · 0 false · 10 abstained** — fixes the false assertion, unlocks no new correct calls — [hybrid-retrieval-results.md](docs/hybrid-retrieval-results.md) |
+| Citation-correctness harness (`--score-citations`), a real run | caught a fluent explanation citing 4 real RFC sections at **0% actual recall** |
+
 - **It measures its own citations.** An evaluation harness scores whether the
   cited RFC clause actually *entails* each generated claim (ALCE-style
   precision/recall, RAGChecker-style retriever-vs-generator split) — catching
