@@ -9,7 +9,7 @@ IETF RFCs, and refuses to answer when it can't ground a claim in a source.**
 ![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)
 [![Live API](https://img.shields.io/badge/live-API%20%E2%86%92%20%2Fdocs-brightgreen)](https://routecause.onrender.com/docs)
 
-[**▶ Try the live API**](https://routecause.onrender.com/docs) · [Static demo](https://dim-tsoukalas.github.io/RouteCause/) · [Quickstart](#quickstart) · [HTTP API](#http-api) · [Architecture](#architecture) · [Findings & results](docs/findings.md)
+[**▶ Try the live API**](https://routecause.onrender.com/docs) · [Interactive demo](https://dim-tsoukalas.github.io/RouteCause/) · [Quickstart](#quickstart) · [HTTP API](#http-api) · [Architecture](#architecture) · [Findings & results](docs/findings.md)
 
 ---
 
