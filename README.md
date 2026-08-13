@@ -227,6 +227,12 @@ pip install -e ".[all]"      # everything, incl. dev (pytest)
 
 Two layers, honestly separated (full detail in [`docs/design.md`](docs/design.md)):
 
+<p align="center">
+  <a href="docs/architecture.png">
+    <img src="docs/architecture.png" alt="RouteCause architecture: incident data flows through a deterministic analyzer layer with no LLM involved, then a reasoning layer that retrieves cited RFC evidence, checks its own citations, hunts counter-evidence, ranks competing hypotheses, and either asserts the leading one or abstains." width="480">
+  </a>
+</p>
+
 - **Deterministic layer** (`investigator/analyzers/`) — a config-driven toolset
   registry (mirrors K8sGPT's `IAnalyzer`). Always runs, unconditionally, with no
   LLM involved. The agentic loop never gets a say in what counts as evidence.
